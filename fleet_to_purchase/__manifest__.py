@@ -27,8 +27,10 @@
         'security/ir.model.access.csv',
         'data/data.xml',
         'wizard/register_wizard.xml',
+        'wizard/car_register_tree_view.xml',
         'views/po_cars.xml',
         'views/cars_counter.xml',
+        'views/purchase_inherit.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

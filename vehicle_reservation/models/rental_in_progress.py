@@ -243,18 +243,20 @@ class RentalProgress(models.Model):
                         'rentee_name': self.rentee_name,
                         'price_unit': self.days*i,
                     }))
-                    invoice = {
-                        'invoice_line_ids': line_vals,
-                        'partner_id': self.name.id,
-                        'invoice_date': date.today(),
-                        'branch_id': self.branch_id.id,
-                        'fiscal_position_id': self.branch_id.fiscal_position_id.id,
-                        'rental': self.ids,
-                        'move_type': 'out_invoice',
-                    }
-                    self.stage_id = 'billed'
-                    self.button_show = True
-                    record = self.env['account.move'].create(invoice)
+            r = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id),('type', '=', 'sale')])
+            invoice = {
+                'invoice_line_ids': line_vals,
+                'partner_id': self.name.id,
+                'invoice_date': date.today(),
+                'branch_id': self.branch_id.id,
+                'journal_id': r.id,
+                'fiscal_position_id': self.branch_id.fiscal_position_id.id,
+                'rental': self.ids,
+                'move_type': 'out_invoice',
+            }
+            self.stage_id = 'billed'
+            self.button_show = True
+            record = self.env['account.move'].create(invoice)
 
     def action_server_invoice(self):
         selected_ids = self.env.context.get('active_ids', [])

@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_po_cars,access.po.cars,model_po_cars,,1,1,1,1
 access_register_wizard,access.register.wizard,model_register_wizard,,1,1,1,1
 access_cars_counter,access.cars.counter,model_cars_counter,,1,1,1,1
+access_car_tree,access.car.tree,model_car_tree,,1,1,1,1

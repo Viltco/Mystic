@@ -1,4 +1,5 @@
-from odoo import api, models, fields
+from odoo import api, models, fields , _
+from odoo.exceptions import UserError
 
 
 class BranchAccountJournal(models.Model):
@@ -58,3 +59,24 @@ class AccountaSSET(models.Model):
                     'branch_id': rec.branch_id.id
                 })
         return res
+
+    # def set_to_close(self, invoice_line_id, date=None):
+    #     self.ensure_one()
+    #     disposal_date = date or fields.Date.today()
+    #     if invoice_line_id and self.children_ids.filtered(lambda a: a.state in ('draft', 'open') or a.value_residual > 0):
+    #         raise UserError(_("You cannot automate the journal entry for an asset that has a running gross increase. Please use 'Dispose' on the increase(s)."))
+    #     full_asset = self + self.children_ids
+    #     move_ids = full_asset._get_disposal_moves([invoice_line_id] * len(full_asset), disposal_date)
+    #     full_asset.write(
+    #         {'state': 'close'})
+    #     full_asset.vehicle_id.active = True
+    #     if move_ids:
+    #         return self._return_disposal_view(move_ids)
+
+    # @api.onchange("state")
+    # def _onchange_state_id(self):
+    #     if self.state == 'close':
+    #         print("closed")
+    #         self.vehicle_id.active = False
+    #     else:
+    #         pass

@@ -19,7 +19,7 @@
             <xpath expr="//field[@name='tag_ids']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-             <xpath expr="//field[@name='model_year']" position="attributes">
+            <xpath expr="//field[@name='model_year']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>
             <xpath expr="//label[@for='tag_ids']" position="attributes">
@@ -34,10 +34,10 @@
             <xpath expr="//field[@name='contract_count']" position="attributes">
                 <attribute name="string">Rental Amount</attribute>
             </xpath>
-<!--            <xpath expr="//header" position="inside">-->
-<!--                <button id="button_create_po" name="action_create_po" string="Create PO"-->
-<!--                        class="btn-primary" type="object" attrs="{'invisible': [('button_show','=',True)]}"/>-->
-<!--            </xpath>-->
+            <!--            <xpath expr="//header" position="inside">-->
+            <!--                <button id="button_create_po" name="action_create_po" string="Create PO"-->
+            <!--                        class="btn-primary" type="object" attrs="{'invisible': [('button_show','=',True)]}"/>-->
+            <!--            </xpath>-->
             <xpath expr="//div[@class='oe_button_box']" position="inside">
                 <button name="get_purchase_orders" type="object"
                         class="oe_stat_button" icon="fa-calendar">
@@ -47,6 +47,7 @@
             <xpath expr="/form/sheet/group/group[6]" position="replace">
                 <group string="Accounting Details">
                     <field name="product_id" readonly="True"/>
+                    <field name="counter"/>
                     <field name="analytical_account_id" readonly="True"/>
                     <field name="account_asset_id" options="{'no_create': True}"/>
                 </group>
@@ -156,7 +157,9 @@
             <xpath expr="//field[@name='user_id']" position="before">
                 <field name="partner_id"/>
             </xpath>
-
+            <xpath expr="//field[@name='ins_ref']" position="after">
+                <field name="rental_id"/>
+            </xpath>
         </field>
     </record>
 
@@ -193,6 +196,7 @@
         <field type="xml" name="arch">
             <xpath expr="//field[@name='vehicle_type']" position="after">
                 <field name="model_year"/>
+                <field name="power_cc"/>
             </xpath>
         </field>
     </record>
@@ -204,8 +208,23 @@
         <field name="priority">100</field>
         <field type="xml" name="arch">
             <xpath expr="//field[@name='manager_id']" position="after">
-                <field name="model_year"/>
+                <field name="model_year" required="True"/>
+                <field name="power_cc" required="True"/>
+
             </xpath>
+        </field>
+    </record>
+
+    <record id="model_search_view_inherit" model="ir.ui.view">
+        <field name="name">	fleet.vehicle.model.search.inherit</field>
+        <field name="model">fleet.vehicle.model</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_model_view_search"/>
+        <field type="xml" name="arch">
+            <search>
+                <field name="model_year"/>
+                <field name="power_cc"/>
+                <field name="name"/>
+            </search>
         </field>
     </record>
 

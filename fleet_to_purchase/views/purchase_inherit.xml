@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fleet_purchase_form_inherited" model="ir.ui.view">
+        <field name="name">purchase.order.inherited</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="model">purchase.order</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='branch_id']" position="after">
+                <field name="car_to_purchase_ids" readonly="True" widget="many2many_tags"/>
+            </xpath>
+            <xpath expr="/form/sheet/group"
+                   position="after">
+                <div>
+                    <group>
+                        <field name="unit_price"/>
+                    </group>
+                </div>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button id="button_add_price" name="action_add_price" string="Add Unit Price"
+                        class="btn-primary" type="object"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

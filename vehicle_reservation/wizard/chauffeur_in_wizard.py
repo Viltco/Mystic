@@ -32,6 +32,7 @@ class ChauffeurInWizard(models.TransientModel):
                             vals = {
                                 'partner_id': record.name.id,
                                 'vehicle_id': record.vehicle_no.id,
+                                'rental_id': record.id,
                                 'start_date': record.time_out,
                                 'expiration_date': rec.time_in,
                                 'cost_frequency': record.based_on,

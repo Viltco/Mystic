@@ -39,6 +39,23 @@
                             <field name="branch_id" readonly="True"/>
                             <field name="partner_id" readonly="True"/>
                         </group>
+                        <group>
+                            <label for="apply_over_time"/>
+                            <div class="o_row">
+                                <field name="apply_over_time"/>
+                                <span>/ Hours</span>
+                            </div>
+                            <label for="apply_over_night"/>
+                            <div class="o_row">
+                                <field name="apply_over_night"/>
+                                <span>/ Hours</span>
+                            </div>
+                            <label for="apply_out_station"/>
+                            <div class="o_row">
+                                <field name="apply_out_station"/>
+                                <span>/ Hours</span>
+                            </div>
+                        </group>
                     </group>
                     <notebook>
                         <page>
@@ -51,6 +68,9 @@
                                     <field name="per_week_rate"/>
                                     <field name="per_month_rate"/>
                                     <field name="per_year_rate"/>
+                                    <field name="over_time"/>
+                                    <field name="over_night"/>
+                                    <field name="out_station"/>
                                 </tree>
                             </field>
                         </page>

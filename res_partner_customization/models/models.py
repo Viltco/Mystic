@@ -17,6 +17,9 @@ class AddFieldsPartners(models.Model):
     _sql_constraints = [
         ('ntn_unique', 'unique(ntn)', 'Cant be duplicate value For NTN!')]
 
+    def action_view_sale_order(self):
+        pass
+
     @api.model
     def create(self, vals):
         result = super(AddFieldsPartners, self).create(vals)
@@ -42,12 +45,28 @@ class AddFieldsPartners(models.Model):
                  })
         return result
 
+    def write(self, vals):
+        res = super(AddFieldsPartners, self).write(vals)
+        if self.partner_type == 'is_customer':
+            print("u click")
+            res = self.env['res.contract'].create(
+                {'branch_id': self.branch_id.id,
+                 'partner_id': self.id,
+                 })
+        return res
+
     def contract_button(self):
         return {
             'name': _('Customer Contracts'),
             'domain': [('partner_id', '=', self.id)],
             'res_model': 'res.contract',
             'view_id': False,
+            'context': {
+                'active_model': 'res.contract',
+                'active_ids': self.ids,
+                'default_branch_id': self.branch_id.id,
+                'default_partner_id': self.id,
+            },
             'view_mode': 'tree,form',
             'type': 'ir.actions.act_window',
         }

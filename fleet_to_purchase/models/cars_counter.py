@@ -4,7 +4,7 @@ from odoo import api, models, fields, _
 class CarsCounter(models.Model):
     _name = "cars.counter"
     _description = "Car Counter"
-    _rec_name = 'number'
+    _rec_name = 'counter'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     number = fields.Char(string='Number')

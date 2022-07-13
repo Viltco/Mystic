@@ -145,7 +145,7 @@ class VehicleReservation(models.Model):
     # def _onchange_brand_ids(self):
     def _compute_brand_ids(self):
         for rec in self:
-            records = self.env['fleet.vehicle'].search([('model_id.name', '=', rec.model_id.name),('model_id.model_year', '=', rec.model_id.model_year)])
+            records = self.env['fleet.vehicle'].search([('model_id.name', '=', rec.model_id.name),('model_id.model_year', '=', rec.model_id.model_year),('model_id.power_cc', '=', rec.model_id.power_cc)])
             vehicle_list = []
             if records:
                 for re in records:

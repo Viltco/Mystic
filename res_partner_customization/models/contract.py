@@ -9,6 +9,9 @@ class Contracts(models.Model):
     name = fields.Char(string='Name', copy=False, readonly=True, default='New')
     partner_id = fields.Many2one('res.partner', string="Customer")
     branch_id = fields.Many2one('res.branch', string="Branch", tracking=True, required=True)
+    apply_over_time = fields.Integer(string='Apply Over Time After')
+    apply_over_night = fields.Integer(string='Apply Over Night After')
+    apply_out_station = fields.Integer(string='Apply Out Station After')
 
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'confirmed'), ('cancel', 'Cancelled')], default='draft',
                              string="status", tracking=True)
@@ -44,4 +47,7 @@ class ContractLines(models.Model):
     per_week_rate = fields.Float(string='Weekly')
     per_month_rate = fields.Float(string='Monthly')
     per_year_rate = fields.Float(string='Yearly')
+    over_time = fields.Float(string='OverTime')
+    over_night = fields.Float(string='OverNight')
+    out_station = fields.Float(string='OutStation')
     contract_id = fields.Many2one('res.contract')

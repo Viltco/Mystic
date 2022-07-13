@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="register_tree_view_form" model="ir.ui.view">
+        <field name="name">car.tree.form</field>
+        <field name="model">car.tree</field>
+        <field name="arch" type="xml">
+            <form string="Registration">
+                <group>
+                    <field name="car_counter_id"/>
+                    <field name="license_plate"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="register_tree_action" model="ir.actions.act_window">
+        <field name="name">Register Tree</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">car.tree</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="register_tree_view_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

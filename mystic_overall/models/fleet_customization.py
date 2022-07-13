@@ -27,8 +27,30 @@ class FleetManageField(models.Model):
                               help='Odometer measure of the vehicle at the moment of this log')
     time_in = fields.Datetime('Time In', compute="_get_earliest_date")
     fleet_age = fields.Char('Fleet Age', compute="_compute_fleet_age")
+    counter = fields.Char(string='Car Counter')
+    model_year = fields.Char('Model Year', help='Year of the model', compute="_compute_model_year")
 
     account_asset_id = fields.Many2one('account.asset', string="Fixed Assets", domain="[('asset_show', '=', False)]")
+
+    def _compute_model_year(self):
+        self.model_year = self.model_id.model_year
+
+    def name_get(self):
+        print('gggg')
+        res = []
+        for rec in self:
+            print((rec.id, '%s/%s/%s/%s' % (
+            rec.model_id.brand_id.name, rec.model_id.name, rec.model_id.model_year, rec.model_id.power_cc)))
+            if rec.license_plate:
+                res.append((rec.id, '%s/%s/%s/%s/%s' % (
+                rec.model_id.brand_id.name, rec.model_id.name, rec.model_id.model_year, rec.model_id.power_cc,
+                rec.license_plate)))
+            else:
+                res.append((rec.id, '%s/%s/%s/%s/%s' % (
+                rec.model_id.brand_id.name, rec.model_id.name, rec.model_id.model_year, rec.model_id.power_cc,
+                rec.counter)))
+
+        return res
 
     def write(self, values):
         print(self.account_asset_id)
@@ -49,11 +71,11 @@ class FleetManageField(models.Model):
                 month = int((dayss - (year * 365)) / 30)
                 # week = int((dayss - (year * 365)) - month * 30) // 7
                 day = int((dayss - (year * 365)) - month * 30)
-                print("year" , year)
+                print("year", year)
                 print("month", month)
                 # print("week" , week)
-                print("days" , day)
-                self.fleet_age = str(year) + "-year" + '/' + str(month) + '-Month'+ '/' + str(day) + '-Day'
+                print("days", day)
+                self.fleet_age = str(year) + "-year" + '/' + str(month) + '-Month' + '/' + str(day) + '-Day'
             else:
                 self.fleet_age = 0
         else:
@@ -170,6 +192,8 @@ class FleetContractField(models.Model):
     partner_id = fields.Many2one('res.partner', string="Customer", tracking=True,
                                  domain=[('partner_type', '=', 'is_customer')])
 
+    rental_id = fields.Many2one('rental.progress', string="Source", tracking=True)
+
 
 class FleetOdometerField(models.Model):
     _inherit = "fleet.vehicle.odometer"
@@ -182,9 +206,10 @@ class FleetModelField(models.Model):
     _inherit = "fleet.vehicle.model"
 
     model_year = fields.Selection(selection=[(f'{i}', i) for i in range(1900, 3000)], string='Model Year')
+    power_cc = fields.Char(string="Power/CC")
 
     def name_get(self):
         res = []
         for rec in self:
-            res.append((rec.id, '%s : %s: %s' % (rec.brand_id.name, rec.name, rec.model_year)))
+            res.append((rec.id, '%s : %s: %s : %s' % (rec.brand_id.name, rec.name, rec.model_year, rec.power_cc)))
         return res
