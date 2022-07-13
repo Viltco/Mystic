@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="register_wizard_form" model="ir.ui.view">
+        <field name="name">register.wizard.form</field>
+        <field name="model">register.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Registration">
+                <group>
+                    <group>
+                        <field name="license_plate"/>
+                    </group>
+                    <group>
+                        <field name="analytical_account_id"/>
+                        <field name="product_id"/>
+                        <field name="vehicle_id"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="register_action" string="Register" class="btn-primary"
+                            type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="register_wizard_action" model="ir.actions.act_window">
+        <field name="name">Register</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">register.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="register_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

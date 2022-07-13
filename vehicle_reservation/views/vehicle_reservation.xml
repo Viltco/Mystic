@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="vehicle_reservation_tree" model="ir.ui.view">
+        <field name="name">vehicle.reservation.tree</field>
+        <field name="model">vehicle.reservation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="reservation_bf"/>
+                <field name="brand_id"/>
+                <field name="branch_id"/>
+                <field name="partner_id"/>
+                <field name="booking"/>
+                <field name="vehicle_out"/>
+                <field name="booking_accept"/>
+            </tree>
+
+        </field>
+    </record>
+    <record id="vehicle_reservation_form" model="ir.ui.view">
+        <field name="name">vehicle.reservation.form</field>
+        <field name="model">vehicle.reservation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button id="button_confirm" name="action_confirm" string="Confirm"
+                            class="btn-primary" type="object"
+                            attrs="{'invisible':[('state','in',('confirm' , 'cancel'))]}"/>
+                    <button id="button_reset_draft" name="action_reset_draft" string="Reset to Draft"
+                            class="btn-secondary" type="object" states="confirm,cancel"/>
+                    <button id="button_cancel" name="action_cancel" string="Cancel"
+                            class="btn-secondary" type="object" states="draft"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="rental_in_progress" type="object"
+                                class="oe_stat_button" icon="fa-bars">
+                            <field name="rental_counter" widget="statinfo" string="Rental"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="reservation_bf" readonly="1" force_save="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Renting Station">
+                            <field name="branch_id" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+<!--                            <field name="booking_id" attrs="{'readonly': [('state', '=', 'confirm')]}"/>-->
+                        </group>
+                        <group string="Customer">
+                            <!--                            <field name="partner_id" attrs="{'readonly': [('state', '=', 'confirm')]}" widget="res_partner_many2one"/>-->
+                            <field name="partner_id" widget="res_partner_many2one"
+                                   context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
+                                   options='{"always_reload": True}' attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="rentee_name"/>
+                        </group>
+                        <group string="Booking">
+                            <field name="booking" widget="radio" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="guard" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="based_on" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="payment_type" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                        </group>
+                        <group string="Booking Time">
+                            <field name="vehicle_out" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="report_timing" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                        </group>
+                        <group string="Demand Vehicle">
+                            <field name="model_id" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="brand_id" attrs="{'readonly': [('state', '=', 'confirm')]}"
+                                   domain="[('id','in', brand_ids)]" options="{'no_create': True}"/>
+<!--                             <field name="brand_id" attrs="{'readonly': [('state', '=', 'confirm')]}"-->
+<!--                                    options="{'no_create': True}"/>-->
+                            <field name="brand_ids" widget="many2many_tags" invisible="1"/>
+                        </group>
+                        <group string="Booking">
+                            <field name="booking_accept" widget="radio"
+                                   attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                        </group>
+                        <group string="User Information">
+                            <field name="source_name" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="source_mobile_number" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+
+                            <field name="user_name" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="user_mobile_number" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                        </group>
+                        <group string="Address">
+                            <field name="pickup" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="program" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="vehicle_reservation_pivot" model="ir.ui.view">
+        <field name="name">vehicle.reservation.pivot</field>
+        <field name="model">vehicle.reservation</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="reservation_bf"/>
+                <field name="brand_id"/>
+                <field name="branch_id"/>
+                <field name="partner_id"/>
+                <field name="booking"/>
+                <field name="vehicle_out"/>
+                <field name="booking_accept"/>
+            </pivot>
+
+        </field>
+    </record>
+
+
+    <record id="vehicle_reservation_action" model="ir.actions.act_window">
+        <field name="name">Vehicle Reservation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.reservation</field>
+        <field name="view_mode">tree,kanban,form,pivot</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                create your Vehicle Reservation!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="reservation_root"
+              name="Vehicle Reservation"
+              sequence="10" web_icon="vehicle_reservation,static/description/icon.png"/>
+
+    <menuitem id="vehicle_reservation_details"
+              name="Reservation"
+              parent="reservation_root"
+              sequence="1"/>
+
+     <menuitem id="reservation_details"
+              name="Reservation"
+              parent="vehicle_reservation_details"
+              action="vehicle_reservation_action"
+              sequence="2"/>
+
+</odoo>

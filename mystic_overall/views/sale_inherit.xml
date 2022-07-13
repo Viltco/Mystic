@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fleet_sale_form_inherited" model="ir.ui.view">
+        <field name="name">sale.order.inherited</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="model">sale.order</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='sale_order_template_id']" position="after">
+                <field name="branch_id"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position='attributes'>
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

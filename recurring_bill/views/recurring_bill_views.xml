@@ -1,0 +1,77 @@
+<odoo>
+
+    <record id="view_recurring_bill_type_form" model="ir.ui.view">
+        <field name="name">recurring.bill.type.form</field>
+        <field name="model">recurring.bill.type</field>
+        <field name="arch" type="xml">
+            <form string="Recurring Bill Type">
+                <sheet>
+                    <h1>
+                        <field name="name" placeholder="Recurring Bill Type Name" required="1"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="recurring_interval"/>
+                        </group>
+                        <group>
+                            <field name="payment_schedule"/>
+                        </group>
+                        <group>
+                            <field name="is_asset_status"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_recurring_bill_type_tree" model="ir.ui.view">
+        <field name="name">recurring.bill.type.tree</field>
+        <field name="model">recurring.bill.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="recurring_interval"/>
+                <field name="payment_schedule"/>
+                <field name="is_asset_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_recurring_bill_type_search" model="ir.ui.view">
+        <field name="name">recurring.bill.type.search</field>
+        <field name="model">recurring.bill.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_recurring_bill_type_view" model="ir.actions.act_window">
+        <field name="name">Recurring Bill Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">recurring.bill.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_recurring_bill_type_tree"/>
+        <field name="search_view_id" ref="view_recurring_bill_type_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Record Found. Let's Create..........
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_recurring_bill_type"
+              name="Recurring Bill Type"
+              parent="account.menu_finance_configuration"
+              action="action_recurring_bill_type_view"
+              sequence="1"
+    />
+
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_branch_form_inherited" model="ir.ui.view">
+        <field name="name">account.journal.inherited</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="model">account.journal</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="branch_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_rental_bill_form_inherited" model="ir.ui.view">
+        <field name="name">account.move.inherited</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="model">account.move</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='branch_id']" position="after">
+                <field name="rental" widget="many2many_tags" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']//field[@name='name']" position="after">
+                <field name="rental_id"/>
+                <field name="date_rental"/>
+                <field name="rentee_name"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position='attributes'>
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_asset_form_inherited" model="ir.ui.view">
+        <field name="name">account.asset.inherited</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+        <field name="model">account.asset</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='acquisition_date']" position="after">
+                <field name="vehicle_id"/>
+                <field name="asset_show"/>
+                <field name="branch_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

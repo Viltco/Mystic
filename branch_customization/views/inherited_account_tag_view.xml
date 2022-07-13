@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="analytical_account_tag_form_inherited" model="ir.ui.view">
+            <field name="name">account.analytic.tag.inherited</field>
+            <field name="inherit_id" ref="analytic.account_analytic_tag_form_view"/>
+            <field name="model">account.analytic.tag</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

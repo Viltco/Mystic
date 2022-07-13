@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_lease_bill,access.lease.bill,model_lease_bill,,1,1,1,1
+access_lease_bill_line,access.lease.bill.line,model_lease_bill_line,,1,1,1,1
+access_lease_wizard,access.lease.wizard,model_lease_wizard,,1,1,1,1

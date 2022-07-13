@@ -1,0 +1,452 @@
+<odoo>
+    <data>
+        <template id="rental_bill_id_print">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+                         t-att-data-oe-lang="o and o.env.context.get('lang')">
+                        <t t-call="rental_bill_invoice.rental_bill_header_footer"/>
+                        <t t-set="o" t-value="o.with_context(lang=lang)"/>
+                        <t t-set="address">
+                            <address t-field="o.partner_id"
+                                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                            <div t-if="o.partner_id.vat" class="mt16">
+                                <t t-if="o.company_id.country_id.vat_label" t-esc="o.company_id.country_id.vat_label"
+                                   id="inv_tax_id_label"/>
+                                <t t-else="">Tax ID</t>:
+                                <span t-field="o.partner_id.vat"/>
+                            </div>
+                        </t>
+                        <div class="page" style="margin:50px;">
+                            <br/>
+
+                            <table class="table table-borderless table-sm"
+                                   style="table-layout: fixed; width: 100%;">
+                                <tr>
+                                    <td width="65%">
+                                        <h3>
+                                            <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Invoice
+                                            </span>
+                                            <span t-if="o.move_type == 'out_invoice' and o.state == 'draft'">Draft
+                                                Invoice
+                                            </span>
+                                            <span t-if="o.move_type == 'out_invoice' and o.state == 'cancel'">Cancelled
+                                                Invoice
+                                            </span>
+                                            <span t-if="o.move_type == 'out_refund'">Credit Note</span>
+                                            <span t-if="o.move_type == 'in_refund'">Vendor Credit Note</span>
+                                            <span t-if="o.move_type == 'in_invoice'">Vendor Bill</span>
+                                            <span t-if="o.name != '/'" t-field="o.name"/>
+                                        </h3>
+
+
+                                        <div id="informations" class="row mt32 mb32">
+                                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.invoice_date"
+                                                 name="invoice_date">
+                                                <strong>Invoice Date:</strong>
+                                                <p class="m-0" t-field="o.invoice_date"/>
+                                            </div>
+                                            <div class="col-auto col-3 mw-100 mb-2"
+                                                 t-if="o.invoice_date_due and o.move_type == 'out_invoice' and o.state == 'posted'"
+                                                 name="due_date">
+                                                <strong>Due Date:</strong>
+                                                <p class="m-0" t-field="o.invoice_date_due"/>
+                                            </div>
+                                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.invoice_origin"
+                                                 name="origin">
+                                                <strong>Source:</strong>
+                                                <p class="m-0" t-field="o.invoice_origin"/>
+                                            </div>
+                                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.partner_id.ref"
+                                                 name="customer_code">
+                                                <strong>Customer Code:</strong>
+                                                <p class="m-0" t-field="o.partner_id.ref"/>
+                                            </div>
+                                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.ref" name="reference">
+                                                <strong>Reference:</strong>
+                                                <p class="m-0" t-field="o.ref"/>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td width="35%" style="padding-left:20px">
+                                        <h3>Branch:&#160;
+                                            <span t-field="o.branch_id"/>
+                                        </h3>
+                                        <strong>
+                                            <span t-field="o.partner_id.name" style="font-size:22px"/>
+                                        </strong>
+                                        <br/>
+                                        <p>
+                                            <span t-field="o.partner_id.city"/>
+                                            <span t-field="o.partner_id.state_id"/>
+                                            <span t-field="o.partner_id.zip"/>
+                                            <span t-field="o.partner_id.country_id"/>
+                                            <br/>
+                                            NTN:
+                                            <span t-field="o.partner_id.ntn"/>
+                                            <br/>
+                                            GST:
+                                            <span t-field="o.partner_id.strn"/>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <t t-set="display_discount" t-value="any(l.discount for l in o.invoice_line_ids)"/>
+                            <p style="text-align: justify;">
+                                Dear Sir,
+                                <br/>
+                                <br/>
+                                Thank you very much for giving us the opportunity to serve you. We sincerely hope that
+                                out services were upto your expectation.
+                                <br/>
+                                Enclosed is our invoices against our services provided and would appreciate if you could
+                                arrange to send us the payment at your earliest.
+                                <br/>
+                                Thank you once again for your patronage and assure you of our utmost attention in future
+                                as well.
+                            </p>
+                            <table class="table table-sm o_main_table" name="invoice_line_table">
+                                <thead>
+                                    <tr>
+                                        <th name="th_date" class="text-left" width="15%">
+                                            <span>Date</span>
+                                        </th>
+                                        <th name="th_ref" class="text-left" width="15%">
+                                            <span>Rental No</span>
+                                        </th>
+                                        <th class="text-center" width="40%">Description</th>
+                                        <th class="text-left" width="15%">Rentee Name</th>
+                                        <th name="th_subtotal" class="text-right" width="15%">
+                                            <span groups="account.group_show_line_subtotals_tax_excluded">Amount</span>
+                                            <span groups="account.group_show_line_subtotals_tax_included">Total Price
+                                            </span>
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody class="invoice_tbody">
+                                    <t t-set="current_subtotal" t-value="0"/>
+                                    <t t-set="lines"
+                                       t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True)"/>
+
+                                    <t t-foreach="lines" t-as="line">
+                                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"
+                                           groups="account.group_show_line_subtotals_tax_excluded"/>
+                                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_total"
+                                           groups="account.group_show_line_subtotals_tax_included"/>
+
+                                        <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                            <t t-if="not line.display_type" name="account_invoice_line_accountable">
+                                                <td t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" width="15%">
+                                                    <span class="text-nowrap" t-esc="o.get_date(line.date_rental)"/>
+                                                </td>
+                                                <td class="text-left" width="15%">
+                                                    <span t-field="line.rental_id"/>
+                                                </td>
+                                                <td width="40%" style="text-align:left">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                                <td width="15%" style="text-align:center">
+                                                    <span t-field="line.rentee_name" class="text-left"/>
+                                                </td>
+                                                <td class="text-right o_price_total" width="15%">
+                                                    <span class="text-nowrap" t-field="line.price_subtotal"
+                                                          groups="account.group_show_line_subtotals_tax_excluded"/>
+                                                    <span class="text-nowrap" t-field="line.price_total"
+                                                          groups="account.group_show_line_subtotals_tax_included"/>
+                                                </td>
+
+
+                                            </t>
+                                            <t t-if="line.display_type == 'line_section'">
+                                                <td colspan="99">
+                                                    <span t-field="line.name" t-options="{'widget': 'text'}"/>
+                                                </td>
+                                                <t t-set="current_section" t-value="line"/>
+                                                <t t-set="current_subtotal" t-value="0"/>
+                                            </t>
+                                            <t t-if="line.display_type == 'line_note'">
+                                                <td colspan="99">
+                                                    <span t-field="line.name" t-options="{'widget': 'text'}"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+
+                                        <t t-if="current_section and (line_last or lines[line_index+1].display_type == 'line_section')">
+                                            <tr class="is-subtotal text-right">
+                                                <td colspan="99">
+                                                    <strong class="mr16">Subtotal</strong>
+                                                    <span
+                                                            t-esc="current_subtotal"
+                                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                                                    />
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <div class="clearfix">
+                                <div id="total" class="row">
+                                    <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
+                                        <table class="table table-sm" style="page-break-inside: avoid;">
+                                            <tr class="border-black o_subtotal" style="">
+                                                <td>
+                                                    <strong>Subtotal</strong>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-field="o.amount_untaxed"/>
+                                                </td>
+                                            </tr>
+                                            <t t-foreach="o.amount_by_group" t-as="amount_by_group">
+                                                <tr style="">
+                                                    <t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) in [0, 1] and float_compare(o.amount_untaxed, amount_by_group[2], precision_rounding=o.currency_id.rounding) == 0">
+                                                        <td>
+                                                            <span class="text-nowrap" t-esc="amount_by_group[0]"/>
+                                                        </td>
+                                                        <td class="text-right o_price_total">
+                                                            <span class="text-nowrap" t-esc="amount_by_group[3]"/>
+                                                        </td>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <td>
+                                                            <span t-esc="amount_by_group[0]"/>
+                                                            <span class="text-nowrap">on
+                                                                <t t-esc="amount_by_group[4]"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right o_price_total">
+                                                            <span class="text-nowrap" t-esc="amount_by_group[3]"/>
+                                                        </td>
+                                                    </t>
+                                                </tr>
+                                            </t>
+                                            <tr class="border-black o_total">
+                                                <td>
+                                                    <strong>Total</strong>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span class="text-nowrap" t-field="o.amount_total"/>
+                                                    <br/>
+
+                                                </td>
+                                            </tr>
+                                            <t t-if="print_with_payments">
+                                                <t t-if="o.payment_state != 'invoicing_legacy'">
+                                                    <t t-set="payments_vals"
+                                                       t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
+                                                    <t t-foreach="payments_vals" t-as="payment_vals">
+                                                        <tr>
+                                                            <td>
+                                                                <i class="oe_form_field text-right oe_payment_label">
+                                                                    Paid on
+                                                                    <t t-esc="payment_vals['date']"
+                                                                       t-options='{"widget": "date"}'/>
+                                                                </i>
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <span t-esc="payment_vals['amount']"
+                                                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                    <t t-if="len(payments_vals) > 0">
+                                                        <tr class="border-black">
+                                                            <td>
+                                                                <strong>Amount Due</strong>
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <span t-field="o.amount_residual"/>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="margin:0;padding:0;line-height: 5px:">
+                                <strong>Rupees:</strong>
+                                <span t-esc="o.get_amount_in_words()"/>
+                                <br/>
+                                <span t-if="o.move_type in ('out_invoice', 'in_refund') and o.payment_reference"
+                                      name="payment_communication">
+                                    Please use the following communication for your payment :
+                                    <b>
+                                        <span t-field="o.payment_reference"/>
+                                    </b>
+                                </span>
+                                <br/>
+                                <strong>Note:</strong>
+                                Please all cross cheques should be made in favor of MYSTIC TOURS (PVT.) LTD.
+                            </p>
+                            <p t-if="o.invoice_payment_term_id" name="payment_term">
+                                <span t-field="o.invoice_payment_term_id.note"/>
+                            </p>
+                            <p t-if="o.narration" name="comment">
+                                <span t-field="o.narration"/>
+                            </p>
+                            <p t-if="o.fiscal_position_id.note" name="note">
+                                <span t-field="o.fiscal_position_id.note"/>
+                            </p>
+                            <p t-if="o.invoice_incoterm_id" name="incoterm">
+                                <strong>Incoterm:</strong>
+                                <span t-field="o.invoice_incoterm_id.code"/>
+                                -
+                                <span t-field="o.invoice_incoterm_id.name"/>
+                            </p>
+                            <div id="qrcode" t-if="o.display_qr_code and o.amount_residual > 0">
+                                <p t-if="qr_code_urls.get(o.id)">
+                                    <strong class="text-center">Scan me with your banking app.</strong>
+                                    <br/>
+                                    <br/>
+                                    <img class="border border-dark rounded" t-att-src="qr_code_urls[o.id]"/>
+                                </p>
+                            </div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+
+                            <table>
+                                <tr>
+                                    <td width="80%"/>
+                                    <td width="20%" style="margin:0;padding:0;line-height: 5px:">
+                                        <hr style="border-top: 1px solid black" width="150px"/>
+                                        <span style="padding-left:25px">
+                                            <strong>Credit Manager</strong>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <template id="rental_bill_header_footer">
+            <t t-set="company" t-value="user.company_id"/>
+            <div class="header first-page row">
+                <table class="table table-borderless table-sm"
+                       style="table-layout: fixed; width: 100%;">
+                    <tr>
+                        <td width="65%">
+                            <p style="text-align:left;padding-left:80px">
+                                <img t-if="not o.company_id.logo"
+                                     t-att-src="'/web/static/src/img/placeholder.png'"
+                                     height="120"
+                                     border="1" width="150"/>
+                                <img t-if="o.company_id.logo"
+                                     t-att-src="'data:image/png;base64,%s' % to_text(o.company_id.logo)"
+                                     height="120" border="1" width="150"/>
+                            </p>
+                        </td>
+                        <td width="35%" style="margin:0;padding:0;line-height: 5px:">
+                            <div style="text-align:center;border-bottom: 1px solid black;width:215px;">
+                                <span style="font-size:20px">
+                                    <strong>Government Approved</strong>
+                                </span>
+                            </div>
+                            <p>
+                                Car Rental And Tours Operator
+                                <br/>
+                                Under License No. LHR/3528
+                                <br/>
+                                NTN# &#160; 0786481-7
+                                <br/>
+                                PNTN# 0786481-7
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="footer">
+                <div style="text-align:center;border-bottom: 1px solid black">
+                    <strong>Car Rental And Tours Operator</strong>
+                </div>
+                <table class="table table-borderless table-sm"
+                       style="table-layout: fixed; width: 100%;">
+                    <tr>
+                        <td width="28%">
+                            <strong>
+                                Head Office:
+                            </strong>
+                            <br/>
+                            <p style="font-size:11px;margin:0;padding:0;line-height: 5px:">
+                                164-Ali Block, New Garden Town, Lahore.
+                                <br/>
+                                Ph: 042-35912441-3
+                                <br/>
+                                Fax No: 0423-5912440
+                                <br/>
+                                Cell: 0300-8485023, 0321-84852023
+                            </p>
+                        </td>
+
+                        <td width="25%">
+                            <strong>
+                                Islamabad Office:
+                            </strong>
+                            <br/>
+                            <p style="font-size:11px;margin:0;padding:0;line-height: 5px:">
+                                Plot No.404, I-9/3, Industrial Area,
+                                <br/>
+                                Islamabad
+                                <br/>
+                                Ph: 051-2855256-7, Fax No.
+                                <br/>
+                                051-2280439
+                            </p>
+                        </td>
+
+                        <td width="25%">
+                            <strong>
+                                Karachi Office:
+                            </strong>
+                            <br/>
+                            <p style="font-size:11px;margin:0;padding:0;line-height: 5px:">
+                                103-B Sindhi Muslim, Co-operative
+                                <br/>
+                                Housing Society Karachi
+                                <br/>
+                                Ph: 021-34300985-7
+                                <br/>
+                                Fax No. 021-34541681
+                            </p>
+                        </td>
+
+                        <td width="28%">
+                            <strong>
+                                Multan Office:
+                            </strong>
+                            <br/>
+                            <p style="font-size:11px;margin:0;padding:0;line-height: 5px:">
+                                Office No. 19, Khan Center, Upper Ground
+                                <br/>
+                                Floor, Abdali Road, Multan.
+                                <br/>
+                                Ph: 061-4543363 Fax: 061-4543364
+                                <br/>
+                                Cell; 0321-8485057
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <div class="text-center" style="background-color: black;">
+
+                    <table class="table table-borderless table-sm"
+                           style="table-layout: fixed; width: 100%;">
+                        <tr style="color: white;">
+                            <th>UAN: 111-555-756</th>
+                            <th style="text-align:left">Website: www.mysticcarrental.com</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </template>
+    </data>
+</odoo>

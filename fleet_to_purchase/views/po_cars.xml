@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="po_cars_tree" model="ir.ui.view">
+        <field name="name">po.cars.tree</field>
+        <field name="model">po.cars</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="model_id"/>
+<!--                <field name="branch_id"/>-->
+                <field name="number"/>
+                <field name="stage_id" widget="badge" decoration-muted="stage_id == 'not_purchase'"
+                       decoration-success="stage_id == 'purchase'"/>
+            </tree>
+
+        </field>
+    </record>
+    <record id="po_cars_form" model="ir.ui.view">
+        <field name="name">po.cars.form</field>
+        <field name="model">po.cars</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button id="button_register" name="action_register" string="Register"
+                            class="btn-primary" type="object"
+                            attrs="{'invisible':['|' , ('stage_id','!=','purchase'),('button_show', '=', True)]}"/>
+                    <!--                    <button id="button_create_po" name="action_create_po" string="Create PO"-->
+                    <!--                            class="btn-primary" type="object" attrs="{'invisible': [('button_po_show','=',True)]}"/>-->
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_counter_view"
+                                class="oe_stat_button"
+                                icon="fa-copy"
+                                type="object">
+                            <field string="Vehicles" name="vehicles_count" widget="statinfo"/>
+                        </button>
+<!--                        <button name="action_purchase_car_view"-->
+<!--                                class="oe_stat_button"-->
+<!--                                icon="fa-copy"-->
+<!--                                type="object">-->
+<!--&lt;!&ndash;                            <field string="Purchase" name="purchase_count" widget="statinfo"/>&ndash;&gt;-->
+<!--                        </button>-->
+                    </div>
+                    <group>
+                        <group>
+                            <field name="model_id"/>
+<!--                            <field name="branch_id"/>-->
+                        </group>
+                        <group>
+                            <field name="number"/>
+                            <field name="button_show" invisible="1"/>
+                            <field name="button_po_show" invisible="1"/>
+                            <field name="bpo"/>
+                            <field name="loan_number"/>
+
+                        </group>
+                        <group>
+                            <field name="qty"/>
+                        </group>
+                        <group>
+                            <field name="stage_id" decoration-muted="stage_id == 'not_purchase'"
+                                   decoration-success="stage_id == 'purchase'"/>
+                        </group>
+                    </group>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+     <record id="action_create_purchase_vehicle" model="ir.actions.server">
+      <field name="name">Create Purchase Order</field>
+      <field name="model_id" ref="fleet_to_purchase.model_po_cars"/>
+      <field name="binding_model_id" ref="fleet_to_purchase.model_po_cars"/>
+      <field name="state">code</field>
+      <field name="code"> if records: action = records.action_server_invoice()</field>
+    </record>
+
+     <record id="action_create_multiple_purchase_vehicle" model="ir.actions.server">
+      <field name="name">Create Multiple Purchase Order</field>
+      <field name="model_id" ref="fleet_to_purchase.model_po_cars"/>
+      <field name="binding_model_id" ref="fleet_to_purchase.model_po_cars"/>
+      <field name="state">code</field>
+      <field name="code"> if records: action = records.action_server_multiple_invoice()</field>
+    </record>
+
+
+    <record id="po_cars_action" model="ir.actions.act_window">
+        <field name="name">To Purchase</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">po.cars</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('stage_id', '=', 'not_purchase')]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                create your Cars!
+            </p>
+        </field>
+    </record>
+
+    <record id="po_cars_to_register_view" model="ir.actions.act_window">
+        <field name="name">To Register</field>
+        <field name="res_model">po.cars</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('stage_id', '=', 'purchase')]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="cars_details"
+              name="Cars"
+              parent="purchase.menu_purchase_root"
+              sequence="2"/>
+
+    <menuitem id="po_cars_details"
+              name="To Purchase"
+              parent="fleet_to_purchase.cars_details"
+              action="po_cars_action"
+              sequence="1"/>
+
+    <menuitem id="register_cars_details"
+              name="To Register"
+              parent="fleet_to_purchase.cars_details"
+              action="po_cars_to_register_view"
+              sequence="3"/>
+
+</odoo>

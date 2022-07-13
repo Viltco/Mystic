@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="booking_wizard_form" model="ir.ui.view">
+        <field name="name">booking.wizard.form</field>
+        <field name="model">booking.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Registration">
+                <group>
+                    <group>
+                        <field name="partner_id"/>
+                        <field name="model_id"/>
+                    </group>
+                    <group>
+                        <field name="booking" widget="radio"/>
+                        <field name="based_on"/>
+                        <field name="payment_type"/>
+                    </group>
+                    <group>
+                        <field name="vehicle_out"/>
+                        <field name="vehicle_in"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="booking_action" string="Booking" class="btn-primary"
+                            type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="booking_wizard_action" model="ir.actions.act_window">
+        <field name="name">Booking</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">booking.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="booking_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="booking_details"
+              name="Booking"
+              parent="vehicle_reservation_details"
+              action="booking_wizard_action"
+              sequence="1"/>
+
+</odoo>

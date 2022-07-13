@@ -1,0 +1,16 @@
+<odoo>
+
+    <record id="cron_scheduler_action_recurring_bill" model="ir.cron">
+        <field name="name">Recurring Bill Scheduler</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="model_id" ref="model_account_move"/>
+        <field name="state">code</field>
+        <field name="active">1</field>
+        <field name="code">model.action_create_bill()</field>
+        <field name="interval_number">1</field>
+<!--        <field name="interval_type">minutes</field>-->
+        <field name="interval_type">months</field>
+        <field name="numbercall">-1</field>
+    </record>
+
+</odoo>

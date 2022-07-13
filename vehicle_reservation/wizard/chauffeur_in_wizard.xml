@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="chauffeur_in_wizard_form" model="ir.ui.view">
+        <field name="name">chauffeur.in.form</field>
+        <field name="model">chauffeur.in</field>
+        <field name="arch" type="xml">
+            <form string="Registration">
+                <group>
+                    <group>
+                        <field name="km_in"/>
+                        <field name="time_in"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="chauffeur_in_action" string="Chauffeur In" class="btn-primary"
+                            type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="chauffeur_in_wizard_action" model="ir.actions.act_window">
+        <field name="name">Chauffeur In</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">chauffeur.in</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="chauffeur_in_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

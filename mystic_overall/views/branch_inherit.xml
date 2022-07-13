@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_branch_code_tree_inherited" model="ir.ui.view">
+        <field name="name">res.branch.inherited</field>
+        <field name="inherit_id" ref="branch.branch_res_branch_view_form"/>
+        <field name="model">res.branch</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='division_id']" position="after">
+                <field name="code" required="True"/>
+                <field name="journal_id" readonly="True"/>
+            </xpath>
+        </field>
+    </record>
+
+
+     <record id="fleet_ir_sequence_branch_inherited" model="ir.ui.view">
+        <field name="name">ir.sequence.inherited</field>
+        <field name="inherit_id" ref="base.sequence_view"/>
+        <field name="model">ir.sequence</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="branch_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fleet_vehicle_form_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="model">fleet.vehicle</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <group col="4">
+                    <field name="booleans" widget="radio"/>
+                    <field name="branch_id" required="True"/>
+
+                    <field name="button_show" invisible="1"/>
+                    <field name="time_in"/>
+                    <field name="fleet_age" readonly="True" force_save="1"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+             <xpath expr="//field[@name='model_year']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//label[@for='tag_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/group/group[1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/group/group[3]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='contract_count']" position="attributes">
+                <attribute name="string">Rental Amount</attribute>
+            </xpath>
+<!--            <xpath expr="//header" position="inside">-->
+<!--                <button id="button_create_po" name="action_create_po" string="Create PO"-->
+<!--                        class="btn-primary" type="object" attrs="{'invisible': [('button_show','=',True)]}"/>-->
+<!--            </xpath>-->
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+                <button name="get_purchase_orders" type="object"
+                        class="oe_stat_button" icon="fa-calendar">
+                    <field name="po_counter" widget="statinfo" string="Purchase Order"/>
+                </button>
+            </xpath>
+            <xpath expr="/form/sheet/group/group[6]" position="replace">
+                <group string="Accounting Details">
+                    <field name="product_id" readonly="True"/>
+                    <field name="analytical_account_id" readonly="True"/>
+                    <field name="account_asset_id" options="{'no_create': True}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_tree_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_tree"/>
+        <field name="model">fleet.vehicle</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="analytical_account_id" optional="hide"/>
+                <field name="account_asset_id" optional="hide"/>
+
+            </xpath>
+            <xpath expr="//field[@name='driver_id']" position="replace">
+                <field name="booleans" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='future_driver_id']" position="replace">
+                <field name="branch_id" optional="show"/>
+                <field name="color" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='vin_sn']" position="replace">
+                <field name="odometer" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='acquisition_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="/tree" position="attributes">
+                <attribute name="decoration-danger">color == 'RED'</attribute>
+                <attribute name="decoration-info">color == 'BLUE'</attribute>
+                <attribute name="decoration-success">color == 'GREEN'</attribute>
+                <attribute name="decoration-warning">color == 'BROWN'</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="analytical_account_vehicle_form_inherited" model="ir.ui.view">
+        <field name="name">account.analytic.account.inherited</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+        <field name="model">account.analytic.account</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='group_id']" position="after">
+                <field name="fleet_vehicle_id" readonly="True"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_filter_view_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_search"/>
+        <field name="model">fleet.vehicle</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <search>
+                <field name="branch_id"/>
+                <filter name="branch_id" string="Branch" context="{'group_by':'branch_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_filter_view_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_kanban"/>
+        <field name="model">fleet.vehicle</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='tag_ids']" position="before">
+                <field name="branch_id"/>
+            </xpath>
+            <xpath expr="/kanban/templates/t/div/div[hasclass('oe_kanban_details')]/strong[hasclass('o_kanban_record_title')]"
+                   position="after">
+                <div class="o_kanban_branch_section">
+                    <field name="branch_id"/>
+                    <!--                    <field name="time_in"/>-->
+                </div>
+                <div class="oe_kanban_right">
+                    <field name="time_in"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_contract_view_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.log.contract.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_log_contract_view_form"/>
+        <field name="model">fleet.vehicle.log.contract</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='insurer_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='purchaser_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="partner_id"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_contract_view_inherited_state" model="ir.ui.view">
+        <field name="name">fleet.vehicle.state.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_state_view_tree"/>
+        <field name="model">fleet.vehicle.state</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="color"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <record id="fleet_vehicle_odometer_tree_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.odometer.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_tree"/>
+        <field name="model">fleet.vehicle.odometer</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='unit']" position="after">
+                <field name="driven"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_model_tree_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.model.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_model_view_tree"/>
+        <field name="model">fleet.vehicle.model</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='vehicle_type']" position="after">
+                <field name="model_year"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_model_from_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.model.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_model_view_form"/>
+        <field name="model">fleet.vehicle.model</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='manager_id']" position="after">
+                <field name="model_year"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_cost_pivot_inherited" model="ir.ui.view">
+        <field name="name">fleet.vehicle.cost.report.inherited</field>
+        <field name="inherit_id" ref="fleet.fleet_costs_report_view_pivot"/>
+        <field name="model">fleet.vehicle.cost.report</field>
+        <field name="priority">100</field>
+        <field type="xml" name="arch">
+            <xpath expr="//field[@name='cost']" position="attributes">
+                <attribute name="string">Amount</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.menu" id="fleet.menu_fleet_reporting_costs">
+        <field name="name">Rental Amount</field>
+    </record>
+    <record model="ir.ui.menu" id="fleet.fleet_vehicle_log_contract_menu">
+        <field name="name">Rental Amount</field>
+    </record>
+    <record id="fleet.fleet_vehicle_log_contract_action" model="ir.actions.act_window">
+        <field name="name">Rental Amount</field>
+    </record>
+
+    <!--    <record id="fleet.fleet_costs_rental_reporting_action" model="ir.actions.act_window">-->
+    <!--        <field name="name">Rental Amount</field>-->
+    <!--        <field name="res_model">fleet.vehicle.cost.report</field>-->
+    <!--        <field name="view_mode">graph,pivot</field>-->
+    <!--        <field name="view_id"></field>-->
+    <!--        <field name="context" eval="{'search_default_filter_date_start': 1}"/>-->
+    <!--        <field name="search_view_id" ref="fleet.fleet_costs_report_view_search"/>-->
+    <!--        <field name="help" type="html">-->
+    <!--            <p class="o_view_nocontent_empty_folder">-->
+    <!--                No data for analysis-->
+    <!--            </p>-->
+    <!--            <p>-->
+    <!--                Odoo helps you managing the costs for your different vehicles-->
+    <!--                Costs are generally created from services and contract and appears here.-->
+    <!--            </p>-->
+    <!--            <p>-->
+    <!--                Thanks to the different filters, Odoo can only print the effective-->
+    <!--                costs, sort them by type and by vehicle.-->
+    <!--            </p>-->
+    <!--        </field>-->
+    <!--    </record>-->
+
+    <record id="fleet.fleet_costs_reporting_action" model="ir.actions.act_window">
+        <field name="name">Rental Amount Analysis</field>
+    </record>
+
+
+    <menuitem id="fleet.fleet_vehicle_tag_menu" active="False"/>
+    <menuitem id="fleet.fleet_menu_config_activity_type" active="False"/>
+
+    <!--    <record model="ir.ui.menu" id="fleet.fleet_vehicle_tag_menu">-->
+    <!--        <field name="active">False</field>-->
+    <!--    </record>-->
+
+</odoo>

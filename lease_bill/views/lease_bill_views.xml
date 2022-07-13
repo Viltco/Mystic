@@ -1,0 +1,164 @@
+<odoo>
+
+    <record id="view_lease_bill_form" model="ir.ui.view">
+        <field name="name">lease.bill.form</field>
+        <field name="model">lease.bill</field>
+        <field name="arch" type="xml">
+            <form string="Lease Bill">
+                <header>
+                    <button name="action_draft"
+                            type="object"
+                            string="Reset To Draft"
+                            states="posted"
+                            groups="account.group_account_manager"
+                    />
+                    <button name="action_post"
+                            type="object"
+                            string="Validate"
+                            states="draft"
+                            class="btn-primary"
+                    />
+                    <button string="Schedule Installment"
+                            type="object"
+                            class="oe_highlight"
+                            name="action_create_installment"
+                            attrs="{'invisible': [('is_installment', '=', True)]}"
+                    />
+                    <button string="Create Draft Entry"
+                            type="object"
+                            class="oe_highlight"
+                            name="create_draft_entry"
+                            states="posted"
+                    />
+                    <button string="Update Installment"
+                            type="object"
+                            class="oe_highlight"
+                            name="action_update_installments"
+                            attrs="{'invisible': [('is_installment', '=', False)]}"
+                    />
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_move_view"
+                                class="oe_stat_button"
+                                icon="fa-money"
+                                type="object">
+                            <field string="Moves" name="move_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <h1>
+                        <field name="name" readonly="1"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="bill_id"/>
+                            <field name="amount_bill" required="1"/>
+                            <field name="branch_id"/>
+                            <field name="pre_lease_id"/>
+                            <field name="kibor" required="1"/>
+                            <field name="interest_rate" required="1"/>
+                            <field name="applicable_for" required="1"/>
+                            <field name="installment_total" required="1"/>
+                            <field name="installment_done" required="1"/>
+                            <field name="installment_remain"/>
+                            <field name="interest_date_due" required="1"/>
+                            <field name="lease_long_term_id" required="1"/>
+                        </group>
+                        <group>
+                            <field name="date_bill"/>
+                            <field name="date" required="1"/>
+                            <field name="partner_id" required="1"/>
+                            <field name="date_prin_due" required="1"/>
+                            <field name="lease_journal_id" required="1"/>
+                            <field name="interest_expense_id" required="1"/>
+                            <field name="lease_current_id" required="1"/>
+                            <field name="is_installment"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Installment Schedule">
+                            <field name="lease_bill_lines" >
+                                <tree editable="bottom">
+                                    <field name="lease_bill_id" invisible="1"/>
+                                    <field name="date_account"/>
+                                    <field name="date_due"/>
+                                    <field name="prin_part"/>
+                                    <field name="int_part"/>
+                                    <field name="due_total"/>
+                                    <field name="prin_balance"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="other_info" string="Other Info">
+                            <group>
+                                <group>
+                                    <field name="pre_lease_bill_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lease_bill_tree" model="ir.ui.view">
+        <field name="name">lease.bill.tree</field>
+        <field name="model">lease.bill</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="bill_id"/>
+                <field name="amount_bill"/>
+                <field name="partner_id"/>
+                <field name="lease_journal_id"/>
+                <field name="interest_expense_id"/>
+                <field name="lease_current_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_lease_bill_search" model="ir.ui.view">
+        <field name="name">lease.bill.search</field>
+        <field name="model">lease.bill</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="bill_id"/>
+                <field name="amount_bill"/>
+                <field name="partner_id"/>
+                <field name="lease_journal_id"/>
+                <field name="interest_expense_id"/>
+                <field name="lease_current_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_lease_bill_view" model="ir.actions.act_window">
+        <field name="name">Lease Bill</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">lease.bill</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_lease_bill_tree"/>
+        <field name="search_view_id" ref="view_lease_bill_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Record Found. Let's Create..........
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_lease_bill"
+              name="Lease Bills"
+              parent="account.menu_finance_payables"
+              action="action_lease_bill_view"
+              sequence="2"
+    />
+
+</odoo>

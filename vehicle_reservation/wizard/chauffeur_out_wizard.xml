@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="chauffeur_wizard_form" model="ir.ui.view">
+        <field name="name">chauffeur.wizard.form</field>
+        <field name="model">chauffeur.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Registration">
+                <group>
+                    <group>
+                        <field name="driver_id"/>
+                        <field name="odometer"/>
+                    </group>
+                    <group>
+                        <field name="km_out"/>
+                        <field name="time_out"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="chauffeur_action" string="Chauffeur Out" class="btn-primary"
+                            type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="chauffeur_wizard_action" model="ir.actions.act_window">
+        <field name="name">Chauffeur Out</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">chauffeur.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="chauffeur_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

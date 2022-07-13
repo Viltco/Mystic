@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vehicle_reservation,access.vehicle.reservation,model_vehicle_reservation,,1,1,1,1
+access_rental_progress,access.rental.progress,model_rental_progress,,1,1,1,1
+access_booking_wizard,access.booking.wizard,model_booking_wizard,,1,1,1,1
+access_chauffeur_wizard,access.chauffeur.wizard,model_chauffeur_wizard,,1,1,1,1
+access_chauffeur_in,access.chauffeur.in,model_chauffeur_in,,1,1,1,1

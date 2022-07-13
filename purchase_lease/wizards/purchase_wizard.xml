@@ -1,0 +1,56 @@
+<odoo>
+
+	<record id="view_register_payment_wizard_form" model="ir.ui.view">
+		<field name="name">Register Payment Wizard</field>
+		<field name="model">register.payment.wizard</field>
+		<field name="arch" type="xml">
+			<form >
+				<group>
+					<group>
+						<field name="amount"/>
+					</group>
+
+					<group>
+						<field name="no_of_days"/>
+					</group>
+
+					<group>
+						<field name="down_payemnt" attrs="{'invisible': [('is_check', '=', True)]}"/>
+					</group>
+
+					<group>
+						<field name="down_payemnt_date_due" invisible="1"/>
+					</group>
+
+					<group>
+						<field name="installment_interval"/>
+					</group>
+
+					<group>
+						<field name="payment_schedule"/>
+					</group>
+
+
+<!--					<label for="no_of_days" string="No of Installment"/>-->
+<!--					<div class="d-flex">-->
+<!--						<field name="no_of_days" placeholder="No of Installment"/>-->
+<!--						<span class="o_form_label mx-3 oe_edit_only">  </span>-->
+<!--						<field name="installment_interval" placeholder="Interval"/>-->
+<!--						<span class="o_form_label mx-3 oe_edit_only">  </span>-->
+<!--						<field name="payment_schedule"/>-->
+<!--					</div>-->
+
+					<group>
+						<field name="date_due"/>
+						<field name="is_check" invisible="1"/>
+					</group>
+				</group>
+				<footer>
+					<button name="create_installments" string="Apply" type="object" class="btn-primary"/>
+					<button  string="Cancel" type="object" class="btn-secondary" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+
+</odoo>

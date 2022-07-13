@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="view_payment_wizard_form_branch_inherit_" model="ir.ui.view">
+            <field name="name">view.paymentwizard.form.branch.inherit</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/group/group[@name='group1']/field[@name='partner_bank_id']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

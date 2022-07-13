@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="rental_progress_tree" model="ir.ui.view">
+        <field name="name">rental.progress.tree</field>
+        <field name="model">rental.progress</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="rental_seq"/>
+                <field name="name"/>
+                <field name="vehicle_no"/>
+                <field name="driver_id"/>
+                <field name="km_in"/>
+                <field name="km_out"/>
+                <field name="driven"/>
+                <field name="time_in"/>
+                <field name="time_out"/>
+                <field name="state"/>
+                <field name="stage_id" widget="badge" decoration-muted="stage_id == 'not_billed'"
+                       decoration-success="stage_id == 'billed'"/>
+            </tree>
+
+        </field>
+    </record>
+    <record id="rental_progress_form" model="ir.ui.view">
+        <field name="name">rental.progress.form</field>
+        <field name="model">rental.progress</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button id="button_chauffeur_out" name="action_chauffeur_out" string="Chauffeur Out"
+                            class="btn-primary" type="object"
+                            attrs="{'invisible':[('state','in',('chauffeur_out' , 'chauffeur_in' , 'rental_close'))]}"/>
+                    <button id="button_chauffeur_in" name="action_chauffeur_in" string="Chauffeur In"
+                            class="btn-primary" type="object" states="chauffeur_out"/>
+                    <button id="button_rental_closed" name="action_rental_closed" string="Rental Closed"
+                            class="btn-primary" type="object"
+                            attrs="{'invisible':[('state','in',('ready_for_departure','chauffeur_out'  , 'rental_close'))]}"/>
+                    <button id="button_create_invoice" name="action_create_invoice" string="Create Invoice"
+                            class="btn-primary" type="object" groups="account.group_account_invoice"
+                            attrs="{'invisible':['|',('state','in',('ready_for_departure','chauffeur_out','chauffeur_in')),('button_show','=',True)]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="ready_for_departure,chauffeur_out,chauffeur_in,rental_close"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="get_invoice_rental"
+                                type="object" icon="fa-bars">
+                            <field name="inv_counter" widget="statinfo" string="Invoice"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="rental_seq" readonly="1" force_save="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Customer">
+                            <field name="name"/>
+                            <field name="rentee_name"/>
+                            <field name="branch_id"/>
+                            <field name="source"/>
+                            <field name="reservation_id" invisible="1"/>
+                            <field name="based_on" readonly="1"/>
+                            <field name="payment_type" readonly="1"/>
+                        </group>
+                        <group string="Assigned">
+                            <field name="vehicle_no"/>
+                            <field name="driver_id"/>
+                            <field name="mobile"/>
+                        </group>
+                        <group string="Kms Driven">
+                            <field name="odometer" force_save="1"/>
+                            <field name="km_out"/>
+                            <field name="km_in"/>
+                            <field name="driven"/>
+                            <field name="toll"/>
+                            <field name="allowa"/>
+                        </group>
+                        <group>
+                            <field name="time_in"/>
+                            <field name="time_out"/>
+                            <field name="days" force_save="1"/>
+                            <field name="out_of_station"/>
+                            <field name="over_night"/>
+                            <field name="button_show" invisible="1"/>
+                        </group>
+                        <group string="Actual Iteneracy">
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+     <record id="action_create_invoice_ren" model="ir.actions.server">
+      <field name="name">Create Invoice</field>
+      <field name="model_id" ref="vehicle_reservation.model_rental_progress"/>
+      <field name="binding_model_id" ref="vehicle_reservation.model_rental_progress"/>
+      <field name="state">code</field>
+      <field name="code"> if records: action = records.action_server_invoice()</field>
+    </record>
+
+
+    <record id="rental_progress_action" model="ir.actions.act_window">
+        <field name="name">All Rental</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rental.progress</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                create your Rental Progress!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="rental_details"
+              name="Rentals"
+              parent="reservation_root"
+              sequence="2"/>
+
+    <menuitem id="vehicle_rental_details"
+              name="All Rental"
+              parent="rental_details"
+              action="rental_progress_action"
+              sequence="1"/>
+
+    <record id="rental_progress_schedule_action" model="ir.actions.act_window">
+        <field name="name">Rental Schedule</field>
+        <field name="res_model">rental.progress</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', 'in', ('chauffeur_out','chauffeur_in'))]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="vehicle_rental_schedule_details"
+              name="Rental Schedule"
+              parent="rental_details"
+              action="rental_progress_schedule_action"
+              sequence="2"/>
+
+    <record id="rental_progress_completed_action" model="ir.actions.act_window">
+        <field name="name">Rental Completed</field>
+        <field name="res_model">rental.progress</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'rental_close')]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="vehicle_rental_completed_details"
+              name="Rental Completed"
+              parent="rental_details"
+              action="rental_progress_completed_action"
+              sequence="3"/>
+</odoo>

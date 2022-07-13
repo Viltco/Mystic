@@ -1,0 +1,85 @@
+<odoo>
+    <data>
+        <record id="purchase_order_form_inherited" model="ir.ui.view">
+            <field name="name">purchase.order.inherited</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="model">purchase.order</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='partner_ref']" position="after">
+                    <field name="bpo" required="1"/>
+                    <field name="is_advance_payment" required="1"/>
+                    <field name="advance_amount" required="1"
+                           attrs="{'invisible': [('is_advance_payment', 'in', [False, 'no'])]}"/>
+                    <field name="payment_state" force_save="1" invisible="1"/>
+                </xpath>
+                <xpath expr="//div[@class='oe_button_box']" position="inside">
+                    <button name="get_payments" type="object"
+                            class="oe_stat_button" icon="fa-dollar" string="Advance">
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <!--      Purchase Order Tree View-->
+        <record id="purchase_order_kpis_tree_inherited" model="ir.ui.view">
+            <field name="name">purchase.order.inherited</field>
+            <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+            <field name="model">purchase.order</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="bpo" optional="show"/>
+                    <field name="payment_state" widget="badge" decoration-danger="payment_state == 'not_app'"
+                           decoration-warning="payment_state == 'unpaid'" decoration-success="payment_state == 'paid'"
+                           optional="show" force_save="1"/>
+                </xpath>
+            </field>
+        </record>
+        <!--Payment -->
+        <record id="view_account_payment_form_inherited" model="ir.ui.view">
+            <field name="name">account.payment.inherited</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="model">account.payment</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="is_advance_pay" attrs="{'invisible': [('partner_type', '=', 'customer')]}"/>
+                    <field name="purchase_order_id" attrs="{'invisible': [('is_advance_pay', '=', False)]}"/>
+                    <field name="advance_amount"
+                           attrs="{'invisible': [('purchase_order_id', '=', False)]}"
+                           readonly="1" force_save="1"/>
+                </xpath>
+            </field>
+        </record>
+        <!--        Account Move-->
+        <record id="view_move_form_inherited" model="ir.ui.view">
+            <field name="name">account.move.inherited</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="model">account.move</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+
+                <xpath expr="//field[@name='purchase_vendor_bill_id']" position="after">
+                    <field name="advance_status" readonly="1"  force_save="1" attrs="{'invisible': [('move_type', '=', 'entry')]}"/>
+                    <field name="paid_amount" readonly="1" force_save="1" attrs="{'invisible': [('hide_aj', '=', False)]}"/>
+                    <field name="hide_aj" invisible="1"/>
+                    <field name="advance_journal" attrs="{'invisible': [('hide_aj', '=', False)]}" force_save="1"/>
+                    <field name="advance_account" attrs="{'invisible': [('hide_aj', '=', False)]}" />
+                </xpath>
+
+                <xpath expr="//header" position="inside">
+                    <button name="action_create_jv" type="object" string="Create JV" class="oe_highlight" attrs="{'invisible': [('move_type', '=', 'entry')]}"/>
+                </xpath>
+                <xpath expr="//div[@class='oe_button_box']" position="inside">
+                    <button name="get_bills_jvs" type="object"
+                            class="oe_stat_button" icon="fa-dollar" string="Journal Entries" attrs="{'invisible': [('move_type', '=', 'entry')]}">
+                    </button>
+                </xpath>
+<!--                <xpath expr="//field[@name='journal_id']" position="after">-->
+<!--                        <field name="advance_journal"/>-->
+<!--                </xpath>-->
+            </field>
+        </record>
+    </data>
+</odoo>
