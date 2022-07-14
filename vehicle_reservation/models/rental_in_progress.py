@@ -64,14 +64,22 @@ class RentalProgress(models.Model):
         ('billed', 'BILLED'),
         ('not_billed', 'NOT BILLED')], default='not_billed', string="Stage ID")
 
-    # @api.depends('time_in', 'time_out')
-    # def _compute_calculate_total_days(self):
-    #     if self.time_out and self.time_in:
-    #         self.total_days = (self.time_in - self.time_out).days
-    #     else:
-    #         self.total_days = 0
+    @api.onchange('out_of_station')
+    def _onchange_out_station(self):
+        if self.out_of_station:
+            record = self.env['res.contract'].search(
+                [('partner_id', '=', self.name.id),
+                 ('state', '=', 'confirm')])
+            for j in record.contract_lines_id:
+                if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
+                    if self.apply_out_station <= self.driven:
+                        self.out_station_rate = j.out_station
+                        self.net_amount = self.total_rate + self.out_station_rate
+                    else:
+                        pass
+        else:
+            self.net_amount = self.net_amount - self.out_station_rate
 
-    # @api.onchange('total_days')
     @api.onchange('time_in', 'time_out')
     def _onchange_calculate_dwm(self):
         if self.time_out and self.time_in:
@@ -101,7 +109,7 @@ class RentalProgress(models.Model):
                                 self.hours = hours
                             self.days = total_days.days
                             self.day_rate = j.per_day_rate
-                            self.total_rate = (self.days * self.day_rate)+self.per_hour_rate
+                            self.total_rate = (self.days * self.day_rate) + self.per_hour_rate
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
@@ -125,7 +133,8 @@ class RentalProgress(models.Model):
                             self.weeks = week
                             self.day_rate = j.per_day_rate
                             self.week_rate = j.per_week_rate
-                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate)+self.per_hour_rate)
+                            self.total_rate = ((self.days * self.day_rate) + (
+                                        self.weeks * self.week_rate) + self.per_hour_rate)
                             if self.apply_out_station <= self.driven:
                                 print("Out Station")
                                 self.out_of_station = True
@@ -141,7 +150,7 @@ class RentalProgress(models.Model):
                             # td = str(total_days).split(',')
                             # td = td[-1].replace(' ', '')
                             print(td)
-                            print("hours",type(hours))
+                            print("hours", type(hours))
                             print("month", month)
                             print("week", week)
                             print("day", day)
@@ -164,7 +173,8 @@ class RentalProgress(models.Model):
                             print("Rate month", self.month_rate)
                             print("Rate week", self.week_rate)
                             print("Rate day", self.day_rate)
-                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (self.months * self.month_rate)+self.per_hour_rate)
+                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
+                                        self.months * self.month_rate) + self.per_hour_rate)
                             if self.apply_out_station <= self.driven:
                                 print("Out Station")
                                 self.out_of_station = True

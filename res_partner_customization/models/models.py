@@ -33,27 +33,32 @@ class AddFieldsPartners(models.Model):
                      'mobile_phone': result.phone,
                      'is_driver': True,
                      })
-        return result
-
-    @api.model
-    def create(self, vals):
-        result = super(AddFieldsPartners, self).create(vals)
-        if result.partner_type == 'is_customer':
+        elif result.partner_type == 'is_customer':
             res = self.env['res.contract'].create(
                 {'branch_id': result.branch_id.id,
                  'partner_id': result.id,
                  })
         return result
 
-    def write(self, vals):
-        res = super(AddFieldsPartners, self).write(vals)
-        if self.partner_type == 'is_customer':
-            print("u click")
-            res = self.env['res.contract'].create(
-                {'branch_id': self.branch_id.id,
-                 'partner_id': self.id,
-                 })
-        return res
+    # @api.model
+    # def create(self, vals):
+    #     result = super(AddFieldsPartners, self).create(vals)
+    #     if result.partner_type == 'is_customer':
+    #         res = self.env['res.contract'].create(
+    #             {'branch_id': result.branch_id.id,
+    #              'partner_id': result.id,
+    #              })
+    #     return result
+
+    # def write(self, vals):
+    #     result = super(AddFieldsPartners, self).write(vals)
+    #     if self.partner_type == 'is_customer':
+    #         print("u click")
+    #         res = self.env['res.contract'].create(
+    #             {'branch_id': self.branch_id.id,
+    #              'partner_id': self.id,
+    #              })
+    #     return result
 
     def contract_button(self):
         return {
