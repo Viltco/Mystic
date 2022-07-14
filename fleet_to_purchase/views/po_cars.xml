@@ -51,7 +51,7 @@
                             <field name="number"/>
                             <field name="button_show" invisible="1"/>
                             <field name="button_po_show" invisible="1"/>
-                            <field name="bpo"/>
+                            <field name="pbo"/>
                             <field name="loan_number"/>
 
                         </group>

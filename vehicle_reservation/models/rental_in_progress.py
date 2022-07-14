@@ -30,16 +30,28 @@ class RentalProgress(models.Model):
     mobile = fields.Char(string="Mobile", tracking=True, related='name.mobile')
     km_in = fields.Integer(string="Kms In", tracking=True)
     km_out = fields.Integer(string="Kms Out", tracking=True)
-    driven = fields.Integer(string="Driven", tracking=True, compute="_compute_driven", readonly=True)
     toll = fields.Integer(string="Toll", tracking=True)
     allowa = fields.Integer(string="Allowa.", tracking=True)
     time_in = fields.Datetime('Time In')
     time_out = fields.Datetime('Time Out')
-    days = fields.Integer(string='Days' ,readonly="1" , compute="_compute_calculate_date")
     note = fields.Text(string='Note')
     out_of_station = fields.Boolean(default=False)
     over_night = fields.Boolean(default=False)
     button_show = fields.Boolean(default=False)
+
+    hours = fields.Integer(string='Hours', readonly="1")
+    per_hour_rate = fields.Integer(string='Hour Rate', readonly="1")
+    days = fields.Integer(string='Days', readonly="1")
+    day_rate = fields.Integer(string='Day Rate', readonly="1")
+    weeks = fields.Integer(string='Weeks', readonly="1")
+    week_rate = fields.Integer(string='Week Rate', readonly="1")
+    months = fields.Integer(string='Months', readonly="1")
+    month_rate = fields.Integer(string='Month Rate', readonly="1")
+    total_rate = fields.Integer(string='Total Rate', readonly="1")
+    driven = fields.Integer(string="Driven", tracking=True, compute="_compute_driven", readonly=True)
+    apply_out_station = fields.Integer(string='Apply Out Station After', readonly="1")
+    out_station_rate = fields.Integer(string='Out Station Rate', readonly="1")
+    net_amount = fields.Integer(string='Net Amount', readonly="1")
 
     state = fields.Selection(
         [('ready_for_departure', 'Ready For Departure'), ('chauffeur_out', 'Chauffeur Out'),
@@ -52,12 +64,136 @@ class RentalProgress(models.Model):
         ('billed', 'BILLED'),
         ('not_billed', 'NOT BILLED')], default='not_billed', string="Stage ID")
 
-    @api.depends('time_in', 'time_out')
-    def _compute_calculate_date(self):
+    # @api.depends('time_in', 'time_out')
+    # def _compute_calculate_total_days(self):
+    #     if self.time_out and self.time_in:
+    #         self.total_days = (self.time_in - self.time_out).days
+    #     else:
+    #         self.total_days = 0
+
+    # @api.onchange('total_days')
+    @api.onchange('time_in', 'time_out')
+    def _onchange_calculate_dwm(self):
         if self.time_out and self.time_in:
-             self.days = (self.time_in- self.time_out).days
+            # total_days = (self.time_in - self.time_out).days
+            total_days = (self.time_in - self.time_out)
+            if total_days:
+                # year = int(total_days / 365)
+                # month = int((total_days - (year * 365)) / 30)
+                # week = int((total_days - (year * 365)) - month * 30) // 7
+                # day = int((total_days - (year * 365)) - month * 30 - week * 7)
+                record = self.env['res.contract'].search(
+                    [('partner_id', '=', self.name.id),
+                     ('state', '=', 'confirm')])
+                i = 0
+                td = str(total_days).split(',')
+                td = td[-1].replace(' ', '')
+                hours = datetime.strptime(str(td), "%H:%M:%S").hour
+                minutes = datetime.strptime(str(td), "%H:%M:%S").minute
+                for j in record.contract_lines_id:
+                    if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
+                        self.apply_out_station = record.apply_out_station
+                        self.per_hour_rate = j.per_hour_rate
+                        if self.based_on == 'daily':
+                            if minutes > 0:
+                                self.hours = hours + 1
+                            else:
+                                self.hours = hours
+                            self.days = total_days.days
+                            self.day_rate = j.per_day_rate
+                            self.total_rate = (self.days * self.day_rate)+self.per_hour_rate
+                            if self.apply_out_station <= self.driven:
+                                self.out_of_station = True
+                                self.out_station_rate = j.out_station
+                                self.net_amount = self.total_rate + self.out_station_rate
+                            else:
+                                self.net_amount = self.total_rate
+                                self.out_station_rate = 0
+                        elif self.based_on == 'weekly':
+                            week = int(total_days.days // 7)
+                            day = int(total_days.days - week * 7)
+                            # hours = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").hour
+                            # minutes = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").minute
+                            if minutes > 0:
+                                self.hours = hours + 1
+                            else:
+                                self.hours = hours
+                            print("Weekly")
+                            print(week)
+                            print(day)
+                            self.days = day
+                            self.weeks = week
+                            self.day_rate = j.per_day_rate
+                            self.week_rate = j.per_week_rate
+                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate)+self.per_hour_rate)
+                            if self.apply_out_station <= self.driven:
+                                print("Out Station")
+                                self.out_of_station = True
+                                self.out_station_rate = j.out_station
+                                self.net_amount = self.total_rate + self.out_station_rate
+                            else:
+                                self.net_amount = self.total_rate
+                                self.out_station_rate = 0
+                        elif self.based_on == 'monthly':
+                            month = int(total_days.days / 30)
+                            week = int(total_days.days - month * 30) // 7
+                            day = int(total_days.days - month * 30 - week * 7)
+                            # td = str(total_days).split(',')
+                            # td = td[-1].replace(' ', '')
+                            print(td)
+                            print("hours",type(hours))
+                            print("month", month)
+                            print("week", week)
+                            print("day", day)
+                            print("minute", minutes)
+                            if minutes > 0:
+                                print("True")
+                                self.hours = hours + 1
+                            else:
+                                self.hours = hours
+                            print("monthly")
+                            self.days = day
+                            self.weeks = week
+                            self.months = month
+                            self.day_rate = j.per_day_rate
+                            self.week_rate = j.per_week_rate
+                            self.month_rate = j.per_month_rate
+                            print("Total month", self.months)
+                            print("Total week", self.weeks)
+                            print("Total day", self.days)
+                            print("Rate month", self.month_rate)
+                            print("Rate week", self.week_rate)
+                            print("Rate day", self.day_rate)
+                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (self.months * self.month_rate)+self.per_hour_rate)
+                            if self.apply_out_station <= self.driven:
+                                print("Out Station")
+                                self.out_of_station = True
+                                self.out_station_rate = j.out_station
+                                self.net_amount = self.total_rate + self.out_station_rate
+                            else:
+                                self.net_amount = self.total_rate
+                                self.out_station_rate = 0
+                    # else:
+                    #     self.days = 0
+                    #     self.weeks = 0
+                    #     self.months = 0
+                    #     self.day_rate = 0
+                    #     self.week_rate = 0
+                    #     self.month_rate = 0
+            else:
+                self.days = 0
+                self.weeks = 0
+                self.months = 0
+                self.day_rate = 0
+                self.week_rate = 0
+                self.month_rate = 0
         else:
             self.days = 0
+            self.weeks = 0
+            self.months = 0
+            self.day_rate = 0
+            self.week_rate = 0
+            self.month_rate = 0
 
     @api.model
     def create(self, values):
@@ -93,14 +229,6 @@ class RentalProgress(models.Model):
             'target': 'new',
             'type': 'ir.actions.act_window',
         }
-        # for rec in self:
-        #     if rec.km_out > 0:
-        #         rec.state = 'chauffeur_out'
-        #     else:
-        #         raise ValidationError(f'Please enter some value of KM OUT')
-        #     record = rec.env['fleet.vehicle.state'].search([('sequence', '=', 2)])
-        #     for r in record:
-        #         rec.vehicle_no.state_id = r.id
 
     def action_chauffeur_in(self):
         return {
@@ -112,8 +240,7 @@ class RentalProgress(models.Model):
                 'active_ids': self.ids,
             },
             'target': 'new',
-            'type': 'ir.actions.act_window',}
-
+            'type': 'ir.actions.act_window', }
 
     # def action_chauffeur_in(self):
     #     for rec in self:
@@ -241,9 +368,9 @@ class RentalProgress(models.Model):
                         'date_rental': self.time_out,
                         'rental_id': self.id,
                         'rentee_name': self.rentee_name,
-                        'price_unit': self.days*i,
+                        'price_unit': self.days * i,
                     }))
-            r = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id),('type', '=', 'sale')])
+            r = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id), ('type', '=', 'sale')])
             invoice = {
                 'invoice_line_ids': line_vals,
                 'partner_id': self.name.id,

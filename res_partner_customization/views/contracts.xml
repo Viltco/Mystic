@@ -26,6 +26,8 @@
                             class="btn-secondary" type="object" states="confirm,cancel"/>
                     <button id="button_cancel" name="action_cancel" string="Cancel"
                             class="btn-secondary" type="object" states="draft"/>
+                    <button id="button_add_price" name="action_add_price" string="Add Prices"
+                            class="btn-primary" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
                 </header>
                 <sheet>
@@ -43,22 +45,37 @@
                             <label for="apply_over_time"/>
                             <div class="o_row">
                                 <field name="apply_over_time"/>
-                                <span>/ Hours</span>
+                                <span>Hr</span>
                             </div>
                             <label for="apply_over_night"/>
                             <div class="o_row">
                                 <field name="apply_over_night"/>
-                                <span>/ Hours</span>
+                                <span>Hr</span>
                             </div>
                             <label for="apply_out_station"/>
                             <div class="o_row">
                                 <field name="apply_out_station"/>
-                                <span>/ Hours</span>
+                                <span>Km</span>
                             </div>
+                        </group>
+                        <group>
+                            <field name="per_hour_rate"/>
+                            <field name="per_km_rate"/>
+                            <field name="per_day_rate"/>
+                            <field name="per_week_rate"/>
+                            <field name="per_month_rate"/>
+                            <field name="per_year_rate"/>
+                            <field name="over_time"/>
+                            <field name="over_night"/>
+                            <field name="out_station"/>
                         </group>
                     </group>
                     <notebook>
                         <page>
+                            <button name="%(select_multiple_models.act_open_select_models_view)d" type="action" string="Select Models"
+                                    class="oe_highlight"/>
+<!--                                                                context="{'default_flag_order': 'po'}"-->
+<!--                                    attrs="{'invisible': [('state', '!=', 'draft')]}"-->
                             <field name="contract_lines_id">
                                 <tree editable="bottom">
                                     <field name="model_id"/>

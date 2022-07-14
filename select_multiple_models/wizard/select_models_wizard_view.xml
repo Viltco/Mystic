@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="view_select_models_form" model="ir.ui.view">
+        <field name="name">select.models.form</field>
+        <field name="model">select.models</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <script>-->
+                $(document).ready(function(){
+                    $('.modal-dialog').css({'width': '100%', 'height': '100%', 'margin':'0 0 0 34px'});
+                $('.modal-content').css({'height': '100%', 'width':'120%'});
+                $('.modal-body').css({'height': '100%'});
+                });
+            </script>
+            <form string="Select Models">
+                <group string="Models">
+                    <field name="model_ids" nolabel="1" >
+                        <tree editable="bottom">
+                            <field name="brand_id" readonly="1"/>
+                            <field name="name" readonly="1"/>
+                            <field name="vehicle_type" readonly="1"/>
+                            <field name="model_year" readonly="1"/>
+                            <field name="power_cc" readonly="1"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="select_models" string="Add" type="object" class="oe_highlight" />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="act_open_select_models_view">
+        <field name="name">Select Models</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">select.models</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record model="ir.actions.act_window.view" id="act_open_select_models_view_form">
+        <field name="act_window_id" ref="act_open_select_models_view" />
+        <field name="sequence" eval="10" />
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_select_models_form" />
+    </record>
+
+</odoo>

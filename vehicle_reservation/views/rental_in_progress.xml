@@ -73,20 +73,51 @@
                             <field name="odometer" force_save="1"/>
                             <field name="km_out"/>
                             <field name="km_in"/>
-                            <field name="driven"/>
                             <field name="toll"/>
                             <field name="allowa"/>
                         </group>
                         <group>
                             <field name="time_in"/>
                             <field name="time_out"/>
-                            <field name="days" force_save="1"/>
                             <field name="out_of_station"/>
                             <field name="over_night"/>
                             <field name="button_show" invisible="1"/>
                         </group>
                         <group string="Actual Iteneracy">
                             <field name="note"/>
+                        </group>
+                        <group string="Calculations">
+                            <group>
+                                <field name="hours" force_save="1"/>
+                                <field name="per_hour_rate" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="days" force_save="1"/>
+                                <field name="day_rate" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="weeks" force_save="1"/>
+                                <field name="week_rate" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="months" force_save="1"/>
+                                <field name="month_rate" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="total_rate" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="driven"/>
+                                <label for="apply_out_station"/>
+                                <div class="o_row">
+                                    <field name="apply_out_station"/>
+                                    <span>Km</span>
+                                </div>
+                                <field name="out_station_rate"/>
+                            </group>
+                            <group>
+                                <field name="net_amount"/>
+                            </group>
                         </group>
                     </group>
                 </sheet>
@@ -98,12 +129,12 @@
         </field>
     </record>
 
-     <record id="action_create_invoice_ren" model="ir.actions.server">
-      <field name="name">Create Invoice</field>
-      <field name="model_id" ref="vehicle_reservation.model_rental_progress"/>
-      <field name="binding_model_id" ref="vehicle_reservation.model_rental_progress"/>
-      <field name="state">code</field>
-      <field name="code"> if records: action = records.action_server_invoice()</field>
+    <record id="action_create_invoice_ren" model="ir.actions.server">
+        <field name="name">Create Invoice</field>
+        <field name="model_id" ref="vehicle_reservation.model_rental_progress"/>
+        <field name="binding_model_id" ref="vehicle_reservation.model_rental_progress"/>
+        <field name="state">code</field>
+        <field name="code">if records: action = records.action_server_invoice()</field>
     </record>
 
 

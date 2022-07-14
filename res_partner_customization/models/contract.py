@@ -13,6 +13,16 @@ class Contracts(models.Model):
     apply_over_night = fields.Integer(string='Apply Over Night After')
     apply_out_station = fields.Integer(string='Apply Out Station After')
 
+    per_hour_rate = fields.Float(string='Hour')
+    per_km_rate = fields.Float(string='KM')
+    per_day_rate = fields.Float(string='Daily')
+    per_week_rate = fields.Float(string='Weekly')
+    per_month_rate = fields.Float(string='Monthly')
+    per_year_rate = fields.Float(string='Yearly')
+    over_time = fields.Float(string='OverTime')
+    over_night = fields.Float(string='OverNight')
+    out_station = fields.Float(string='OutStation')
+
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'confirmed'), ('cancel', 'Cancelled')], default='draft',
                              string="status", tracking=True)
     contract_lines_id = fields.One2many('contract.lines', 'contract_id', string='Contract Lines')
@@ -34,6 +44,19 @@ class Contracts(models.Model):
 
     def action_cancel(self):
         self.state = 'cancel'
+
+    def action_add_price(self):
+        for rec in self:
+            for r in rec.contract_lines_id:
+                r.per_hour_rate = rec.per_hour_rate
+                r.per_km_rate = rec.per_km_rate
+                r.per_day_rate = rec.per_day_rate
+                r.per_week_rate = rec.per_week_rate
+                r.per_month_rate = rec.per_month_rate
+                r.per_year_rate = rec.per_year_rate
+                r.over_time = rec.over_time
+                r.over_night = rec.over_night
+                r.out_station = rec.out_station
 
 
 class ContractLines(models.Model):

@@ -100,26 +100,26 @@ class FleetManageField(models.Model):
         # # print(l)
         self.time_in = datetime.today()
 
-    # @api.model
-    # def create(self, vals):
-    #     res = super(FleetManageField, self).create(vals)
-    #     # print(res)
-    #     result = self.env['account.analytic.account'].create(
-    #         {'name': res['license_plate'],
-    #          'fleet_vehicle_id': res.id,
-    #          })
-    #     res.analytical_account_id = result.id
-    #     result = self.env['product.product'].create(
-    #         {'name': res['license_plate'],
-    #          'fleet_vehicle_id': res.id,
-    #          'branch_ids': res['branch_id'],
-    #          'type': 'service',
-    #          'invoice_policy': 'order',
-    #          'purchase_method': 'purchase',
-    #          })
-    #     res.product_id = result.id
-    #     result.product_tmpl_id.write({'fleet_vehicle_id': res.id})
-    #     return res
+    @api.model
+    def create(self, vals):
+        res = super(FleetManageField, self).create(vals)
+        # print(res)
+        result = self.env['account.analytic.account'].create(
+            {'name': res['license_plate'],
+             'fleet_vehicle_id': res.id,
+             })
+        res.analytical_account_id = result.id
+        # result = self.env['product.product'].create(
+        #     {'name': res['license_plate'],
+        #      'fleet_vehicle_id': res.id,
+        #      'branch_ids': res['branch_id'],
+        #      'type': 'service',
+        #      'invoice_policy': 'order',
+        #      'purchase_method': 'purchase',
+        #      })
+        # res.product_id = result.id
+        # result.product_tmpl_id.write({'fleet_vehicle_id': res.id})
+        return res
 
     def _get_odometer(self):
         FleetVehicalOdometer = self.env['fleet.vehicle.odometer']

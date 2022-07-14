@@ -16,7 +16,7 @@ class PurchaseCars(models.Model):
     # vehicle_id = fields.Many2one('fleet.vehicle', string="Vehicle", tracking=True, copy=False)
     button_show = fields.Boolean(default=False)
     button_po_show = fields.Boolean(default=False)
-    bpo = fields.Char(string='BPO')
+    pbo = fields.Char(string='PBO')
     loan_number = fields.Char(string='Loan No')
     qty = fields.Integer(string='Quantity', required=True)
 

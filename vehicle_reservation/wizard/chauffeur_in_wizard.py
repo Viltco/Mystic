@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -9,45 +11,166 @@ class ChauffeurInWizard(models.TransientModel):
     km_in = fields.Integer(string="Kms In", tracking=True)
     time_in = fields.Datetime('Time In')
 
+    # def chauffeur_in_action(self):
+    #     print("u click")
+    #     for rec in self:
+    #         record = self.env['rental.progress'].browse(self.env.context.get('active_id'))
+    #         if rec.km_in > record.km_out:
+    #             record.km_in = rec.km_in
+    #             record.time_in = rec.time_in
+    #             record.state = 'chauffeur_in'
+    #             result = self.env['res.contract'].search(
+    #                 [('partner_id', '=', record.name.id),('state', '=', 'confirm')])
+    #             i = 0
+    #             for r in result.contract_lines_id:
+    #                 if r.model_id.id == record.vehicle_no.model_id.id:
+    #                     if r.model_id.model_year == record.vehicle_no.model_id.model_year:
+    #                         # if record.based_on == 'daily':
+    #                         #     i = r.per_day_rate
+    #                         # elif record.based_on == 'weekly':
+    #                         #     i = r.per_week_rate
+    #                         # elif record.based_on == 'monthly':
+    #                         #     i = r.per_month_rate
+    #                         # vals = {
+    #                         #     'partner_id': record.name.id,
+    #                         #     'vehicle_id': record.vehicle_no.id,
+    #                         #     'rental_id': record.id,
+    #                         #     'start_date': record.time_out,
+    #                         #     'expiration_date': rec.time_in,
+    #                         #     'cost_frequency': record.based_on,
+    #                         #     'cost_generated': i,
+    #                         #     # 'reservation_id': self.id,
+    #                         # }
+    #                         # self.env['fleet.vehicle.log.contract'].create(vals)
+    #         else:
+    #             raise ValidationError(f'Please enter value greater than KM Out')
+
     def chauffeur_in_action(self):
-        print("u click")
         for rec in self:
-            record = self.env['rental.progress'].browse(self.env.context.get('active_id'))
-            if rec.km_in > record.km_out:
-                record.km_in = rec.km_in
-                record.time_in = rec.time_in
-                record.state = 'chauffeur_in'
-                result = self.env['res.contract'].search(
-                    [('partner_id', '=', record.name.id),('state', '=', 'confirm')])
-                i = 0
-                for r in result.contract_lines_id:
-                    if r.model_id.id == record.vehicle_no.model_id.id:
-                        if r.model_id.model_year == record.vehicle_no.model_id.model_year:
-                            if record.based_on == 'daily':
-                                i = r.per_day_rate
-                            elif record.based_on == 'weekly':
-                                i = r.per_week_rate
-                            elif record.based_on == 'monthly':
-                                i = r.per_month_rate
-                            vals = {
-                                'partner_id': record.name.id,
-                                'vehicle_id': record.vehicle_no.id,
-                                'rental_id': record.id,
-                                'start_date': record.time_out,
-                                'expiration_date': rec.time_in,
-                                'cost_frequency': record.based_on,
-                                'cost_generated': i,
-                                # 'reservation_id': self.id,
-                            }
-                            self.env['fleet.vehicle.log.contract'].create(vals)
+            res = self.env['rental.progress'].browse(self.env.context.get('active_id'))
+            if rec.km_in > res.km_out:
+                res.km_in = rec.km_in
+                res.time_in = rec.time_in
+                res.state = 'chauffeur_in'
+                total_days = (rec.time_in - res.time_out)
+                if total_days:
+                    # year = int(total_days / 365)
+                    # month = int((total_days - (year * 365)) / 30)
+                    # week = int((total_days - (year * 365)) - month * 30) // 7
+                    # day = int((total_days - (year * 365)) - month * 30 - week * 7)
+                    record = self.env['res.contract'].search(
+                        [('partner_id', '=', res.name.id),
+                         ('state', '=', 'confirm')])
+                    i = 0
+                    td = str(total_days).split(',')
+                    td = td[-1].replace(' ', '')
+                    hours = datetime.strptime(str(td), "%H:%M:%S").hour
+                    minutes = datetime.strptime(str(td), "%H:%M:%S").minute
+                    for j in record.contract_lines_id:
+                        if j.model_id.name == res.vehicle_no.model_id.name and j.model_id.model_year == res.vehicle_no.model_id.model_year and j.model_id.power_cc == res.vehicle_no.model_id.power_cc:
+                            res.apply_out_station = record.apply_out_station
+                            res.per_hour_rate = j.per_hour_rate
+                            if res.based_on == 'daily':
+                                if minutes > 0:
+                                    res.hours = hours + 1
+                                else:
+                                    res.hours = hours
+                                res.days = total_days.days
+                                res.day_rate = j.per_day_rate
+                                res.total_rate = (res.days * res.day_rate) + res.per_hour_rate
+                                if res.apply_out_station <= self.driven:
+                                    res.out_of_station = True
+                                    res.out_station_rate = j.out_station
+                                    res.net_amount = res.total_rate + res.out_station_rate
+                                else:
+                                    res.net_amount = res.total_rate
+                                    res.out_station_rate = 0
+                            elif res.based_on == 'weekly':
+                                week = int(total_days.days // 7)
+                                day = int(total_days.days - week * 7)
+                                # hours = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").hour
+                                # minutes = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").minute
+                                if minutes > 0:
+                                    res.hours = hours + 1
+                                else:
+                                    res.hours = hours
+                                print("Weekly")
+                                print(week)
+                                print(day)
+                                res.days = day
+                                res.weeks = week
+                                res.day_rate = j.per_day_rate
+                                res.week_rate = j.per_week_rate
+                                res.total_rate = ((res.days * res.day_rate) + (
+                                        res.weeks * res.week_rate) + res.per_hour_rate)
+                                if res.apply_out_station <= res.driven:
+                                    print("Out Station")
+                                    res.out_of_station = True
+                                    res.out_station_rate = j.out_station
+                                    res.net_amount = res.total_rate + res.out_station_rate
+                                else:
+                                    res.net_amount = res.total_rate
+                                    res.out_station_rate = 0
+                            elif res.based_on == 'monthly':
+                                month = int(total_days.days / 30)
+                                week = int(total_days.days - month * 30) // 7
+                                day = int(total_days.days - month * 30 - week * 7)
+                                # td = str(total_days).split(',')
+                                # td = td[-1].replace(' ', '')
+                                print(td)
+                                print("hours", type(hours))
+                                print("month", month)
+                                print("week", week)
+                                print("day", day)
+                                print("minute", minutes)
+                                if minutes > 0:
+                                    print("True")
+                                    res.hours = hours + 1
+                                else:
+                                    res.hours = hours
+                                print("monthly")
+                                res.days = day
+                                res.weeks = week
+                                res.months = month
+                                res.day_rate = j.per_day_rate
+                                res.week_rate = j.per_week_rate
+                                res.month_rate = j.per_month_rate
+                                print("Total month", res.months)
+                                print("Total week", res.weeks)
+                                print("Total day", res.days)
+                                print("Rate month", res.month_rate)
+                                print("Rate week", res.week_rate)
+                                print("Rate day", res.day_rate)
+                                res.total_rate = ((res.days * res.day_rate) + (res.weeks * res.week_rate) + (
+                                        res.months * res.month_rate) + res.per_hour_rate)
+                                if res.apply_out_station <= res.driven:
+                                    print("Out Station")
+                                    res.out_of_station = True
+                                    res.out_station_rate = j.out_station
+                                    res.net_amount = res.total_rate + res.out_station_rate
+                                else:
+                                    res.net_amount = res.total_rate
+                                    res.out_station_rate = 0
+                        # else:
+                        #     self.days = 0
+                        #     self.weeks = 0
+                        #     self.months = 0
+                        #     self.day_rate = 0
+                        #     self.week_rate = 0
+                        #     self.month_rate = 0
+                else:
+                    res.days = 0
+                    res.weeks = 0
+                    res.months = 0
+                    res.day_rate = 0
+                    res.week_rate = 0
+                    res.month_rate = 0
+                # else:
+                #     self.days = 0
+                #     self.weeks = 0
+                #     self.months = 0
+                #     self.day_rate = 0
+                #     self.week_rate = 0
+                #     self.month_rate = 0
             else:
                 raise ValidationError(f'Please enter value greater than KM Out')
-
-    # for rec in self:
-    #     if rec.km_in > rec.km_out:
-    #         rec.state = 'chauffeur_in'
-    #     elif rec.km_in < rec.km_out:
-    #         raise ValidationError(f'Please enter value greater than KM Out')
-
-
-
