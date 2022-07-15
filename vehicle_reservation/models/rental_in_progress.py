@@ -109,7 +109,7 @@ class RentalProgress(models.Model):
                                 self.hours = hours
                             self.days = total_days.days
                             self.day_rate = j.per_day_rate
-                            self.total_rate = (self.days * self.day_rate) + self.per_hour_rate
+                            self.total_rate = (self.days * self.day_rate) + (self.hours * self.per_hour_rate)
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
@@ -134,7 +134,7 @@ class RentalProgress(models.Model):
                             self.day_rate = j.per_day_rate
                             self.week_rate = j.per_week_rate
                             self.total_rate = ((self.days * self.day_rate) + (
-                                        self.weeks * self.week_rate) + self.per_hour_rate)
+                                        self.weeks * self.week_rate) + (self.hours * self.per_hour_rate))
                             if self.apply_out_station <= self.driven:
                                 print("Out Station")
                                 self.out_of_station = True
@@ -173,8 +173,9 @@ class RentalProgress(models.Model):
                             print("Rate month", self.month_rate)
                             print("Rate week", self.week_rate)
                             print("Rate day", self.day_rate)
+                            print("Driven", self.driven)
                             self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
-                                        self.months * self.month_rate) + self.per_hour_rate)
+                                        self.months * self.month_rate) + (self.hours * self.per_hour_rate))
                             if self.apply_out_station <= self.driven:
                                 print("Out Station")
                                 self.out_of_station = True

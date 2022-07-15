@@ -51,6 +51,8 @@ class ChauffeurInWizard(models.TransientModel):
             if rec.km_in > res.km_out:
                 res.km_in = rec.km_in
                 res.time_in = rec.time_in
+                driven = rec.km_in - res.km_out
+                print("current driven" , driven)
                 res.state = 'chauffeur_in'
                 total_days = (rec.time_in - res.time_out)
                 if total_days:
@@ -77,8 +79,8 @@ class ChauffeurInWizard(models.TransientModel):
                                     res.hours = hours
                                 res.days = total_days.days
                                 res.day_rate = j.per_day_rate
-                                res.total_rate = (res.days * res.day_rate) + res.per_hour_rate
-                                if res.apply_out_station <= res.driven:
+                                res.total_rate = (res.days * res.day_rate) + (res.hours * res.per_hour_rate)
+                                if res.apply_out_station <= driven:
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
                                     res.net_amount = res.total_rate + res.out_station_rate
@@ -102,8 +104,8 @@ class ChauffeurInWizard(models.TransientModel):
                                 res.day_rate = j.per_day_rate
                                 res.week_rate = j.per_week_rate
                                 res.total_rate = ((res.days * res.day_rate) + (
-                                        res.weeks * res.week_rate) + res.per_hour_rate)
-                                if res.apply_out_station <= res.driven:
+                                        res.weeks * res.week_rate) + (res.hours * res.per_hour_rate))
+                                if res.apply_out_station <= driven:
                                     print("Out Station")
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
@@ -141,9 +143,10 @@ class ChauffeurInWizard(models.TransientModel):
                                 print("Rate month", res.month_rate)
                                 print("Rate week", res.week_rate)
                                 print("Rate day", res.day_rate)
+                                print("Driven", res.driven)
                                 res.total_rate = ((res.days * res.day_rate) + (res.weeks * res.week_rate) + (
-                                        res.months * res.month_rate) + res.per_hour_rate)
-                                if res.apply_out_station <= res.driven:
+                                        res.months * res.month_rate) + (res.hours * res.per_hour_rate))
+                                if res.apply_out_station <= driven:
                                     print("Out Station")
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
