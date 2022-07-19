@@ -1,0 +1,27 @@
+<odoo>
+
+    <record id="fleet_vehicle_tracking_form_inherit" model="ir.ui.view">
+        <field name="name">fleet.vehicle.tracking.form.inherit</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[1]" position="after">
+                <page string="Tracking Charges Lines">
+                    <field name="tracking_charges_lines">
+                        <tree editable="bottom">
+                            <field name="tracking_charge_id" invisible="1"/>
+                            <field name="date_from" required="1"/>
+                            <field name="date_to" required="1"/>
+                            <field name="branch_id" required="1" readonly="0"/>
+                            <field name="re_amount" required="1"/>
+                            <field name="percentage" required="1"/>
+                            <field name="amount_subtotal"/>
+                            <field name="tracking_status" required="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

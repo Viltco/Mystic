@@ -7,7 +7,6 @@ from datetime import datetime
 
 class AccountMoveInherit(models.Model):
     _inherit = 'account.move'
-    # purchase_id = fields.Many2one('purchase.order')
     advance_status = fields.Selection(selection=[
         ('not_app', 'N/A'),
         ('unpaid', 'Unpaid'),
@@ -17,18 +16,22 @@ class AccountMoveInherit(models.Model):
     paid_amount = fields.Float(string='Paid Amount')
     advance_journal = fields.Many2one('account.journal', string='Account Journal')
     hide_aj = fields.Boolean(default=False)
+
+    def _default_account_id(self):
+        # account_id = self.env['account.account'].search([('code', '=', '18222')])
+        account_id = self.env['ir.config_parameter'].get_param('advance_payment_purchase.account_id')
+        account_id = self.env['account.account'].search([('id', '=', account_id)])
+        print(account_id)
+        return account_id
+
     advance_account = fields.Many2one(
         comodel_name='account.account',
         string='Advance Account',
         store=True, readonly=False,
-        domain="[('user_type_id.type', 'in', ('receivable', 'payable')), ('company_id', '=', company_id)]")
-
-    #
-    # @api.depends('purchase_vendor_bill_id')
-    # def _compute_advance_status(self):
-    #     for rec in self:
-    #         rec.advance_status = rec.purchase_vendor_bill_id
-    #         print(rec.advance_status)
+        domain="[('user_type_id.type', 'in', ('receivable', 'payable')), ('company_id', '=', company_id)]",
+        default=_default_account_id)
+    hide_jv_link = fields.Boolean(default=False)
+    move_id = fields.Many2one('account.move')
 
     @api.onchange('purchase_vendor_bill_id', 'purchase_id')
     def _onchange_purchase_auto_complete(self):
@@ -64,18 +67,17 @@ class AccountMoveInherit(models.Model):
         paid_records = self.env['account.payment'].search(
             ['&', ('state', '=', 'posted'), ('is_advance_pay', '=', True),
              ('purchase_order_id', '=', self.purchase_id.id)])
-        if self.purchase_id.payment_state == 'paid':
-            self.paid_amount = 0.00
-        else:
-            total_payment = 0
-            for rec in paid_records:
-                total_payment += rec.amount
-            self.paid_amount = self.purchase_id.advance_amount - total_payment
+        total_payment = 0
+        for rec in paid_records:
+            total_payment += rec.amount
+        self.paid_amount = total_payment
+
         if self.purchase_id.is_advance_payment == 'yes':
             self.hide_aj = True
         else:
             self.hide_aj = False
             self.paid_amount = 0.00
+
         new_lines = self.env['account.move.line']
         for line in po_lines.filtered(lambda l: not l.display_type):
             new_line = new_lines.new(line._prepare_account_move_line(self))
@@ -112,6 +114,7 @@ class AccountMoveInherit(models.Model):
                 'journal_id': record.advance_journal.id,
                 'partner_id': record.partner_id.id,
                 'date': record.date,
+                'move_id': self.id,
                 'state': 'draft',
             }
             debit_line = (0, 0, {
@@ -135,6 +138,8 @@ class AccountMoveInherit(models.Model):
             move_dict['line_ids'] = lines
             move = self.env['account.move'].create(move_dict)
             print('JV Created')
+        self.hide_jv_link = True
+        print(self.hide_jv_link)
 
     def draft_validation(self, active_model, records):
         total = 0
@@ -154,7 +159,6 @@ class AccountMoveInherit(models.Model):
         if total_plus > active_model.paid_amount:
             raise UserError('Advance has already been paid')
 
-
     def action_post(self):
         active_model = self.env['account.move'].browse(self.env.context.get('active_id'))
         if self.move_type == 'entry' and self.line_ids[-1].account_id.id == active_model.advance_account.id:
@@ -163,6 +167,15 @@ class AccountMoveInherit(models.Model):
                 ['&', ('ref', '=', active_model.name), ('state', '=', 'posted')])
             self.draft_validation(active_model, records)
         self._post(soft=False)
+        # Set entries ref and confirmation Map Advance Payment
+        if self.move_type == 'in_invoice':
+            if self.advance_account and self.advance_journal:
+                entries = self.env['account.move'].search([('move_id', '=', self.id)])
+                if entries:
+                    for e in entries:
+                        e.ref = self.name
+                else:
+                    raise UserError('Please Map Advance Payment First')
         return False
         # self.write({
         #     'state': 'approve'
@@ -171,10 +184,14 @@ class AccountMoveInherit(models.Model):
     def get_bills_jvs(self):
         return {
             'name': _('Journal Entries'),
-            'domain': [('ref', '=', self.name)],
+            'domain': [('move_id', '=', self.id)],
             'view_type': 'form',
             'res_model': 'account.move',
             'view_id': False,
             'view_mode': 'tree,form',
             'type': 'ir.actions.act_window',
         }
+
+    @api.onchange('branch_id')
+    def _onchange_branch_id(self):
+        print(self.move_type)

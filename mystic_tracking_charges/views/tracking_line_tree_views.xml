@@ -1,0 +1,47 @@
+<odoo>
+
+    <record id="view_tracking_charges_line_tree" model="ir.ui.view">
+        <field name="name">tracking.charges.line.tree</field>
+        <field name="model">tracking.charges.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="tracking_charge_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="branch_id"/>
+                <field name="re_amount"/>
+                <field name="percentage"/>
+                <field name="amount_subtotal"/>
+                <field name="tracking_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_tracking_charges_line_view" model="ir.actions.act_window">
+        <field name="name">Tracking Charges Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tracking.charges.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_tracking_charges_line_tree"/>
+        <field name="domain">[('tracking_status', '=', 'active')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Record Found. Let's Create..........
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="main_menu_tracking_charges_line"
+              name="Tracking Charges Lines"
+              parent="fleet.menu_root"
+              sequence="2"
+    />
+
+    <menuitem id="menu_tracking_charges_line"
+              name="Tracking Charges Lines"
+              parent="main_menu_tracking_charges_line"
+              action="action_tracking_charges_line_view"
+              sequence="1"
+    />
+
+</odoo>
