@@ -12,15 +12,10 @@
                 <field name="per_day_rate"/>
                 <field name="per_week_rate"/>
                 <field name="per_month_rate"/>
-                <field name="mobil_oil_rate"/>
-                <field name="oil_filter_rate"/>
-                <field name="air_filter_rate"/>
-                <field name="airport_rate"/>
+                <field name="per_year_rate"/>
                 <field name="over_time"/>
                 <field name="over_night"/>
                 <field name="out_station"/>
-                <!--                <field name="is_lock"/>-->
-
             </tree>
         </field>
     </record>
@@ -40,15 +35,10 @@
                             <field name="per_day_rate"/>
                             <field name="per_week_rate"/>
                             <field name="per_month_rate"/>
-                            <field name="mobil_oil_rate"/>
-                            <field name="oil_filter_rate"/>
-                            <field name="air_filter_rate"/>
-                            <field name="airport_rate"/>
+                            <field name="per_year_rate"/>
                             <field name="over_time"/>
                             <field name="over_night"/>
                             <field name="out_station"/>
-                            <!--                            <field name="is_lock"/>-->
-
                         </group>
                     </group>
                 </sheet>

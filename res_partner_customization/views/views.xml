@@ -8,12 +8,8 @@
             <field name="priority">100</field>
             <field type="xml" name="arch">
                 <xpath expr="//field[@name='vat']" position="after">
-                    <field name="ntn"
-                           attrs="{'required':['|' ,('partner_type','=','is_customer'),('partner_type','=','is_vendor')]}"/>
+                    <field name="ntn" attrs="{'required':['|' ,('partner_type','=','is_customer'),('partner_type','=','is_vendor')]}"/>
                     <field name="strn"/>
-                </xpath>
-                <xpath expr="//field[@name='function']" position="before">
-                    <field name="una"/>
                 </xpath>
                 <xpath expr="/form/sheet/div[hasclass('oe_title')]" position="after">
                     <group>
