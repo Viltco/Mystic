@@ -64,30 +64,56 @@
                             <field name="per_day_rate"/>
                             <field name="per_week_rate"/>
                             <field name="per_month_rate"/>
-                            <field name="per_year_rate"/>
+                            <field name="mobil_oil_rate"/>
+                            <field name="oil_filter_rate"/>
+                            <field name="air_filter_rate"/>
+                            <field name="airport_rate"/>
                             <field name="over_time"/>
                             <field name="over_night"/>
                             <field name="out_station"/>
                         </group>
+                        <group string="Airport">
+                            <label for="addit_hour_rate"/>
+                            <div class="o_row">
+                                <field name="addit_hour_rate"/>
+                                <span>Per Hour</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="hourly_limit"/>
+                            </div>
+                            <label for="addit_km_rate"/>
+                            <div class="o_row">
+                                <field name="addit_km_rate"/>
+                                <span>Per KM</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="km_limit"/>
+                            </div>
+                        </group>
                     </group>
                     <notebook>
                         <page>
-                            <button name="%(select_multiple_models.act_open_select_models_view)d" type="action" string="Select Models"
+                            <button name="%(select_multiple_models.act_open_select_models_view)d" type="action"
+                                    string="Select Models"
                                     class="oe_highlight"/>
-<!--                                                                context="{'default_flag_order': 'po'}"-->
-<!--                                    attrs="{'invisible': [('state', '!=', 'draft')]}"-->
                             <field name="contract_lines_id">
-                                <tree editable="bottom">
+                                <tree editable="bottom" decoration-muted="is_lock == True">
                                     <field name="model_id"/>
                                     <field name="per_hour_rate"/>
                                     <field name="per_km_rate"/>
                                     <field name="per_day_rate"/>
                                     <field name="per_week_rate"/>
                                     <field name="per_month_rate"/>
-                                    <field name="per_year_rate"/>
+                                    <field name="mobil_oil_rate" optional="hide"/>
+                                    <field name="oil_filter_rate" optional="hide"/>
+                                    <field name="air_filter_rate" optional="hide"/>
+                                    <field name="airport_rate"/>
                                     <field name="over_time"/>
                                     <field name="over_night"/>
                                     <field name="out_station"/>
+                                    <field name="is_lock"/>
                                 </tree>
                             </field>
                         </page>
@@ -99,6 +125,22 @@
                 </div>
             </form>
         </field>
+    </record>
+
+    <record id="action_lock_contract_lines" model="ir.actions.server">
+        <field name="name">Lock</field>
+        <field name="model_id" ref="res_partner_customization.model_res_contract"/>
+        <field name="binding_model_id" ref="res_partner_customization.model_res_contract"/>
+        <field name="state">code</field>
+        <field name="code">if records: action = records.action_server_lock()</field>
+    </record>
+
+    <record id="action_unlock_contract_lines" model="ir.actions.server">
+        <field name="name">UnLock</field>
+        <field name="model_id" ref="res_partner_customization.model_res_contract"/>
+        <field name="binding_model_id" ref="res_partner_customization.model_res_contract"/>
+        <field name="state">code</field>
+        <field name="code">if records: action = records.action_server_unlock()</field>
     </record>
 
 
