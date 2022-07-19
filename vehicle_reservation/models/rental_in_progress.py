@@ -23,7 +23,7 @@ class RentalProgress(models.Model):
     based_on = fields.Selection([
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'), ('yearly', 'Yearly')], default='daily', string="Based On")
+        ('monthly', 'Monthly'), ('airport', 'Airport')], default='daily', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -39,19 +39,22 @@ class RentalProgress(models.Model):
     over_night = fields.Boolean(default=False)
     button_show = fields.Boolean(default=False)
 
-    hours = fields.Integer(string='Hours', readonly="1")
-    per_hour_rate = fields.Integer(string='Hour Rate', readonly="1")
-    days = fields.Integer(string='Days', readonly="1")
-    day_rate = fields.Integer(string='Day Rate', readonly="1")
-    weeks = fields.Integer(string='Weeks', readonly="1")
-    week_rate = fields.Integer(string='Week Rate', readonly="1")
-    months = fields.Integer(string='Months', readonly="1")
-    month_rate = fields.Integer(string='Month Rate', readonly="1")
-    total_rate = fields.Integer(string='Total Rate', readonly="1")
-    driven = fields.Integer(string="Driven", tracking=True, compute="_compute_driven", readonly=True)
-    apply_out_station = fields.Integer(string='Apply Out Station After', readonly="1")
-    out_station_rate = fields.Integer(string='Out Station Rate', readonly="1")
-    net_amount = fields.Integer(string='Net Amount', readonly="1")
+    hours = fields.Integer(string='Hours')
+    per_hour_rate = fields.Integer(string='Hour Rate')
+    days = fields.Integer(string='Days')
+    day_rate = fields.Integer(string='Day Rate')
+    weeks = fields.Integer(string='Weeks')
+    week_rate = fields.Integer(string='Week Rate')
+    months = fields.Integer(string='Months')
+    month_rate = fields.Integer(string='Month Rate')
+    airport_rate = fields.Integer(string='Airport Rate')
+    extra_airport_km = fields.Integer(string='Extra KMs(Airport)')
+    extra_airport_hour = fields.Integer(string='Extra Hours(Airport)')
+    total_rate = fields.Integer(string='Total Rate')
+    driven = fields.Integer(string="Driven", tracking=True, compute="_compute_driven")
+    apply_out_station = fields.Integer(string='Apply Out Station After')
+    out_station_rate = fields.Integer(string='Out Station Rate')
+    net_amount = fields.Integer(string='Net Amount')
 
     state = fields.Selection(
         [('ready_for_departure', 'Ready For Departure'), ('chauffeur_out', 'Chauffeur Out'),
@@ -63,6 +66,13 @@ class RentalProgress(models.Model):
     stage_id = fields.Selection([
         ('billed', 'BILLED'),
         ('not_billed', 'NOT BILLED')], default='not_billed', string="Stage ID")
+
+    # @api.onchange('toll', 'allowa', 'net_amount')
+    # def _onchange_net_amount(self):
+    #     print("Before Plus",self.net_amount)
+    #     a = self.net_amount
+    #     self.net_amount = a + self.toll + self.allowa
+    #     print("After Plus",self.net_amount)
 
     @api.onchange('out_of_station')
     def _onchange_out_station(self):
@@ -98,20 +108,23 @@ class RentalProgress(models.Model):
                 td = td[-1].replace(' ', '')
                 hours = datetime.strptime(str(td), "%H:%M:%S").hour
                 minutes = datetime.strptime(str(td), "%H:%M:%S").minute
+                extra_km_rate = 0
                 for j in record.contract_lines_id:
                     if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
-                        self.apply_out_station = record.apply_out_station
                         self.per_hour_rate = j.per_hour_rate
                         if self.based_on == 'daily':
                             if minutes > 0:
                                 self.hours = hours + 1
+                                self.per_hour_rate = j.per_hour_rate
                             else:
                                 self.hours = hours
+                                self.per_hour_rate = j.per_hour_rate
                             self.days = total_days.days
                             self.day_rate = j.per_day_rate
                             self.total_rate = (self.days * self.day_rate) + (self.hours * self.per_hour_rate)
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
+                                self.apply_out_station = record.apply_out_station
                                 self.out_station_rate = j.out_station
                                 self.net_amount = self.total_rate + self.out_station_rate
                             else:
@@ -124,8 +137,10 @@ class RentalProgress(models.Model):
                             # minutes = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").minute
                             if minutes > 0:
                                 self.hours = hours + 1
+                                self.per_hour_rate = j.per_hour_rate
                             else:
                                 self.hours = hours
+                                self.per_hour_rate = j.per_hour_rate
                             print("Weekly")
                             print(week)
                             print(day)
@@ -134,10 +149,11 @@ class RentalProgress(models.Model):
                             self.day_rate = j.per_day_rate
                             self.week_rate = j.per_week_rate
                             self.total_rate = ((self.days * self.day_rate) + (
-                                        self.weeks * self.week_rate) + (self.hours * self.per_hour_rate))
+                                    self.weeks * self.week_rate) + (self.hours * self.per_hour_rate))
                             if self.apply_out_station <= self.driven:
                                 print("Out Station")
                                 self.out_of_station = True
+                                self.apply_out_station = record.apply_out_station
                                 self.out_station_rate = j.out_station
                                 self.net_amount = self.total_rate + self.out_station_rate
                             else:
@@ -156,10 +172,11 @@ class RentalProgress(models.Model):
                             print("day", day)
                             print("minute", minutes)
                             if minutes > 0:
-                                print("True")
                                 self.hours = hours + 1
+                                self.per_hour_rate = j.per_hour_rate
                             else:
                                 self.hours = hours
+                                self.per_hour_rate = j.per_hour_rate
                             print("monthly")
                             self.days = day
                             self.weeks = week
@@ -175,15 +192,58 @@ class RentalProgress(models.Model):
                             print("Rate day", self.day_rate)
                             print("Driven", self.driven)
                             self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
-                                        self.months * self.month_rate) + (self.hours * self.per_hour_rate))
+                                    self.months * self.month_rate) + (self.hours * self.per_hour_rate) + j.mobil_oil_rate + j.oil_filter_rate + j.air_filter_rate)
                             if self.apply_out_station <= self.driven:
                                 print("Out Station")
                                 self.out_of_station = True
+                                self.apply_out_station = record.apply_out_station
                                 self.out_station_rate = j.out_station
                                 self.net_amount = self.total_rate + self.out_station_rate
                             else:
                                 self.net_amount = self.total_rate
                                 self.out_station_rate = 0
+                        elif self.based_on == 'airport':
+                            print("hours", hours)
+                            print("minute", minutes)
+                            self.airport_rate = j.airport_rate
+                            extra_km = self.driven - record.km_limit
+                            print("Extra kmmm", extra_km)
+                            extra_hour = hours - record.hourly_limit
+                            print("Extra ho", extra_hour)
+                            if extra_km > 0:
+                                print("Extra KM" , extra_km)
+                                self.extra_airport_km = extra_km
+                                extra_km_rate = extra_km * record.addit_km_rate
+                                # self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
+                                #         self.months * self.month_rate) + self.airport_rate + extra_km_rate)
+                            if extra_hour > 0:
+                                print("Extra Hour" , extra_hour)
+                                if minutes > 0:
+                                    print("minut")
+                                    self.hours = hours + 1
+                                    print("Hours After Minute" , self.hours)
+                                    self.per_hour_rate = record.addit_hour_rate
+                                    self.extra_airport_hour = extra_hour + 1
+                                else:
+                                    self.hours = hours
+                                    self.per_hour_rate = record.addit_hour_rate
+                                    self.extra_airport_hour = extra_hour
+                                print("True")
+                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
+                                    self.months * self.month_rate) + (self.extra_airport_hour * self.per_hour_rate) + self.airport_rate  + extra_km_rate)
+                            self.net_amount = self.total_rate
+                            # else:
+                            #     self.hours = hours
+                            #     self.week_rate = record.addit_hour_rate
+                            #     self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
+                            #             self.months * self.month_rate) + (self.hours * self.per_hour_rate) + extra_rate)
+                            #     self.net_amount = self.total_rate
+
+                            # else:
+                            #     self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
+                            #             self.months * self.month_rate) + (self.hours * self.per_hour_rate) + (self.airport_rate))
+                            #     self.net_amount = self.total_rate
+
                     # else:
                     #     self.days = 0
                     #     self.weeks = 0
@@ -198,6 +258,7 @@ class RentalProgress(models.Model):
                 self.day_rate = 0
                 self.week_rate = 0
                 self.month_rate = 0
+                self.airport_rate = 0
         else:
             self.days = 0
             self.weeks = 0
@@ -205,6 +266,7 @@ class RentalProgress(models.Model):
             self.day_rate = 0
             self.week_rate = 0
             self.month_rate = 0
+            self.airport_rate = 0
 
     @api.model
     def create(self, values):
@@ -357,31 +419,32 @@ class RentalProgress(models.Model):
 
     def action_create_invoice(self):
         for rec in self:
-            record = self.env['res.contract'].search(
-                [('partner_id', '=', rec.name.id),
-                 ('state', '=', 'confirm')])
-            i = 0
-            print("helloo")
-            for j in record.contract_lines_id:
-                print("hy", j)
-                if j.model_id.name == rec.vehicle_no.model_id.name:
-                    print("Done")
-                    if rec.based_on == 'daily':
-                        i = j.per_day_rate
-                    elif rec.based_on == 'weekly':
-                        i = j.per_week_rate
-                    elif rec.based_on == 'monthly':
-                        i = j.per_month_rate
-                    line_vals = []
-                    line_vals.append((0, 0, {
-                        'product_id': self.vehicle_no.product_id.id,
-                        'analytic_account_id': self.vehicle_no.analytical_account_id.id,
-                        'date_rental': self.time_out,
-                        'rental_id': self.id,
-                        'rentee_name': self.rentee_name,
-                        'price_unit': self.days * i,
-                    }))
+            # record = self.env['res.contract'].search(
+            #     [('partner_id', '=', rec.name.id),
+            #      ('state', '=', 'confirm')])
+            # i = 0
+            # print("helloo")
+            # for j in record.contract_lines_id:
+            #     print("hy", j)
+            #     if j.model_id.name == rec.vehicle_no.model_id.name:
+            #         print("Done")
+            #         if rec.based_on == 'daily':
+            #             i = j.per_day_rate
+            #         elif rec.based_on == 'weekly':
+            #             i = j.per_week_rate
+            #         elif rec.based_on == 'monthly':
+            #             i = j.per_month_rate
+            line_vals = []
+            line_vals.append((0, 0, {
+                'product_id': self.vehicle_no.product_id.id,
+                'analytic_account_id': self.vehicle_no.analytical_account_id.id,
+                'date_rental': self.time_out,
+                'rental_id': self.id,
+                'rentee_name': self.rentee_name,
+                'price_unit': self.net_amount,
+            }))
             r = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id), ('type', '=', 'sale')])
+            print(r)
             invoice = {
                 'invoice_line_ids': line_vals,
                 'partner_id': self.name.id,
@@ -419,29 +482,30 @@ class RentalProgress(models.Model):
                 break
         if merge:
             line_vals = []
+            j = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id), ('type', '=', 'sale')])
             for r in selected_records:
-                record = self.env['res.contract'].search(
-                    [('partner_id', '=', r.name.id),
-                     ('state', '=', 'confirm')])
-                i = 0
-                for j in record.contract_lines_id:
-                    if j.model_id == r.vehicle_no.model_id.id:
-                        if r.based_on == 'daily':
-                            i = j.per_day_rate
-                        elif r.based_on == 'weekly':
-                            i = j.per_week_rate
-                        elif r.based_on == 'monthly':
-                            i = j.per_month_rate
-                    line_vals.append(({
-                        'product_id': r.vehicle_no.product_id.id,
-                        'analytic_account_id': r.vehicle_no.analytical_account_id.id,
-                        'date_rental': r.time_out,
-                        'rental_id': r.id,
-                        'rentee_name': r.rentee_name,
-                        'price_unit': r.days * i,
-                    }))
-                    r.stage_id = 'billed'
-                    r.button_show = True
+                # record = self.env['res.contract'].search(
+                #     [('partner_id', '=', r.name.id),
+                #      ('state', '=', 'confirm')])
+                # i = 0
+                # for j in record.contract_lines_id:
+                #     if j.model_id == r.vehicle_no.model_id.id:
+                #         if r.based_on == 'daily':
+                #             i = j.per_day_rate
+                #         elif r.based_on == 'weekly':
+                #             i = j.per_week_rate
+                #         elif r.based_on == 'monthly':
+                #             i = j.per_month_rate
+                line_vals.append(({
+                    'product_id': r.vehicle_no.product_id.id,
+                    'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                    'date_rental': r.time_out,
+                    'rental_id': r.id,
+                    'rentee_name': r.rentee_name,
+                    'price_unit': r.net_amount,
+                }))
+                r.stage_id = 'billed'
+                r.button_show = True
             print(line_vals)
             invoice_obj = self.env['account.move']
             vals = {
@@ -450,6 +514,7 @@ class RentalProgress(models.Model):
                 'branch_id': selected_records[0].branch_id.id,
                 'invoice_date': datetime.today(),
                 'state': 'draft',
+                'journal_id': j.id,
                 'fiscal_position_id': selected_records[0].branch_id.fiscal_position_id.id,
                 'rental': selected_records.ids,
                 'move_type': 'out_invoice',

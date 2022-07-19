@@ -16,7 +16,7 @@ class BookingWizard(models.TransientModel):
     based_on = fields.Selection([
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'), ('yearly', 'Yearly')], default='daily', string="Based On")
+        ('monthly', 'Monthly'), ('airport', 'Airport')], default='daily', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")

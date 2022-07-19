@@ -8,21 +8,14 @@ class BranchAccountJournal(models.Model):
     branch_id = fields.Many2one('res.branch', string="Branch", tracking=True)
     code = fields.Char(string='Short Code', size=10, required=True,
                        help="Shorter name used for display. "
-                            "The journal entries of this journal will also be named using this prefix by default." , related="branch_id.code" , readonly=False)
+                            "The journal entries of this journal will also be named using this prefix by default.", readonly=False)
 
-    # @api.onchange('type', 'branch_id', 'code')
-    # def _onchange_branch_code(self):
-    #     if self.type and self.branch_id:
-    #         if self.type == 'sale':
-    #             self.code = self.branch_id.code
-    #         elif self.type == 'purchase':
-    #             self.code = '' + self.branch_id.code
-    #         elif self.type == 'cash':
-    #             self.code = 'CSH-' + self.branch_id.code
-    #         elif self.type == 'bank':
-    #             self.code = 'BNK-' + self.branch_id.code
-    #         elif self.type == 'general':
-    #             self.code = 'MISC-' + self.branch_id.code
+    @api.onchange('branch_id')
+    def _onchange_branch_code(self):
+        for rec in self:
+            record = self.env['res.branch'].search([('name', '=' , rec.branch_id.name)])
+            print(record)
+            self.code = record.code
 
 
 class BillAccountRental(models.Model):

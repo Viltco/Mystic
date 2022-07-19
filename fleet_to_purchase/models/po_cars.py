@@ -50,14 +50,16 @@ class PurchaseCars(models.Model):
                  'fleet_vehicle_id': rest.id,
                  })
             # values['analytical_account_id'] = resul.id
-            r = self.env['product.category'].search([('name', '=', 'Pool Vehicles')])
+            # r = self.env['product.category'].search([('name', '=', 'Pool Vehicles')])
+            r = self.env['ir.config_parameter'].get_param('fleet_to_purchase.product_category_id')
+            print(r, "Product Category")
             resu = self.env['product.product'].create(
                 {'name': str(v.name) + '/' + str(v.brand_id.name) + '/' + str(v.model_year) + '/' + str(
                     v.power_cc) + '/' + str(values['number']),
                  'fleet_vehicle_id': rest.id,
                  # 'branch_ids': res['branch_id'],
                  'type': 'product',
-                 'categ_id': r.id,
+                 'categ_id': r,
                  'invoice_policy': 'order',
                  'purchase_method': 'purchase',
                  })

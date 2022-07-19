@@ -10,6 +10,10 @@
                         <field name="km_in"/>
                         <field name="time_in"/>
                     </group>
+                    <group>
+                        <field name="toll"/>
+                        <field name="allowa"/>
+                    </group>
                 </group>
 
                 <footer>

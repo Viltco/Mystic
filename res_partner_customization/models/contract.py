@@ -13,12 +13,20 @@ class Contracts(models.Model):
     apply_over_night = fields.Integer(string='Apply Over Night After')
     apply_out_station = fields.Integer(string='Apply Out Station After')
 
+    addit_hour_rate = fields.Integer(string='Additional Hourly Rate')
+    hourly_limit = fields.Integer(string='Hourly Limit')
+    addit_km_rate = fields.Integer(string='Additional KM Rate')
+    km_limit = fields.Integer(string='KM Limit')
+
     per_hour_rate = fields.Float(string='Hour')
     per_km_rate = fields.Float(string='KM')
     per_day_rate = fields.Float(string='Daily')
     per_week_rate = fields.Float(string='Weekly')
     per_month_rate = fields.Float(string='Monthly')
-    per_year_rate = fields.Float(string='Yearly')
+    mobil_oil_rate = fields.Float(string='Mobil Oil Rate')
+    oil_filter_rate = fields.Float(string='Oil Filter Rate')
+    air_filter_rate = fields.Float(string='Air Filter Rate')
+    airport_rate = fields.Float(string='Airport')
     over_time = fields.Float(string='OverTime')
     over_night = fields.Float(string='OverNight')
     out_station = fields.Float(string='OutStation')
@@ -45,18 +53,48 @@ class Contracts(models.Model):
     def action_cancel(self):
         self.state = 'cancel'
 
+    def action_server_lock(self):
+        print("u click")
+        active_model = self.env['res.contract'].browse(self.env.context.get('active_id'))
+        for r in active_model.contract_lines_id:
+            print(r)
+            r.is_lock = True
+            # if not r.is_lock:
+            #     r.is_lock = True
+            # else:
+            #     r.is_lock = False
+
+    def action_server_unlock(self):
+        print("u click")
+        active_model = self.env['res.contract'].browse(self.env.context.get('active_id'))
+        for r in active_model.contract_lines_id:
+            print(r)
+            r.is_lock = False
+
+            # if not r.is_lock:
+            #     r.is_lock = True
+            # else:
+            #     r.is_lock = False
+
     def action_add_price(self):
         for rec in self:
             for r in rec.contract_lines_id:
-                r.per_hour_rate = rec.per_hour_rate
-                r.per_km_rate = rec.per_km_rate
-                r.per_day_rate = rec.per_day_rate
-                r.per_week_rate = rec.per_week_rate
-                r.per_month_rate = rec.per_month_rate
-                r.per_year_rate = rec.per_year_rate
-                r.over_time = rec.over_time
-                r.over_night = rec.over_night
-                r.out_station = rec.out_station
+                if not r.is_lock:
+                    print(r)
+                    r.per_hour_rate = rec.per_hour_rate
+                    r.per_km_rate = rec.per_km_rate
+                    r.per_day_rate = rec.per_day_rate
+                    r.per_week_rate = rec.per_week_rate
+                    r.per_month_rate = rec.per_month_rate
+                    r.mobil_oil_rate = rec.mobil_oil_rate
+                    r.oil_filter_rate = rec.oil_filter_rate
+                    r.air_filter_rate = rec.air_filter_rate
+                    r.airport_rate = rec.airport_rate
+                    r.over_time = rec.over_time
+                    r.over_night = rec.over_night
+                    r.out_station = rec.out_station
+                else:
+                    print("no change")
 
 
 class ContractLines(models.Model):
@@ -69,8 +107,13 @@ class ContractLines(models.Model):
     per_day_rate = fields.Float(string='Daily')
     per_week_rate = fields.Float(string='Weekly')
     per_month_rate = fields.Float(string='Monthly')
-    per_year_rate = fields.Float(string='Yearly')
+    mobil_oil_rate = fields.Float(string='Mobil Oil Rate')
+    oil_filter_rate = fields.Float(string='Oil Filter Rate')
+    air_filter_rate = fields.Float(string='Air Filter Rate')
+    airport_rate = fields.Float(string='Airport')
     over_time = fields.Float(string='OverTime')
     over_night = fields.Float(string='OverNight')
     out_station = fields.Float(string='OutStation')
     contract_id = fields.Many2one('res.contract')
+
+    is_lock = fields.Boolean(default=False)

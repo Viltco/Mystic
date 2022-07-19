@@ -21,3 +21,8 @@ class PurchaseSource(models.Model):
                 r.price_unit = rec.unit_price
 
 
+class PurchaseSettingCategory(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    product_category_id = fields.Many2one('product.category', string='Product Category',
+                                   config_parameter='fleet_to_purchase.product_category_id')
