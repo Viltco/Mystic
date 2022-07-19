@@ -19,7 +19,7 @@
     'version': '14.0.0.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'fleet', 'branch', 'mystic_insurance'],
+    'depends': ['base', 'fleet', 'branch'],
 
     # always loaded
     'data': [
