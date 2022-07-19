@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+        <record id="hr_contract_form_inherited" model="ir.ui.view">
+            <field name="name">hr.contract.inherited</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="model">hr.contract</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='analytic_account_id']" position="after">
+                    <field name="branch_id"/>
+                    <field name="analytic_tag_id" widget="many2many_tags" force_save="1" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="hr_employee_form_inherited" model="ir.ui.view">
+            <field name="name">hr.employee.inherited</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="model">hr.employee</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="branch_id"/>
+                    <field name="analytic_tag_id" widget="many2many_tags" force_save="1" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

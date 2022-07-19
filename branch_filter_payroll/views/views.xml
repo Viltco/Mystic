@@ -1,0 +1,193 @@
+<odoo>
+    <data>
+        <!--        Form Views-->
+        <!--        Structure Type form view-->
+        <record id="hr_payroll_structure_type_form_inherited" model="ir.ui.view">
+            <field name="name">hr.payroll.structure.type.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_form"/>
+            <field name="model">hr.payroll.structure.type</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='wage_type']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+
+            </field>
+        </record>
+        <!--Rules form view-->
+        <record id="hr_salary_rule_form_inherited" model="ir.ui.view">
+            <field name="name">hr.salary.rule.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+            <field name="model">hr.salary.rule</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='appears_on_payslip']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+        <!--batches form view-->
+        <record id="hr_payslip_run_form_inherited" model="ir.ui.view">
+            <field name="name">hr.payslip.run.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payslip_run_form"/>
+            <field name="model">hr.payslip.run</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='credit_note']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--payslip form view-->
+        <record id="hr_payslip_form_inherited" model="ir.ui.view">
+            <field name="name">hr.payslip.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="model">hr.payslip</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='struct_id']" position="before">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+        <!--structures form view-->
+        <record id="hr_payslip_structure_form_inherited" model="ir.ui.view">
+            <field name="name">hr.payroll.structure.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_employee_grade_form"/>
+            <field name="model">hr.payroll.structure</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='country_id']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--        Tree Views-->
+
+        <record id="hr_payroll_structure_type_tree_inherited" model="ir.ui.view">
+            <field name="name">hr.payroll.structure.type.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_tree"/>
+            <field name="model">hr.payroll.structure.type</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--        Rules Tree View-->
+        <record id="hr_salary_rule_tree_inherited" model="ir.ui.view">
+            <field name="name">hr.salary.rule.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_salary_rule_list"/>
+            <field name="model">hr.salary.rule</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+        <!--batches tree view-->
+        <record id="hr_payslip_run_tree_inherited" model="ir.ui.view">
+            <field name="name">hr.payslip.run.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payslip_run_tree"/>
+            <field name="model">hr.payslip.run</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+        <!--payslip form view-->
+        <record id="hr_payslip_tree_inherited" model="ir.ui.view">
+            <field name="name">hr.payslip.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_tree"/>
+            <field name="model">hr.payslip</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <!--structures form view-->
+        <record id="hr_payslip_structure_tree_inherited" model="ir.ui.view">
+            <field name="name">hr.payroll.structure.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payroll_structure_list_view"/>
+            <field name="model">hr.payroll.structure</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="branch_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--Group By-->
+         <record id="hr_payroll_structure_type_search_inherited" model="ir.ui.view">
+            <field name="name">hr.payroll.structure.type.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_search"/>
+            <field name="model">hr.payroll.structure.type</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//search" position="inside">
+                    <filter string="Branch" name="branch_id" context="{'group_by': 'branch_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_salary_rule_search_inherited" model="ir.ui.view">
+            <field name="name">hr.salary.rule.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_rule_filter"/>
+            <field name="model">hr.salary.rule</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//search/group" position="inside">
+                    <filter string="Branch" name="branch_id" context="{'group_by': 'branch_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_payslip_run_search_inherited" model="ir.ui.view">
+            <field name="name">hr.payslip.run.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payslip_run_filter"/>
+            <field name="model">hr.payslip.run</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//search/group" position="inside">
+                    <filter string="Branch" name="branch_id" context="{'group_by': 'branch_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_payslip_search_inherited" model="ir.ui.view">
+            <field name="name">hr.payslip.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_filter"/>
+            <field name="model">hr.payslip</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//search/group" position="inside">
+                    <filter string="Branch" name="branch_id" context="{'group_by': 'branch_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_payslip_structure_search_inherited" model="ir.ui.view">
+            <field name="name">hr.payroll.structure.inherited</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payroll_structure_filter"/>
+            <field name="model">hr.payroll.structure</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//search/group" position="inside">
+                    <filter string="Branch" name="branch_id" context="{'group_by': 'branch_id'}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
