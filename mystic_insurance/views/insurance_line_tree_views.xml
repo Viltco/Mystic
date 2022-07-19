@@ -1,0 +1,47 @@
+<odoo>
+
+    <record id="view_fleet_insurance_line_tree" model="ir.ui.view">
+        <field name="name">fleet.insurance.line.tree</field>
+        <field name="model">fleet.insurance.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="fleet_vehicle_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="branch_id"/>
+                <field name="re_amount"/>
+                <field name="percentage"/>
+                <field name="amount_subtotal"/>
+                <field name="insurance_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_fleet_insurance_line_view" model="ir.actions.act_window">
+        <field name="name">Fleet Insurance Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fleet.insurance.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_fleet_insurance_line_tree"/>
+        <field name="domain">[('insurance_status', '=', 'active')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Record Found. Let's Create..........
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="main_menu_fleet_insurance_line"
+              name="Fleet Insurance Lines"
+              parent="fleet.menu_root"
+              sequence="2"
+    />
+
+    <menuitem id="menu_fleet_insurance_line"
+              name="Fleet Insurance Lines"
+              parent="main_menu_fleet_insurance_line"
+              action="action_fleet_insurance_line_view"
+              sequence="1"
+    />
+
+</odoo>

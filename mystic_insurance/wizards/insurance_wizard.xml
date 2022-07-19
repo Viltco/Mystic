@@ -1,0 +1,31 @@
+<odoo>
+
+	<record id="view_insurance_wizard_form" model="ir.ui.view">
+		<field name="name">Insurance Wizard</field>
+		<field name="model">insurance.wizard</field>
+		<field name="arch" type="xml">
+			<form >
+				<group>
+					<group>
+						<field name="date"/>
+					</group>
+					<group>
+						<field name="partner_id"/>
+					</group>
+					<group>
+						<field name="product_id"/>
+					</group>
+					<group>
+						<field name="journal_id"/>
+					</group>
+					<field name="fleet_ids" invisible="1" readonly="1" widget="many2many_tags" options="{'no_create': True, 'no_open': True, 'no_create_edit':True}"/>
+				</group>
+				<footer>
+					<button name="create_bills" string="Creat Bills" type="object" class="btn-primary"/>
+					<button  string="Cancel" type="object" class="btn-secondary" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+
+</odoo>

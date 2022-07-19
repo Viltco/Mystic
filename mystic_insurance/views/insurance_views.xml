@@ -1,0 +1,64 @@
+<odoo>
+
+    <record id="fleet_vehicle_form_inherit" model="ir.ui.view">
+        <field name="name">fleet.vehicle.form.inherit</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Insurance Lines">
+                        <field name="fleet_insurance_lines">
+                            <tree editable="bottom">
+                                <field name="fleet_vehicle_id" invisible="1"/>
+                                <field name="date_from" required="1"/>
+                                <field name="date_to" required="1"/>
+                                <field name="branch_id" required="1" readonly="0"/>
+                                <field name="re_amount" required="1"/>
+                                <field name="percentage" required="1"/>
+                                <field name="amount_subtotal"/>
+                                <field name="insurance_status" required="1"/>
+                            </tree>
+                        </field>
+
+<!--                        <group name="note_group" col="6" class="mt-2 mt-md-0">-->
+<!--                            <group colspan="4">-->
+<!--                                <field name="note" nolabel="1" placeholder="Terms and conditions..."/>-->
+<!--                            </group>-->
+<!--                            <group class="oe_subtotal_footer oe_right" colspan="2" name="crm_total">-->
+
+<!--                                &lt;!&ndash;                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">&ndash;&gt;-->
+<!--                                <div class="oe_inline o_td_label">-->
+<!--                                    <label for="total_amount"/>-->
+<!--                                </div>-->
+<!--                                <field name="total_amount" nolabel="1" widget='monetary'/>-->
+<!--                                <field name="total_gst" widget='monetary'/>-->
+<!--                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+<!--                                    <label for="sub_total"/>-->
+<!--                                </div>-->
+<!--                                <field name="sub_total" nolabel="1" class="oe_subtotal_footer_separator"-->
+<!--                                       widget='monetary'/>-->
+
+<!--                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+<!--                                    <label for="total_cost_line"/>-->
+<!--                                </div>-->
+<!--                                <field name="total_cost_line" nolabel="1" class="oe_subtotal_footer_separator"-->
+<!--                                       widget='monetary'/>-->
+<!--                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+<!--                                    <label for="total_margin"/>-->
+<!--                                </div>-->
+<!--                                <field name="total_margin" nolabel="1" class="oe_subtotal_footer_separator"-->
+<!--                                       widget='monetary'/>-->
+<!--                            </group>-->
+<!--                            <div class="oe_clear"/>-->
+<!--                        </group>-->
+
+                    </page>
+                </notebook>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

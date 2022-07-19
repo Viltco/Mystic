@@ -1,0 +1,15 @@
+<odoo>
+
+    <record id="action_insurance_bill_server" model="ir.actions.server">
+        <field name="name">Create Insurance Bills</field>
+        <field name="sequence">1</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="model_fleet_insurance_line"/>
+        <field name="binding_model_id" ref="model_fleet_insurance_line"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records: action = records.action_create_bill_wizard()
+        </field>
+    </record>
+
+</odoo>
