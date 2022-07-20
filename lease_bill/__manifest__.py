@@ -19,15 +19,17 @@
     'version': '14.0.0.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'account'],
+    'depends': ['base', 'account','advance_payment_purchase', 'branch'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
+        'wizards/lease_wizard.xml',
+        'wizards/lease_payment_wizard.xml',
         'views/account_move_views.xml',
         'views/lease_bill_views.xml',
-        'wizards/lease_wizard.xml',
+        'views/lease_bill_lines_view.xml',
     ],
 
 }

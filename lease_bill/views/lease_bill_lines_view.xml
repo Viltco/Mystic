@@ -1,0 +1,80 @@
+<odoo>
+
+    <record id="view_lease_bill_line_form" model="ir.ui.view">
+        <field name="name">lease.bill.line.form</field>
+        <field name="model">lease.bill.line</field>
+        <field name="arch" type="xml">
+            <form string="Lease Bill Line" create="false" edit="false">
+                <sheet>
+                    <group col="4">
+                        <field name="bill_id"/>
+                        <field name="lease_bill_id"/>
+                        <field name="partner_id"/>
+                        <field name="date_due"/>
+                        <field name="prin_part"/>
+                        <field name="int_part"/>
+                        <field name="due_total"/>
+                        <field name="prin_balance"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lease_bill_line_tree" model="ir.ui.view">
+        <field name="name">lease.bill.line.tree</field>
+        <field name="model">lease.bill.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <header>
+                    <button string="Register Payment" type="object" name="action_register_payment"/>
+                </header>
+                <field name="bill_id" optional="show"/>
+                <field name="lease_bill_id" optional="show"/>
+                <field name="partner_id" optional="show"/>
+                <field name="date_due" optional="show"/>
+                <field name="prin_part" optional="show"/>
+                <field name="int_part" optional="show"/>
+                <field name="due_total" optional="show"/>
+                <field name="prin_balance" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_lease_bill_line_search" model="ir.ui.view">
+        <field name="name">lease.bill.line.search</field>
+        <field name="model">lease.bill.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="date_due"/>
+                <field name="prin_part"/>
+                <field name="int_part"/>
+                <field name="due_total"/>
+                <field name="prin_balance"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_lease_bill_line_view" model="ir.actions.act_window">
+        <field name="name">Lease Bill Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">lease.bill.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_lease_bill_line_tree"/>
+        <field name="search_view_id" ref="view_lease_bill_line_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Record Found. Let's Create..........
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_lease_bill_line"
+              name="Lease Bill Line"
+              parent="menu_lease_id"
+              action="action_lease_bill_line_view"
+              sequence="3"
+    />
+
+</odoo>

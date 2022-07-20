@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 
 class PurchaseOrderInherit(models.Model):
     _inherit = 'purchase.order'
-    pbo = fields.Char(string='PBO')
+    bpo = fields.Char(string='BPO')
     is_advance_payment = fields.Selection([('yes', 'YES'), ('no', 'NO')], string='Is Advance Payment')
     advance_amount = fields.Float(string='Advance Amount')
     payment_state = fields.Selection(selection=[

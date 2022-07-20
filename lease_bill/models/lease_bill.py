@@ -12,10 +12,15 @@ class LeaseBill(models.Model):
     _rec_name = 'name'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
+    def _default_branch_id(self):
+        branch_id = self.env['res.users'].browse(self._uid).branch_id.id
+        return branch_id
+
+    branch_id = fields.Many2one('res.branch', default=_default_branch_id)
     name = fields.Char(string='Name')
 
     bill_id = fields.Many2one('account.move', string='Bill Reference',
-                                  domain=lambda self: [("move_type", "=", 'in_invoice')])
+                              domain=lambda self: [("move_type", "=", 'in_invoice')])
 
     amount_bill = fields.Float(string='Outstanding Amount')
 
@@ -31,12 +36,18 @@ class LeaseBill(models.Model):
     installment_remain = fields.Integer(string='Remaining Installments', compute='_compute_installment_remain')
     interest_date_due = fields.Date(string='Interest Due Date')
 
-    lease_long_term_id = fields.Many2one('account.account', string='Lease Account Long Term')
-    lease_current_id = fields.Many2one('account.account', string='Lease Account Current')
-    interest_expense_id = fields.Many2one('account.account', string='Interest Expense Account')
+    # lease_long_term_id = fields.Many2one('account.account', string='Lease Account Long Term')
+    # lease_current_id = fields.Many2one('account.account', string='Lease Account Current')
+    # interest_expense_id = fields.Many2one('account.account', string='Interest Expense Account')
+    interest_expense_id = fields.Many2one('product.product', string='Interest Expense',
+                                          domain="[('type', '=', 'service')]")
 
     lease_journal_id = fields.Many2one('account.journal', string='Journal')
-
+    destination_account_id = fields.Many2one(
+        comodel_name='account.account',
+        string='Destination Account',
+        store=True, readonly=False,
+        domain="[('user_type_id.type', 'in', ('receivable', 'payable'))]")
     date = fields.Date(string='Date')
     date_bill = fields.Date(string='Bill Date')
     date_prin_due = fields.Date(string='Principal Due Date')
@@ -50,6 +61,7 @@ class LeaseBill(models.Model):
     lease_bill_lines = fields.One2many('lease.bill.line', 'lease_bill_id')
 
     is_installment = fields.Boolean(string='Is Installment')
+    is_draft_entry = fields.Boolean(string='Is Draft Entry', default=True)
 
     move_count = fields.Integer(string="Move Count", compute='_compute_total_moves', tracking=True)
 
@@ -61,11 +73,11 @@ class LeaseBill(models.Model):
     def create(self, vals):
         sequence = self.env.ref('lease_bill.lease_bill_sequence')
         journal_record = self.env['account.journal'].browse(vals['lease_journal_id'])
-        journal_code = str(journal_record.code)
+        # journal_code = str(journal_record.code)
         current_year = str(date.today().year)
         current_month = str(date.today().month)
         pos_seq = sequence.next_by_id()
-        pre_seq = (journal_code + '/' + current_year + '/' + current_month)
+        pre_seq = ('Lease' + '/' + current_year + '/' + current_month)
         vals['name'] = (pre_seq + str(pos_seq))
         rec = super(LeaseBill, self).create(vals)
         return rec
@@ -88,7 +100,8 @@ class LeaseBill(models.Model):
 
     def action_post(self):
         self.write({
-            'state': 'posted'
+            'state': 'posted',
+            'is_draft_entry': False
         })
 
     def unlink(self):
@@ -100,9 +113,13 @@ class LeaseBill(models.Model):
 
     @api.onchange('bill_id')
     def _onchange_bill_id(self):
+        print()
         for record in self:
+            print(record.bill_id.branch_id.name)
             record.amount_bill = record.bill_id.amount_residual
             record.date_bill = record.bill_id.invoice_date
+            record.partner_id = record.bill_id.partner_id.id
+            record.branch_id = record.bill_id.branch_id.id
 
     @api.depends('installment_total', 'installment_done')
     def _compute_installment_remain(self):
@@ -130,52 +147,98 @@ class LeaseBill(models.Model):
             'view_mode': 'form',
         }
 
-    # Journal Entry Creation
-
+    # # Journal Entry Creation
+    # Bill Creation
     def create_draft_entry(self):
-        line_ids = []
-        debit_sum = 0.0
-        new_debit_sum = 0.0
-        credit_sum = 0.0
+        line_vals = []
         for line in self.lease_bill_lines:
-            move_dict = {
-                'ref': self.name,
-                'journal_id': self.lease_journal_id.id,
+            line_vals.append((0, 0, {
+                'product_id': self.interest_expense_id.id,
+                'name': self.interest_expense_id.name,
+                'price_unit': line.int_part,
+                'quantity': 1.0,
+                'account_id': self.interest_expense_id.property_account_expense_id.id
+            }))
+
+            bill = {
                 'lease_bill_id': self.id,
+                'invoice_line_ids': line_vals,
                 'partner_id': self.partner_id.id,
-                'date': datetime.today(),
-                'state': 'draft',
+                'branch_id': self.branch_id.id,
+                'invoice_date': line.date_due,
+                'date': line.date_due,
+                # 'hide_jv_link': True,
+                # 'journal_id': self.destination_account_id.id,
+                'move_type': 'in_invoice'
             }
-            debit_line = (0, 0, {
-                'name': 'Lease Installment',
-                'debit': abs(line.int_part),
-                'credit': 0.0,
-                'partner_id': self.partner_id.id,
-                'account_id': self.interest_expense_id.id,
-            })
-            line_ids.append(debit_line)
-            debit_sum += debit_line[2]['debit'] - debit_line[2]['credit']
-            new_debit_line = (0, 0, {
-                'name': 'Lease Installment',
-                'debit': abs(line.prin_part),
-                'credit': 0.0,
-                'partner_id': self.partner_id.id,
-                'account_id': self.lease_long_term_id.id,
-            })
-            line_ids.append(new_debit_line)
-            new_debit_sum += new_debit_line[2]['debit'] - new_debit_line[2]['credit']
-            credit_line = (0, 0, {
-                'name': 'Lease Installment',
-                'debit': 0.0,
-                'partner_id': self.partner_id.id,
-                'credit': abs(line.prin_part + line.int_part),
-                'account_id': self.lease_current_id.id,
-            })
-            line_ids.append(credit_line)
-            credit_sum += credit_line[2]['credit'] - credit_line[2]['debit']
-            move_dict['line_ids'] = line_ids
-            move = self.env['account.move'].create(move_dict)
-            line_ids = []
+            print(bill)
+            record = self.env['account.move'].create(bill)
+            line_vals = []
+        self.is_draft_entry = True
+        # line_ids1 = []
+        # line_ids2 = []
+        # for line in self.lease_bill_lines:
+        #     if abs(line.int_part):
+        #         move_dict = {
+        #             'ref': self.name,
+        #             'journal_id': self.lease_journal_id.id,
+        #             'lease_bill_id': self.id,
+        #             'partner_id': self.partner_id.id,
+        #             'date': line.date_due,
+        #             'state': 'draft',
+        #             'branch_id': self.branch_id.id
+        #         }
+        #         debit_line = (0, 0, {
+        #             'name': 'Lease Installment',
+        #             'debit': abs(line.int_part),
+        #             'credit': 0.0,
+        #             'partner_id': self.partner_id.id,
+        #             'account_id': self.interest_expense_id.id,
+        #         })
+        #         line_ids1.append(debit_line)
+        #         credit_line = (0, 0, {
+        #             'name': 'Lease Installment',
+        #             'debit': 0.0,
+        #             'partner_id': self.partner_id.id,
+        #             'credit': abs(line.int_part),
+        #             'date_maturity': line.date_due,
+        #             'account_id': self.lease_current_id.id,
+        #         })
+        #         line_ids1.append(credit_line)
+        #         move_dict['line_ids'] = line_ids1
+        #         move = self.env['account.move'].create(move_dict)
+        #         line_ids1 = []
+        #     if line.prin_part != 0.0:
+        #         move_dict = {
+        #             'ref': self.name,
+        #             'journal_id': self.lease_journal_id.id,
+        #             'lease_bill_id': self.id,
+        #             'partner_id': self.partner_id.id,
+        #             'date': line.date_account,
+        #             'state': 'draft',
+        #             'branch_id': self.branch_id.id
+        #         }
+        #         new_debit_line = (0, 0, {
+        #             'name': 'Lease Installment',
+        #             'debit': abs(line.prin_part),
+        #             'credit': 0.0,
+        #             'partner_id': self.partner_id.id,
+        #             'account_id': self.lease_long_term_id.id,
+        #         })
+        #         line_ids2.append(new_debit_line)
+        #         credit_line = (0, 0, {
+        #             'name': 'Lease Installment',
+        #             'debit': 0.0,
+        #             'partner_id': self.partner_id.id,
+        #             'credit': abs(line.prin_part),
+        #             'date_maturity': line.date_due,
+        #             'account_id': self.lease_current_id.id,
+        #         })
+        #         line_ids2.append(credit_line)
+        #         print(len(line_ids2))
+        #         move_dict['line_ids'] = line_ids2
+        #         move = self.env['account.move'].create(move_dict)
+        #         line_ids2 = []
 
     def action_move_view(self):
         return {
@@ -194,12 +257,39 @@ class LeaseBill(models.Model):
 class LeaseBillLines(models.Model):
     _name = 'lease.bill.line'
     _description = 'Lease Bill Line'
+    _rec_name = 'partner_id'
 
-    lease_bill_id = fields.Many2one('lease.bill')
+    lease_bill_id = fields.Many2one('lease.bill', string='Lease Bill')
 
-    date_account = fields.Date(string='Accounting Date')
+    partner_id = fields.Many2one('res.partner', string='Vendor', related='lease_bill_id.partner_id')
+    bill_id = fields.Many2one('account.move', string='Bill Reference',
+                              domain=lambda self: [("move_type", "=", 'in_invoice')], related='lease_bill_id.bill_id')
+    # date_account = fields.Date(string='Date')
     date_due = fields.Date(string='Due Date')
     prin_part = fields.Float(string='Principal Part')
     int_part = fields.Float(string='Interest Part')
     due_total = fields.Float(string='Total Due')
     prin_balance = fields.Float(string='Balance Principal')
+    def action_register_payment(self):
+        total_amount = 0
+        partner_counter = self[0].partner_id.id
+        for rec in self:
+            if partner_counter != rec.partner_id.id:
+                raise UserError('Please Select Same Partner')
+            else:
+                total_amount += rec.int_part
+                total_amount += rec.prin_part
+                print('Selected')
+        print((total_amount))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Apply Lease Payments',
+            'view_id': self.env.ref('lease_bill.view_lease_payment_wizard_form', False).id,
+            'context': {'default_amount': total_amount,
+                        'default_partner_id': rec.partner_id.id,
+                        'default_ref':rec.bill_id.name,
+                        'default_destination_account_id':rec.lease_bill_id.destination_account_id.id},
+            'target': 'new',
+            'res_model': 'lease.payment.wizard',
+            'view_mode': 'form',
+        }

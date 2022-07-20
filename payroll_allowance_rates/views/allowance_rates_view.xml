@@ -1,0 +1,92 @@
+<odoo>
+    <data>
+        <record id="view_allowance_rates_form" model="ir.ui.view">
+            <field name="name">allowance.rates.form</field>
+            <field name="model">allowance.rates</field>
+            <field name="arch" type="xml">
+                <form string="Allowance Rates">
+                    <sheet>
+                        <group col="4">
+                            <field name="early_in" widget="float_time"/>
+                            <field name="late_out" widget="float_time"/>
+                            <field name="out_station"/>
+                            <field name="local_night"/>
+                            <field name="out_night"/>
+                            <field name="over_days"/>
+                            <field name="rakhsha"/>
+                            <field name="rentals"/>
+                            <field name="monthly_nights"/>
+                            <field name="extra"/>
+                            <field name="hold_night"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_allowance_rates_tree" model="ir.ui.view">
+            <field name="name">allowance.rates.tree</field>
+            <field name="model">allowance.rates</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="early_in" optional="show"/>
+                    <field name="late_out" optional="show"/>
+                    <field name="out_station" optional="show"/>
+                    <field name="local_night" optional="show"/>
+                    <field name="out_night" optional="show"/>
+                    <field name="over_days" optional="show"/>
+                    <field name="rakhsha" optional="show"/>
+                    <field name="rentals" optional="show"/>
+                    <field name="monthly_nights" optional="show"/>
+                    <field name="extra" optional="show"/>
+                    <field name="hold_night" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_allowance_rates_search" model="ir.ui.view">
+            <field name="name">allowance.rates.search</field>
+            <field name="model">allowance.rates</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="early_in" widget="float_time"/>
+                    <field name="late_out" widget="float_time"/>
+                    <field name="out_station"/>
+                    <field name="local_night"/>
+                    <field name="out_night"/>
+                    <field name="over_days"/>
+                    <field name="rakhsha"/>
+                    <field name="rentals"/>
+                    <field name="monthly_nights"/>
+                    <field name="extra"/>
+                    <field name="hold_night"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_allowance_rates_view" model="ir.actions.act_window">
+            <field name="name">Allowance Rates</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">allowance.rates</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_allowance_rates_tree"/>
+            <field name="search_view_id" ref="view_allowance_rates_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Record Found. Let's Create..........
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_allowance_rates_root"
+                  name="Allowance"
+                  parent="hr_work_entry_contract.menu_hr_payroll_configuration"
+                  sequence="12"/>
+
+        <menuitem id="menu_allowance_rates"
+                  name="Allowance Rates"
+                  parent="menu_allowance_rates_root"
+                  sequence="2"
+                  action="action_allowance_rates_view"/>
+    </data>
+</odoo>

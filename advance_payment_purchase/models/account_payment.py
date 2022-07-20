@@ -59,4 +59,33 @@ class AccountPaymentInherit(models.Model):
         self.write({
             'state': 'posted'
         })
+        for payment in self:
+            # if payment.payment_invoice_ids:
+            #     if payment.amount < sum(payment.payment_invoice_ids.mapped('reconcile_amount')):
+            #         raise UserError(_("stop the function."))
+            print('=====payment method_id====',payment.payment_method_id)
+            for line_id in payment.payment_invoice_ids:
+                if not line_id.reconcile_amount:
+                    continue
+                if line_id.amount_total <= line_id.reconcile_amount:
+                    self.ensure_one()
+                    if payment.payment_type == 'inbound':
+                        lines = payment.move_id.line_ids.filtered(lambda line: line.credit > 0)
+                        lines += line_id.invoice_id.line_ids.filtered(lambda line: line.account_id == lines[0].account_id and not line.reconciled)
+                        lines.reconcile()
+                    elif payment.payment_type == 'outbound':
+                        lines = payment.move_id.line_ids.filtered(lambda line: line.debit > 0)
+                        lines += line_id.invoice_id.line_ids.filtered(lambda line: line.account_id == lines[0].account_id and not line.reconciled)
+                        lines.reconcile()
+                else:
+                    self.ensure_one()
+                    if payment.payment_type == 'inbound':
+                        lines = payment.move_id.line_ids.filtered(lambda line: line.credit > 0)
+                        lines += line_id.invoice_id.line_ids.filtered(lambda line: line.account_id == lines[0].account_id and not line.reconciled)
+                        lines.with_context(amount=line_id.reconcile_amount).reconcile()
+                    elif payment.payment_type == 'outbound':
+                        lines = payment.move_id.line_ids.filtered(lambda line: line.debit > 0)
+                        lines += line_id.invoice_id.line_ids.filtered(lambda line: line.account_id == lines[0].account_id and not line.reconciled)
+                        lines.with_context(amount=line_id.reconcile_amount).reconcile()
         self.move_id._post(soft=False)
+

@@ -7,6 +7,18 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='journal_div']" position="after">
                 <field name="lease_bill_id"/>
+                <field name="due_date"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_invoice_tree_inherit" model="ir.ui.view">
+        <field name="name">account.move.tree.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="due_date" optional="show"/>
             </xpath>
         </field>
     </record>

@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+        <record id="view_attendance_tree_inherited" model="ir.ui.view">
+            <field name="name">hr.attendance.inherited</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+            <field name="model">hr.attendance</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='check_out']" position="after">
+                    <field name="early_in" widget="float_time" optional="show" readonly="1"/>
+                    <field name="late_in" widget="float_time" optional="show" readonly="1"/>
+                    <field name="early_out" widget="float_time" optional="show" readonly="1"/>
+                    <field name="late_out" widget="float_time" optional="show" readonly="1"/>
+                </xpath>
+                <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="shift" optional="show" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
