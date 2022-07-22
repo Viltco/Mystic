@@ -76,119 +76,153 @@ class ChauffeurInWizard(models.TransientModel):
                     extra_km_rate = 0
                     for j in record.contract_lines_id:
                         if j.model_id.name == res.vehicle_no.model_id.name and j.model_id.model_year == res.vehicle_no.model_id.model_year and j.model_id.power_cc == res.vehicle_no.model_id.power_cc:
-                            res.per_hour_rate = j.per_hour_rate
                             if res.based_on == 'daily':
                                 if minutes > 0:
                                     res.hours = hours + 1
+                                    res.per_hour_rate = j.per_hour_rate
                                 else:
                                     res.hours = hours
+                                    res.per_hour_rate = j.per_hour_rate
                                 res.days = total_days.days
-                                res.day_rate = j.per_day_rate
-                                res.total_rate = (res.days * res.day_rate) + (res.hours * res.per_hour_rate)
+                                if res.days > 0:
+                                    res.day_rate = j.per_day_rate
+                                else:
+                                    res.day_rate = 0
+                                res.hours_value = res.hours * res.per_hour_rate
+                                res.days_value = res.days * res.day_rate
+                                res.total_rate = res.days_value + res.hours_value
+                                overtime = res.hours - record.apply_over_time
+                                if overtime > 0:
+                                    res.over_time = True
+                                    res.apply_over_time = record.apply_over_time
+                                    res.over_time_rate = j.over_time
+                                    res.over_time_value = overtime * j.over_time
+                                else:
+                                    res.over_time = False
+                                    res.apply_over_time = 0
+                                    res.over_time_rate = 0
+                                    res.over_time_value = 0
+                                res.apply_out_station = record.apply_out_station
                                 if res.apply_out_station <= driven:
-                                    res.apply_out_station = record.apply_out_station
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
-                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance
+                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance + res.over_time_value
                                 else:
-                                    res.net_amount = res.total_rate + toll_allowance
+                                    res.out_of_station = False
+                                    res.net_amount = res.total_rate + toll_allowance + res.over_time_value
                                     res.out_station_rate = 0
                             elif res.based_on == 'weekly':
                                 week = int(total_days.days // 7)
                                 day = int(total_days.days - week * 7)
-                                # hours = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").hour
-                                # minutes = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").minute
                                 if minutes > 0:
                                     res.hours = hours + 1
+                                    res.per_hour_rate = j.per_hour_rate
                                 else:
                                     res.hours = hours
-                                print("Weekly")
-                                print(week)
-                                print(day)
+                                    res.per_hour_rate = j.per_hour_rate
                                 res.days = day
+                                if res.days > 0:
+                                    res.day_rate = j.per_day_rate
+                                else:
+                                    res.day_rate = 0
                                 res.weeks = week
-                                res.day_rate = j.per_day_rate
-                                res.week_rate = j.per_week_rate
-                                res.total_rate = ((res.days * res.day_rate) + (
-                                        res.weeks * res.week_rate) + (res.hours * res.per_hour_rate))
+                                if res.weeks > 0:
+                                    res.week_rate = j.per_week_rate
+                                else:
+                                    res.week_rate = 0
+                                res.hours_value = res.hours * res.per_hour_rate
+                                res.days_value = res.days * res.day_rate
+                                res.weeks_value = res.weeks * res.week_rate
+                                res.total_rate = (res.hours_value + res.days_value + res.weeks_value)
+                                overtime = res.hours - record.apply_over_time
+                                if overtime > 0:
+                                    res.over_time = True
+                                    res.apply_over_time = record.apply_over_time
+                                    res.over_time_rate = j.over_time
+                                    res.over_time_value = overtime * j.over_time
+                                else:
+                                    res.over_time = False
+                                    res.apply_over_time = 0
+                                    res.over_time_rate = 0
+                                    res.over_time_value = 0
+                                res.apply_out_station = record.apply_out_station
                                 if res.apply_out_station <= driven:
-                                    print("Out Station")
-                                    res.apply_out_station = record.apply_out_station
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
-                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance
+                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance + res.over_time_value
                                 else:
-                                    res.net_amount = res.total_rate + toll_allowance
+                                    res.out_of_station = False
+                                    res.net_amount = res.total_rate + toll_allowance + + res.over_time_value
                                     res.out_station_rate = 0
                             elif res.based_on == 'monthly':
                                 month = int(total_days.days / 30)
                                 week = int(total_days.days - month * 30) // 7
                                 day = int(total_days.days - month * 30 - week * 7)
-                                # td = str(total_days).split(',')
-                                # td = td[-1].replace(' ', '')
-                                print(td)
-                                print("hours", type(hours))
-                                print("month", month)
-                                print("week", week)
-                                print("day", day)
-                                print("minute", minutes)
                                 if minutes > 0:
-                                    print("True")
                                     res.hours = hours + 1
+                                    res.per_hour_rate = j.per_hour_rate
                                 else:
                                     res.hours = hours
-                                print("monthly")
+                                    res.per_hour_rate = j.per_hour_rate
                                 res.days = day
+                                if res.days > 0:
+                                    res.day_rate = j.per_day_rate
+                                else:
+                                    res.day_rate = 0
                                 res.weeks = week
+                                if res.weeks > 0:
+                                    res.week_rate = j.per_week_rate
+                                else:
+                                    res.week_rate = 0
                                 res.months = month
-                                res.day_rate = j.per_day_rate
-                                res.week_rate = j.per_week_rate
-                                res.month_rate = j.per_month_rate
-                                print("Total month", res.months)
-                                print("Total week", res.weeks)
-                                print("Total day", res.days)
-                                print("Rate month", res.month_rate)
-                                print("Rate week", res.week_rate)
-                                print("Rate day", res.day_rate)
-                                print("Driven", res.driven)
-                                res.total_rate = ((res.days * res.day_rate) + (res.weeks * res.week_rate) + (
-                                        res.months * res.month_rate) + (res.hours * res.per_hour_rate))
+                                if res.months > 0:
+                                    res.month_rate = j.per_month_rate
+                                else:
+                                    res.month_rate = 0
+                                res.hours_value = res.hours * res.per_hour_rate
+                                res.days_value = res.days * res.day_rate
+                                res.weeks_value = res.weeks * res.week_rate
+                                res.mobil_oil_rate = j.mobil_oil_rate
+                                res.oil_filter_rate = j.oil_filter_rate
+                                res.air_filter_rate = j.air_filter_rate
+                                res.month_value = (res.months * res.month_rate)
+                                res.total_rate = res.hours_value + res.days_value + res.weeks_value + res.month_value + res.mobil_oil_rate + res.oil_filter_rate + res.air_filter_rate
+                                overtime = res.hours - record.apply_over_time
+                                if overtime > 0:
+                                    res.over_time = True
+                                    res.apply_over_time = record.apply_over_time
+                                    res.over_time_rate = j.over_time
+                                    res.over_time_value = overtime * j.over_time
+                                else:
+                                    res.over_time = False
+                                    res.apply_over_time = 0
+                                    res.over_time_rate = 0
+                                    res.over_time_value = 0
+                                res.apply_out_station = record.apply_out_station
                                 if res.apply_out_station <= driven:
-                                    print("Out Station")
-                                    res.apply_out_station = record.apply_out_station
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
-                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance
+                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance + res.over_time_value
                                 else:
-                                    res.net_amount = res.total_rate + toll_allowance
+                                    res.out_of_station = False
+                                    res.net_amount = res.total_rate + toll_allowance + res.over_time_value
                                     res.out_station_rate = 0
                             elif res.based_on == 'airport':
-                                print("hours", hours)
-                                print("minute", minutes)
                                 res.airport_rate = j.airport_rate
                                 extra_km = driven - record.km_limit
-                                print("Extra kmmm", extra_km)
                                 extra_hour =  hours - record.hourly_limit
-                                print("Extra ho", extra_hour)
                                 if extra_km > 0:
-                                    print("Extra KM", extra_km)
                                     res.extra_airport_km = extra_km
                                     extra_km_rate = extra_km * record.addit_km_rate
-                                    res.total_rate = (
-                                                (res.days * res.day_rate) + (res.weeks * res.week_rate) + (res.months * res.month_rate) + res.airport_rate + extra_km_rate)
-                                elif extra_hour > 0:
-                                    print("Extra Hour", extra_hour)
+                                if extra_hour > 0:
                                     if minutes > 0:
                                         res.hours = extra_hour + 1
                                         res.per_hour_rate = record.addit_hour_rate
                                     else:
                                         res.hours = extra_hour
                                         res.per_hour_rate = record.addit_hour_rate
-                                    print("True")
-                                    res.total_rate = (
-                                                (res.days * res.day_rate) + (res.weeks * res.week_rate) + (
-                                                res.months * res.month_rate) + res.airport_rate + (
-                                                            res.hours * res.per_hour_rate) + extra_km_rate)
+                                res.airport_value = ((res.extra_airport_hour * record.addit_hour_rate) + res.airport_rate + extra_km_rate)
+                                res.total_rate = res.airport_value
                                 res.net_amount = res.total_rate
                 else:
                     res.days = 0

@@ -14,7 +14,7 @@ class AddFieldsPartners(models.Model):
         ('is_driver', 'Driver'), ('is_user', 'User')], default='is_user', string="Partner Type")
     strn = fields.Char(string="STRN", tracking=True)
     ntn = fields.Char(string="NTN/CNIC", tracking=True)
-    una = fields.Char(string="UNA", tracking=True)
+    uan = fields.Char(string="UAN", tracking=True)
     _sql_constraints = [
         ('ntn_unique', 'unique(ntn)', 'Cant be duplicate value For NTN!')]
 

@@ -81,6 +81,7 @@
                             <field name="time_out"/>
                             <field name="out_of_station"/>
                             <field name="over_night"/>
+                            <field name="over_time"/>
                             <field name="button_show" invisible="1"/>
                         </group>
                         <group string="Actual Iteneracy">
@@ -90,35 +91,48 @@
                             <group>
                                 <field name="hours" force_save="1" readonly="1"/>
                                 <field name="per_hour_rate" force_save="1" readonly="1"/>
+                                <field name="hours_value" force_save="1" readonly="1"/>
                             </group>
                             <group>
                                 <field name="days" force_save="1" readonly="1"/>
                                 <field name="day_rate" force_save="1" readonly="1"/>
+                                <field name="days_value" force_save="1" readonly="1"/>
                             </group>
                             <group>
                                 <field name="weeks" force_save="1" readonly="1"/>
                                 <field name="week_rate" force_save="1" readonly="1"/>
+                                <field name="weeks_value" force_save="1" readonly="1"/>
                             </group>
                             <group>
                                 <field name="months" force_save="1" readonly="1"/>
                                 <field name="month_rate" force_save="1" readonly="1"/>
+                                <field name="month_value" force_save="1" readonly="1"/>
+                                <field name="mobil_oil_rate" force_save="1" readonly="1"/>
+                                <field name="oil_filter_rate" force_save="1" readonly="1"/>
+                                <field name="air_filter_rate" force_save="1" readonly="1"/>
                             </group>
                             <group>
                                 <field name="airport_rate" force_save="1" readonly="1"/>
                                 <field name="extra_airport_km" force_save="1" readonly="1"/>
                                 <field name="extra_airport_hour" force_save="1" readonly="1"/>
+                                <field name="airport_value" force_save="1" readonly="1"/>
                             </group>
                             <group>
-                                <field name="total_rate" readonly="1"/>
+                                <field name="total_rate" readonly="1" force_save="1"/>
                             </group>
                             <group>
-                                <field name="driven" readonly="1"/>
+                                <field name="driven" readonly="1" force_save="1"/>
                                 <label for="apply_out_station"/>
                                 <div class="o_row">
-                                    <field name="apply_out_station" readonly="1"/>
+                                    <field name="apply_out_station" readonly="1" force_save="1"/>
                                     <span>Km</span>
                                 </div>
-                                <field name="out_station_rate" readonly="1"/>
+                                <field name="out_station_rate" readonly="1" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="apply_over_time" readonly="1" force_save="1"/>
+                                <field name="over_time_rate" readonly="1" force_save="1"/>
+                                <field name="over_time_value" readonly="1" force_save="1"/>
                             </group>
                             <group>
                                 <field name="net_amount" force_save="1" readonly="1"/>

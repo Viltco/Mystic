@@ -37,6 +37,7 @@ class RentalProgress(models.Model):
     note = fields.Text(string='Note')
     out_of_station = fields.Boolean(default=False)
     over_night = fields.Boolean(default=False)
+    over_time = fields.Boolean(default=False)
     button_show = fields.Boolean(default=False)
 
     hours = fields.Integer(string='Hours')
@@ -47,13 +48,27 @@ class RentalProgress(models.Model):
     week_rate = fields.Integer(string='Week Rate')
     months = fields.Integer(string='Months')
     month_rate = fields.Integer(string='Month Rate')
+    mobil_oil_rate = fields.Float(string='Mobil Oil Rate')
+    oil_filter_rate = fields.Float(string='Oil Filter Rate')
+    air_filter_rate = fields.Float(string='Air Filter Rate')
     airport_rate = fields.Integer(string='Airport Rate')
     extra_airport_km = fields.Integer(string='Extra KMs(Airport)')
     extra_airport_hour = fields.Integer(string='Extra Hours(Airport)')
+
+    hours_value = fields.Integer(string='Hours Value')
+    days_value = fields.Integer(string='Days Value')
+    weeks_value = fields.Integer(string='Weeks Value')
+    month_value = fields.Integer(string='Monthly Value')
+    airport_value = fields.Integer(string='Airport Value')
+    over_time_value = fields.Integer(string='Over Time Value')
+
     total_rate = fields.Integer(string='Total Rate')
-    driven = fields.Integer(string="Driven", tracking=True, compute="_compute_driven")
+    driven = fields.Integer(string="Driven", tracking=True)
+    # , compute="_compute_driven"
     apply_out_station = fields.Integer(string='Apply Out Station After')
     out_station_rate = fields.Integer(string='Out Station Rate')
+    apply_over_time = fields.Integer(string='Apply Over Time After')
+    over_time_rate = fields.Integer(string='Over Time Rate')
     net_amount = fields.Integer(string='Net Amount')
 
     state = fields.Selection(
@@ -74,32 +89,67 @@ class RentalProgress(models.Model):
     #     self.net_amount = a + self.toll + self.allowa
     #     print("After Plus",self.net_amount)
 
-    @api.onchange('out_of_station')
+    @api.onchange('out_of_station', 'driven')
     def _onchange_out_station(self):
         if self.out_of_station:
             record = self.env['res.contract'].search(
                 [('partner_id', '=', self.name.id),
                  ('state', '=', 'confirm')])
+            overtime = self.hours - record.apply_over_time
+            over_rate = 0
             for j in record.contract_lines_id:
                 if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
+                    # if self.out_of_station:
+                    print("out station before")
+                    print(self.apply_out_station)
+                    print(self.driven)
+                    if overtime > 0:
+                        self.over_time = True
+                        self.apply_over_time = record.apply_over_time
+                        self.over_time_rate = j.over_time
+                        over_rate = overtime * self.over_time_rate
                     if self.apply_out_station <= self.driven:
+                        print("out station done")
                         self.out_station_rate = j.out_station
-                        self.net_amount = self.total_rate + self.out_station_rate
-                    else:
-                        pass
+                        self.net_amount = self.total_rate + self.out_station_rate + over_rate
         else:
             self.net_amount = self.net_amount - self.out_station_rate
+
+    @api.onchange('over_time')
+    def _onchange_over_time(self):
+        if self.over_time:
+            record = self.env['res.contract'].search(
+                [('partner_id', '=', self.name.id),
+                 ('state', '=', 'confirm')])
+            overtime = self.hours - record.apply_over_time
+            print("overtime" , overtime)
+            out_station = 0
+            for j in record.contract_lines_id:
+                if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
+                    print("true")
+                    if self.apply_out_station <= self.driven:
+                        self.out_of_station = True
+                        print("out station done")
+                        self.out_station_rate = j.out_station
+                        out_station = self.out_station_rate
+                    if overtime > 0:
+                        print("viltco")
+                        self.over_time = True
+                        self.apply_over_time = record.apply_over_time
+                        self.over_time_rate = j.over_time
+                        # over_rate = overtime * self.over_time_rate
+                        self.net_amount = self.total_rate + out_station + (overtime * self.over_time_rate)
+        else:
+            record = self.env['res.contract'].search(
+                [('partner_id', '=', self.name.id),
+                 ('state', '=', 'confirm')])
+            self.net_amount = self.net_amount - ((self.hours - record.apply_over_time) * self.over_time_rate)
 
     @api.onchange('time_in', 'time_out')
     def _onchange_calculate_dwm(self):
         if self.time_out and self.time_in:
-            # total_days = (self.time_in - self.time_out).days
             total_days = (self.time_in - self.time_out)
             if total_days:
-                # year = int(total_days / 365)
-                # month = int((total_days - (year * 365)) / 30)
-                # week = int((total_days - (year * 365)) - month * 30) // 7
-                # day = int((total_days - (year * 365)) - month * 30 - week * 7)
                 record = self.env['res.contract'].search(
                     [('partner_id', '=', self.name.id),
                      ('state', '=', 'confirm')])
@@ -108,10 +158,14 @@ class RentalProgress(models.Model):
                 td = td[-1].replace(' ', '')
                 hours = datetime.strptime(str(td), "%H:%M:%S").hour
                 minutes = datetime.strptime(str(td), "%H:%M:%S").minute
+                overtime = self.hours - record.apply_over_time
+                print("over time" , overtime)
+                self.driven = self.km_in - self.km_out
+                toll_allowance = self.toll + self.allowa
                 extra_km_rate = 0
                 for j in record.contract_lines_id:
                     if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
-                        self.per_hour_rate = j.per_hour_rate
+                        # self.per_hour_rate = j.per_hour_rate
                         if self.based_on == 'daily':
                             if minutes > 0:
                                 self.hours = hours + 1
@@ -120,129 +174,144 @@ class RentalProgress(models.Model):
                                 self.hours = hours
                                 self.per_hour_rate = j.per_hour_rate
                             self.days = total_days.days
-                            self.day_rate = j.per_day_rate
-                            self.total_rate = (self.days * self.day_rate) + (self.hours * self.per_hour_rate)
+                            if self.days > 0:
+                                self.day_rate = j.per_day_rate
+                            else:
+                                self.day_rate = 0
+                            self.hours_value = self.hours * self.per_hour_rate
+                            self.days_value = self.days * self.day_rate
+                            self.total_rate = self.days_value + self.hours_value
+                            if overtime > 0:
+                                self.over_time = True
+                                self.apply_over_time = record.apply_over_time
+                                self.over_time_rate = j.over_time
+                                self.over_time_value = overtime * j.over_time
+                            else:
+                                self.over_time = False
+                                self.apply_over_time = 0
+                                self.over_time_rate = 0
+                                self.over_time_value = 0
+                            self.apply_out_station = record.apply_out_station
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
-                                self.apply_out_station = record.apply_out_station
                                 self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + self.out_station_rate
+                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance + self.over_time_value
                             else:
-                                self.net_amount = self.total_rate
+                                self.out_of_station = False
+                                self.net_amount = self.total_rate + toll_allowance + self.over_time_value
                                 self.out_station_rate = 0
                         elif self.based_on == 'weekly':
                             week = int(total_days.days // 7)
                             day = int(total_days.days - week * 7)
-                            # hours = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").hour
-                            # minutes = datetime.strptime(str(total_days).replace(' days', ''), "%d, %H:%M:%S").minute
                             if minutes > 0:
                                 self.hours = hours + 1
                                 self.per_hour_rate = j.per_hour_rate
                             else:
                                 self.hours = hours
                                 self.per_hour_rate = j.per_hour_rate
-                            print("Weekly")
-                            print(week)
-                            print(day)
                             self.days = day
-                            self.weeks = week
-                            self.day_rate = j.per_day_rate
-                            self.week_rate = j.per_week_rate
-                            self.total_rate = ((self.days * self.day_rate) + (
-                                    self.weeks * self.week_rate) + (self.hours * self.per_hour_rate))
-                            if self.apply_out_station <= self.driven:
-                                print("Out Station")
-                                self.out_of_station = True
-                                self.apply_out_station = record.apply_out_station
-                                self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + self.out_station_rate
+                            if self.days > 0:
+                                self.day_rate = j.per_day_rate
                             else:
-                                self.net_amount = self.total_rate
+                                self.day_rate = 0
+                            self.weeks = week
+                            if self.weeks > 0:
+                                self.week_rate = j.per_week_rate
+                            else:
+                                self.week_rate = 0
+                            self.hours_value = self.hours * self.per_hour_rate
+                            self.days_value = self.days * self.day_rate
+                            self.weeks_value = self.weeks * self.week_rate
+                            self.total_rate = self.hours_value + self.days_value + self.weeks_value
+                            if overtime > 0:
+                                self.over_time = True
+                                self.apply_over_time = record.apply_over_time
+                                self.over_time_rate = j.over_time
+                                self.over_time_value = overtime * j.over_time
+                            else:
+                                self.over_time = False
+                                self.apply_over_time = 0
+                                self.over_time_rate = 0
+                                self.over_time_value = 0
+                            self.apply_out_station = record.apply_out_station
+                            if self.apply_out_station <= self.driven:
+                                self.out_of_station = True
+                                self.out_station_rate = j.out_station
+                                self.net_amount = self.total_rate + toll_allowance + self.out_station_rate + self.over_time_value
+                            else:
+                                self.out_of_station = False
+                                self.net_amount = self.total_rate + toll_allowance + self.over_time_value
                                 self.out_station_rate = 0
                         elif self.based_on == 'monthly':
                             month = int(total_days.days / 30)
                             week = int(total_days.days - month * 30) // 7
                             day = int(total_days.days - month * 30 - week * 7)
-                            # td = str(total_days).split(',')
-                            # td = td[-1].replace(' ', '')
-                            print(td)
-                            print("hours", type(hours))
-                            print("month", month)
-                            print("week", week)
-                            print("day", day)
-                            print("minute", minutes)
                             if minutes > 0:
                                 self.hours = hours + 1
                                 self.per_hour_rate = j.per_hour_rate
                             else:
                                 self.hours = hours
                                 self.per_hour_rate = j.per_hour_rate
-                            print("monthly")
                             self.days = day
-                            self.weeks = week
-                            self.months = month
-                            self.day_rate = j.per_day_rate
-                            self.week_rate = j.per_week_rate
-                            self.month_rate = j.per_month_rate
-                            print("Total month", self.months)
-                            print("Total week", self.weeks)
-                            print("Total day", self.days)
-                            print("Rate month", self.month_rate)
-                            print("Rate week", self.week_rate)
-                            print("Rate day", self.day_rate)
-                            print("Driven", self.driven)
-                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
-                                    self.months * self.month_rate) + (self.hours * self.per_hour_rate) + j.mobil_oil_rate + j.oil_filter_rate + j.air_filter_rate)
-                            if self.apply_out_station <= self.driven:
-                                print("Out Station")
-                                self.out_of_station = True
-                                self.apply_out_station = record.apply_out_station
-                                self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + self.out_station_rate
+                            if self.days > 0:
+                                self.day_rate = j.per_day_rate
                             else:
-                                self.net_amount = self.total_rate
+                                self.day_rate = 0
+                            self.weeks = week
+                            if self.weeks > 0:
+                                self.week_rate = j.per_week_rate
+                            else:
+                                self.week_rate = 0
+                            self.months = month
+
+                            if self.months > 0:
+                                self.month_rate = j.per_month_rate
+                            else:
+                                self.month_rate = 0
+                            self.hours_value = self.hours * self.per_hour_rate
+                            self.days_value = self.days * self.day_rate
+                            self.weeks_value = self.weeks * self.week_rate
+                            self.mobil_oil_rate = j.mobil_oil_rate
+                            self.oil_filter_rate = j.oil_filter_rate
+                            self.air_filter_rate = j.air_filter_rate
+                            self.month_value = (self.months * self.month_rate)
+                            self.total_rate = self.hours_value + self.days_value + self.weeks_value + self.month_value + self.mobil_oil_rate + self.oil_filter_rate + self.air_filter_rate
+                            if overtime > 0:
+                                self.over_time = True
+                                self.apply_over_time = record.apply_over_time
+                                self.over_time_rate = j.over_time
+                                self.over_time_value = overtime * j.over_time
+                            else:
+                                self.over_time = False
+                                self.apply_over_time = 0
+                                self.over_time_rate = 0
+                                self.over_time_value = 0
+                            self.apply_out_station = record.apply_out_station
+                            if self.apply_out_station <= self.driven:
+                                self.out_of_station = True
+                                self.out_station_rate = j.out_station
+                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance + self.over_time_value
+                            else:
+                                self.out_of_station = False
+                                self.net_amount = self.total_rate + toll_allowance + self.over_time_value
                                 self.out_station_rate = 0
                         elif self.based_on == 'airport':
-                            print("hours", hours)
-                            print("minute", minutes)
                             self.airport_rate = j.airport_rate
                             extra_km = self.driven - record.km_limit
-                            print("Extra kmmm", extra_km)
                             extra_hour = hours - record.hourly_limit
-                            print("Extra ho", extra_hour)
                             if extra_km > 0:
-                                print("Extra KM" , extra_km)
                                 self.extra_airport_km = extra_km
                                 extra_km_rate = extra_km * record.addit_km_rate
-                                # self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
-                                #         self.months * self.month_rate) + self.airport_rate + extra_km_rate)
                             if extra_hour > 0:
-                                print("Extra Hour" , extra_hour)
                                 if minutes > 0:
-                                    print("minut")
                                     self.hours = hours + 1
-                                    print("Hours After Minute" , self.hours)
-                                    self.per_hour_rate = record.addit_hour_rate
                                     self.extra_airport_hour = extra_hour + 1
                                 else:
                                     self.hours = hours
-                                    self.per_hour_rate = record.addit_hour_rate
                                     self.extra_airport_hour = extra_hour
-                                print("True")
-                            self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
-                                    self.months * self.month_rate) + (self.extra_airport_hour * self.per_hour_rate) + self.airport_rate  + extra_km_rate)
+                            self.airport_value = ((self.extra_airport_hour * record.addit_hour_rate) + self.airport_rate + extra_km_rate)
+                            self.total_rate  = self.airport_value
                             self.net_amount = self.total_rate
-                            # else:
-                            #     self.hours = hours
-                            #     self.week_rate = record.addit_hour_rate
-                            #     self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
-                            #             self.months * self.month_rate) + (self.hours * self.per_hour_rate) + extra_rate)
-                            #     self.net_amount = self.total_rate
-
-                            # else:
-                            #     self.total_rate = ((self.days * self.day_rate) + (self.weeks * self.week_rate) + (
-                            #             self.months * self.month_rate) + (self.hours * self.per_hour_rate) + (self.airport_rate))
-                            #     self.net_amount = self.total_rate
 
                     # else:
                     #     self.days = 0
@@ -315,81 +384,6 @@ class RentalProgress(models.Model):
             'target': 'new',
             'type': 'ir.actions.act_window', }
 
-    # def action_chauffeur_in(self):
-    #     for rec in self:
-    #         if rec.km_in > rec.km_out:
-    #             rec.state = 'chauffeur_in'
-    #         elif rec.km_in < rec.km_out:
-    #             raise ValidationError(f'Please enter value greater than KM Out')
-    #         record = self.env['res.contract'].search(
-    #             [('partner_id', '=', rec.name.id), ('model_id', '=', rec.vehicle_no.model_id.id),
-    #              ('state', '=', 'confirm')])
-    #         for r in record:
-    #             year = int(rec.days / 365)
-    #             month = int((rec.days - (year * 365)) / 30)
-    #             week = int((rec.days - (year * 365)) - month * 30) // 7
-    #             day = int((rec.days - (year * 365)) - month * 30 - week * 7)
-    #             print("year" , year)
-    #             print("month", month)
-    #             print("week" , week)
-    #             print("days" , day)
-    #             # print("time" , self.time_in - timedelta(days=day))
-    #             # a = timedelta(days=0)
-    #             if year > 0:
-    #                 # a = self.time_out + timedelta(days=365)
-    #                 print(r.per_year_rate)
-    #                 vals = {
-    #                     'partner_id': self.name.id,
-    #                     'vehicle_id': self.vehicle_no.id,
-    #                     'start_date': self.time_out,
-    #                     # 'expiration_date': self.time_in,
-    #                     'expiration_date': self.time_out + timedelta(days=(365*year)),
-    #                     'cost_frequency': 'yearly',
-    #                     'cost_generated': r.per_year_rate,
-    #                     # 'reservation_id': self.id,
-    #                 }
-    #                 self.env['fleet.vehicle.log.contract'].create(vals)
-    #             if month > 0:
-    #                 print(r.per_month_rate)
-    #                 vals = {
-    #                     'partner_id': self.name.id,
-    #                     'vehicle_id': self.vehicle_no.id,
-    #                     'start_date': self.time_out,
-    #                     'expiration_date': self.time_out + timedelta(days=(30*month)),
-    #                     # 'expiration_date': self.time_in,
-    #                     'cost_frequency': 'monthly',
-    #                     'cost_generated': r.per_month_rate,
-    #                     # 'reservation_id': self.id,
-    #                 }
-    #                 self.env['fleet.vehicle.log.contract'].create(vals)
-    #             if week > 0:
-    #                 print(r.per_week_rate)
-    #                 vals = {
-    #                     'partner_id': self.name.id,
-    #                     'vehicle_id': self.vehicle_no.id,
-    #                     'start_date': self.time_out,
-    #                     'expiration_date': self.time_out + timedelta(days=(7*week)),
-    #                     # 'expiration_date': self.time_in,
-    #                     'cost_frequency': 'weekly',
-    #                     'cost_generated': r.per_week_rate,
-    #                     # 'reservation_id': self.id,
-    #                 }
-    #                 self.env['fleet.vehicle.log.contract'].create(vals)
-    #             if day > 0:
-    #                 print(r.per_day_rate)
-    #
-    #                 vals = {
-    #                     'partner_id': self.name.id,
-    #                     'vehicle_id': self.vehicle_no.id,
-    #                     'start_date': self.time_out,
-    #                     'expiration_date': self.time_out + timedelta(days=(day)),
-    #                     # 'expiration_date': self.time_in,
-    #                     'cost_frequency': 'daily',
-    #                     'cost_generated': r.per_day_rate,
-    #                     # 'reservation_id': self.id,
-    #                 }
-    #                 self.env['fleet.vehicle.log.contract'].create(vals)
-
     def action_rental_closed(self):
         for rec in self:
             record = self.env['fleet.vehicle.odometer'].search([('vehicle_id', '=', rec.vehicle_no.id)],
@@ -413,46 +407,394 @@ class RentalProgress(models.Model):
                 })
             rec.state = 'rental_close'
 
-    def _compute_driven(self):
+    @api.onchange('km_in', 'km_out', 'driven')
+    def _onchange_driven(self):
         for rec in self:
             rec.driven = rec.km_in - rec.km_out
 
     def action_create_invoice(self):
         for rec in self:
-            # record = self.env['res.contract'].search(
-            #     [('partner_id', '=', rec.name.id),
-            #      ('state', '=', 'confirm')])
-            # i = 0
-            # print("helloo")
-            # for j in record.contract_lines_id:
-            #     print("hy", j)
-            #     if j.model_id.name == rec.vehicle_no.model_id.name:
-            #         print("Done")
-            #         if rec.based_on == 'daily':
-            #             i = j.per_day_rate
-            #         elif rec.based_on == 'weekly':
-            #             i = j.per_week_rate
-            #         elif rec.based_on == 'monthly':
-            #             i = j.per_month_rate
             line_vals = []
-            line_vals.append((0, 0, {
-                'product_id': self.vehicle_no.product_id.id,
-                'analytic_account_id': self.vehicle_no.analytical_account_id.id,
-                'date_rental': self.time_out,
-                'rental_id': self.id,
-                'rentee_name': self.rentee_name,
-                'price_unit': self.net_amount,
-            }))
-            r = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id), ('type', '=', 'sale')])
+            if rec.hours_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','hour')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.hours_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'hour')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.hours_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'hour')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.hours_value,
+                    }))
+            if rec.days_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','daily')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.days_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'daily')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.days_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'daily')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.days_value,
+                    }))
+            if rec.weeks_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','weekly')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.weeks_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'weekly')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.weeks_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'weekly')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.weeks_value,
+                    }))
+            if rec.month_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','monthly')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.month_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'monthly')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.month_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'monthly')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.month_value,
+                    }))
+            if rec.mobil_oil_rate > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','mobil_oil')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.mobil_oil_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'mobil_oil')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.mobil_oil_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'mobil_oil')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.mobil_oil_rate,
+                    }))
+            if rec.oil_filter_rate > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','oil_filter')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.oil_filter_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'oil_filter')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.oil_filter_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'oil_filter')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.oil_filter_rate,
+                    }))
+            if rec.air_filter_rate > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','air_filter')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.air_filter_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'air_filter')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.air_filter_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'air_filter')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.air_filter_rate,
+                    }))
+            if rec.airport_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','airport')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.airport_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'airport')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.airport_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'airport')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.airport_value,
+                    }))
+            if rec.over_time_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','over_time')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.over_time_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'over_time')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.over_time_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'over_time')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.over_time_value,
+                    }))
+            if rec.out_station_rate > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','out_station')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.out_station_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'out_station')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.out_station_rate,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'out_station')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.rentee_name,
+                        'price_unit': rec.out_station_rate,
+                    }))
+            r = self.env['account.journal'].search([('branch_id', '=', rec.branch_id.id), ('type', '=', 'sale')])
             print(r)
             invoice = {
                 'invoice_line_ids': line_vals,
-                'partner_id': self.name.id,
+                'partner_id': rec.name.id,
                 'invoice_date': date.today(),
-                'branch_id': self.branch_id.id,
+                'branch_id': rec.branch_id.id,
                 'journal_id': r.id,
-                'fiscal_position_id': self.branch_id.fiscal_position_id.id,
-                'rental': self.ids,
+                'fiscal_position_id': rec.branch_id.fiscal_position_id.id,
+                'rental': rec.ids,
                 'move_type': 'out_invoice',
             }
             self.stage_id = 'billed'
@@ -484,18 +826,6 @@ class RentalProgress(models.Model):
             line_vals = []
             j = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id), ('type', '=', 'sale')])
             for r in selected_records:
-                # record = self.env['res.contract'].search(
-                #     [('partner_id', '=', r.name.id),
-                #      ('state', '=', 'confirm')])
-                # i = 0
-                # for j in record.contract_lines_id:
-                #     if j.model_id == r.vehicle_no.model_id.id:
-                #         if r.based_on == 'daily':
-                #             i = j.per_day_rate
-                #         elif r.based_on == 'weekly':
-                #             i = j.per_week_rate
-                #         elif r.based_on == 'monthly':
-                #             i = j.per_month_rate
                 line_vals.append(({
                     'product_id': r.vehicle_no.product_id.id,
                     'analytic_account_id': r.vehicle_no.analytical_account_id.id,

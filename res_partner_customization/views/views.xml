@@ -13,7 +13,7 @@
                     <field name="strn"/>
                 </xpath>
                 <xpath expr="//field[@name='function']" position="before">
-                    <field name="una"/>
+                    <field name="uan"/>
                 </xpath>
                 <xpath expr="/form/sheet/div[hasclass('oe_title')]" position="after">
                     <group>

@@ -21,7 +21,7 @@
     'images': ['static/description/icon.png'],
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail' , 'fleet' , 'material_purchase_requisitions','branch'],
+    'depends': ['base','mail' , 'fleet' , 'material_purchase_requisitions','branch' , 'product'],
 
     # always loaded
     'data': [
@@ -29,6 +29,7 @@
         'data/data.xml',
         'views/vehicle_reservation.xml',
         'views/rental_in_progress.xml',
+        'views/service_type_product.xml',
         'wizard/booking_wizard.xml',
         'wizard/chauffeur_out_wizard.xml',
         'wizard/chauffeur_in_wizard.xml',

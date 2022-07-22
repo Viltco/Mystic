@@ -104,8 +104,10 @@ class FleetManageField(models.Model):
     # def create(self, vals):
     #     res = super(FleetManageField, self).create(vals)
     #     # print(res)
+    #     v = self.env['fleet.vehicle.model'].browse([vals['model_id']])
     #     result = self.env['account.analytic.account'].create(
-    #         {'name': res['license_plate'],
+    #         {'name': str(v.name) + '/' + str(v.brand_id.name) + '/' + str(v.model_year) + '/' + str(
+    #             v.power_cc) + '/' + res['license_plate'],
     #          'fleet_vehicle_id': res.id,
     #          })
     #     res.analytical_account_id = result.id
