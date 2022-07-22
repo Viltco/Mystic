@@ -8,6 +8,7 @@
                 <sheet>
                     <group col="4">
                         <field name="bill_id"/>
+                        <field name="move_id"/>
                         <field name="lease_bill_id"/>
                         <field name="partner_id"/>
                         <field name="date_due"/>
@@ -28,15 +29,22 @@
             <tree>
                 <header>
                     <button string="Register Payment" type="object" name="action_register_payment"/>
+                    <button string="Draft" type="object" name="action_draft_bill"/>
+                    <button string="Confirm" type="object" name="action_post_bill"/>
+                    <button string="Cancel" type="object" name="action_cancel_bill"/>
                 </header>
                 <field name="bill_id" optional="show"/>
+                <field name="move_id" optional="show"/>
                 <field name="lease_bill_id" optional="show"/>
                 <field name="partner_id" optional="show"/>
+                <field name="branch_id" optional="show"/>
                 <field name="date_due" optional="show"/>
                 <field name="prin_part" optional="show"/>
                 <field name="int_part" optional="show"/>
                 <field name="due_total" optional="show"/>
                 <field name="prin_balance" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="payment_state" optional="show"/>
             </tree>
         </field>
     </record>

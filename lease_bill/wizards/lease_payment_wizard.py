@@ -35,24 +35,56 @@ class AdvancePaymentWizard(models.TransientModel):
         string='Destination Account',
         store=True, readonly=False,
         domain="[('user_type_id.type', 'in', ('receivable', 'payable'))]")
+    branch_id = fields.Many2one('res.branch')
+    lines_list = fields.Char()
 
     def create_data(self):
-        # print('payment')
-        # model = self.env.context.get('active_model')
-        # record = self.env[model].browse(self.env.context.get('active_id'))
-        # print(model)
-        # print(record)
-        for rec in self:
-            print('yesssssssssssssssssssssssss')
-            vals = {
-                'partner_type': 'supplier',
-                'journal_id': rec.journal_id.id,
-                'partner_id': rec.partner_id.id,
-                'date': datetime.today().date(),
-                'amount': rec.amount,
-                # 'currency_id': rec.currency_id.id,
-                'ref': rec.ref,
-                'state': 'draft',
-            }
-            payment = self.env['account.payment'].create(vals)
-
+        move_ids = []
+        for l in str(self.lines_list).split(' '):
+            move_ids.append(l.replace("]", '').replace("[", '').replace("'", '').replace(',',''))
+        print(move_ids)
+        record = self.env['lease.bill.line'].search([('move_id.name', 'in', move_ids)])
+        # total_interest = 0
+        interest_lines = []
+        for rec in record:
+            if rec.move_id:
+                if rec.prin_part == 0.0:
+                    interest_lines.append((0, 0, {
+                        'invoice_id': rec.move_id.id,
+                        'origin': '',
+                        'date_invoice': datetime.today(),
+                        'date_due': datetime.today(),
+                        'amount_total': rec.int_part,
+                        'reconcile_amount': rec.int_part,
+                    }))
+                else:
+                    interest_lines.append((0, 0, {
+                        'invoice_id': rec.move_id.id,
+                        'origin': '',
+                        'date_invoice': datetime.today(),
+                        'date_due': datetime.today(),
+                        'amount_total': rec.int_part,
+                        'reconcile_amount': rec.int_part,
+                    }))
+                    interest_lines.append((0, 0, {
+                        'invoice_id': rec.bill_id.id,
+                        'origin': '',
+                        'date_invoice': datetime.today(),
+                        'date_due': datetime.today(),
+                        'amount_total': rec.prin_part,
+                        'reconcile_amount': rec.prin_part,
+                    }))
+        vals = {
+            'payment_type': 'outbound',
+            'partner_type': 'supplier',
+            'journal_id': self.journal_id.id,
+            'partner_id': self.partner_id.id,
+            'date': datetime.today().date(),
+            # 'amount': self.amount,
+            'ref': self.ref,
+            'state': 'draft',
+            'branch_id': self.branch_id.id,
+            'payment_invoice_ids':interest_lines
+        }
+        payment = self.env['account.payment'].create(vals)
+        # #     payment._onchange_to_get_vendor_invoices()

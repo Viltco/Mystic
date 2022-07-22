@@ -10,6 +10,7 @@
                     <field name="destination_account_id" required="1"/>
                     <field name="payment_method_id" required="1"/>
                     <field name="ref" readonly="1"/>
+                    <field name="branch_id"/>
                 </group>
                 <group>
                     <label string="Amount" for="amount"/>
@@ -18,6 +19,7 @@
                         <field name="currency_id" readonly="1"/>
                     </div>
                 </group>
+
                 <footer>
                     <button name="create_data" string="Create Payment" type="object" class="btn-primary"/>
                     <button string="Cancel" type="object" class="btn-secondary" special="cancel"/>

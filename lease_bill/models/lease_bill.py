@@ -24,7 +24,6 @@ class LeaseBill(models.Model):
 
     amount_bill = fields.Float(string='Outstanding Amount')
 
-    branch_id = fields.Many2one('res.branch', string='Branch')
     pre_lease_id = fields.Many2one('lease.bill', string='Previous Lease')
 
     kibor = fields.Float(string='KIBOR %')
@@ -141,7 +140,8 @@ class LeaseBill(models.Model):
                         'default_installment_date_due': self.interest_date_due,
                         'default_prin_date_due': self.date_prin_due,
                         'default_intr_part': mont_amnt,
-                        'default_interest_months': self.applicable_for},
+                        'default_interest_months': self.applicable_for,
+                        'branch_id': self.branch_id.id},
             'target': 'new',
             'res_model': 'lease.wizard',
             'view_mode': 'form',
@@ -167,78 +167,18 @@ class LeaseBill(models.Model):
                 'branch_id': self.branch_id.id,
                 'invoice_date': line.date_due,
                 'date': line.date_due,
+                'state': 'draft',
                 # 'hide_jv_link': True,
-                # 'journal_id': self.destination_account_id.id,
+                'journal_id': self.lease_journal_id.id,
                 'move_type': 'in_invoice'
             }
-            print(bill)
             record = self.env['account.move'].create(bill)
+            print(record)
+            line.move_id = record.id
+            line.move_id.state = record.state
+            line.branch_id = record.branch_id.id
             line_vals = []
         self.is_draft_entry = True
-        # line_ids1 = []
-        # line_ids2 = []
-        # for line in self.lease_bill_lines:
-        #     if abs(line.int_part):
-        #         move_dict = {
-        #             'ref': self.name,
-        #             'journal_id': self.lease_journal_id.id,
-        #             'lease_bill_id': self.id,
-        #             'partner_id': self.partner_id.id,
-        #             'date': line.date_due,
-        #             'state': 'draft',
-        #             'branch_id': self.branch_id.id
-        #         }
-        #         debit_line = (0, 0, {
-        #             'name': 'Lease Installment',
-        #             'debit': abs(line.int_part),
-        #             'credit': 0.0,
-        #             'partner_id': self.partner_id.id,
-        #             'account_id': self.interest_expense_id.id,
-        #         })
-        #         line_ids1.append(debit_line)
-        #         credit_line = (0, 0, {
-        #             'name': 'Lease Installment',
-        #             'debit': 0.0,
-        #             'partner_id': self.partner_id.id,
-        #             'credit': abs(line.int_part),
-        #             'date_maturity': line.date_due,
-        #             'account_id': self.lease_current_id.id,
-        #         })
-        #         line_ids1.append(credit_line)
-        #         move_dict['line_ids'] = line_ids1
-        #         move = self.env['account.move'].create(move_dict)
-        #         line_ids1 = []
-        #     if line.prin_part != 0.0:
-        #         move_dict = {
-        #             'ref': self.name,
-        #             'journal_id': self.lease_journal_id.id,
-        #             'lease_bill_id': self.id,
-        #             'partner_id': self.partner_id.id,
-        #             'date': line.date_account,
-        #             'state': 'draft',
-        #             'branch_id': self.branch_id.id
-        #         }
-        #         new_debit_line = (0, 0, {
-        #             'name': 'Lease Installment',
-        #             'debit': abs(line.prin_part),
-        #             'credit': 0.0,
-        #             'partner_id': self.partner_id.id,
-        #             'account_id': self.lease_long_term_id.id,
-        #         })
-        #         line_ids2.append(new_debit_line)
-        #         credit_line = (0, 0, {
-        #             'name': 'Lease Installment',
-        #             'debit': 0.0,
-        #             'partner_id': self.partner_id.id,
-        #             'credit': abs(line.prin_part),
-        #             'date_maturity': line.date_due,
-        #             'account_id': self.lease_current_id.id,
-        #         })
-        #         line_ids2.append(credit_line)
-        #         print(len(line_ids2))
-        #         move_dict['line_ids'] = line_ids2
-        #         move = self.env['account.move'].create(move_dict)
-        #         line_ids2 = []
 
     def action_move_view(self):
         return {
@@ -259,37 +199,81 @@ class LeaseBillLines(models.Model):
     _description = 'Lease Bill Line'
     _rec_name = 'partner_id'
 
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('posted', 'Confirm'),
+        ('cancel', 'Cancel')
+    ])
     lease_bill_id = fields.Many2one('lease.bill', string='Lease Bill')
-
     partner_id = fields.Many2one('res.partner', string='Vendor', related='lease_bill_id.partner_id')
     bill_id = fields.Many2one('account.move', string='Bill Reference',
                               domain=lambda self: [("move_type", "=", 'in_invoice')], related='lease_bill_id.bill_id')
+    move_id = fields.Many2one('account.move', string='Installment Bills',
+                              domain=lambda self: [("move_type", "=", 'in_invoice')])
+    payment_state = fields.Selection(selection=[
+        ('not_paid', 'Not Paid'),
+        ('in_payment', 'In Payment'),
+        ('paid', 'Paid'),
+        ('partial', 'Partially Paid'),
+        ('reversed', 'Reversed'),
+        ('invoicing_legacy', 'Invoicing App Legacy')],
+        string="Payment Status", store=True, readonly=True, copy=False, related='move_id.payment_state')
     # date_account = fields.Date(string='Date')
     date_due = fields.Date(string='Due Date')
     prin_part = fields.Float(string='Principal Part')
     int_part = fields.Float(string='Interest Part')
     due_total = fields.Float(string='Total Due')
     prin_balance = fields.Float(string='Balance Principal')
+    branch_id = fields.Many2one('res.branch')
+
     def action_register_payment(self):
-        total_amount = 0
+        total_interest = 0
+        total_principle = 0
         partner_counter = self[0].partner_id.id
+        branch_counter = self[0].branch_id.id
+        lines_list = []
         for rec in self:
             if partner_counter != rec.partner_id.id:
-                raise UserError('Please Select Same Partner')
+                raise UserError('Please Select the same Partner')
+            elif branch_counter != rec.branch_id.id:
+                raise UserError('Please Select the same Branch Bills')
+            elif rec.move_id.state != 'posted':
+                raise UserError("Draft Bill Can't be Paid. Please post the bill first")
             else:
-                total_amount += rec.int_part
-                total_amount += rec.prin_part
-                print('Selected')
-        print((total_amount))
+                total_interest += rec.int_part
+                lines_list.append(rec.move_id.name)
+                if rec.prin_part != 0.0:
+                    total_principle += rec.prin_part
+        total = total_interest + total_principle
         return {
             'type': 'ir.actions.act_window',
             'name': 'Apply Lease Payments',
             'view_id': self.env.ref('lease_bill.view_lease_payment_wizard_form', False).id,
-            'context': {'default_amount': total_amount,
-                        'default_partner_id': rec.partner_id.id,
-                        'default_ref':rec.bill_id.name,
-                        'default_destination_account_id':rec.lease_bill_id.destination_account_id.id},
+            'context': {
+                'default_amount': total,
+                'default_partner_id': self.partner_id.id,
+                # 'default_ref': self.bill_id.name + ' ' + ' '.join(lines_list) ,
+                'default_ref': ' '.join(lines_list) ,
+                'default_destination_account_id': self.lease_bill_id.destination_account_id.id,
+                'default_branch_id': self.branch_id.id,
+                'default_lines_list': lines_list,
+            },
             'target': 'new',
             'res_model': 'lease.payment.wizard',
             'view_mode': 'form',
         }
+
+    def action_post_bill(self):
+        for rec in self:
+            rec.state = 'posted'
+            rec.move_id.state = 'posted'
+
+    def action_draft_bill(self):
+        for rec in self:
+            rec.state = 'draft'
+            rec.move_id.state = 'draft'
+
+    def action_cancel_bill(self):
+        for rec in self:
+            rec.state = 'cancel'
+            rec.move_id.state = 'cancel'

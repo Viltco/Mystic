@@ -24,32 +24,37 @@ class LeaseWizard(models.TransientModel):
         rec = self.env[model].browse(self.env.context.get('active_id'))
         date = self.installment_date_due
         for i in range(0, self.interest_months - self.principal_months):
-            date = date + relativedelta(months=1)
+            # date = date + relativedelta(months=1)
             rec.write({
                 'lease_bill_lines': [(0, 0, {
                     # 'date_account': active_model.date,
                     'date_due': date,
+                    'state': 'draft',
+                    'branch_id':active_model.branch_id.id,
                     'int_part': self.intr_part,
                     'due_total': self.intr_part,
                     'prin_balance': self.amount,
                 })]
             })
-
+            date = date + relativedelta(months=1)
         amount = self.amount
         for i in range(0, self.principal_months):
             annum_perc = (rec.kibor + rec.interest_rate) / 100
             annum_amnt = (round(amount, 0)) * annum_perc
             mont_amnt = annum_amnt / 12
             amount = amount - (amount / (rec.installment_remain - i))
-            date = date + relativedelta(months=1)
+            # date = date + relativedelta(months=1)
             rec.write({
                 'lease_bill_lines': [(0, 0, {
                     # 'date_account': active_model.date,
                     'date_due': date,
+                    'state': 'draft',
+                    'branch_id': active_model.branch_id.id,
                     'prin_part': self.amount / rec.installment_remain,
                     'int_part': round(mont_amnt, 0),
                     'prin_balance': round(amount, 0),
                     'due_total': round(((self.amount / rec.installment_remain) + mont_amnt), 0),
                 })]
             })
+            date = date + relativedelta(months=1)
         rec.is_installment = True

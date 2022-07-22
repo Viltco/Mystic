@@ -173,31 +173,31 @@ class AccountPayment(models.Model):
             # raise UserError(amount)
             rec.amount = amount
 
-    @api.onchange('payment_type', 'partner_type', 'partner_id', 'currency_id')
-    def _onchange_to_get_vendor_invoices(self):
-        if self.payment_type in ['inbound', 'outbound'] and self.partner_type and self.partner_id and self.currency_id:
-            self.payment_invoice_ids = [(6, 0, [])]
-
-            if self.payment_type == 'inbound' and self.partner_type == 'customer':
-                invoice_type = 'out_invoice'
-            elif self.payment_type == 'outbound' and self.partner_type == 'customer':
-                invoice_type = 'out_refund'
-            elif self.payment_type == 'outbound' and self.partner_type == 'supplier':
-                invoice_type = 'in_invoice'
-            else:
-                invoice_type = 'in_refund'
-            invoice_recs = self.env['account.move'].search([
-                ('partner_id', 'child_of', self.partner_id.id),
-                ('state', '=', 'posted'),
-                ('move_type', '=', invoice_type),
-                ('payment_state', '!=', 'paid'),
-                ('currency_id', '=', self.currency_id.id)])
-            print(invoice_type)
-            print(invoice_recs)
-            payment_invoice_values = []
-            for invoice_rec in invoice_recs:
-                payment_invoice_values.append([0, 0, {'invoice_id': invoice_rec.id}])
-            self.payment_invoice_ids = payment_invoice_values
+    # @api.onchange('payment_type', 'partner_type', 'partner_id', 'currency_id')
+    # def _onchange_to_get_vendor_invoices(self):
+    #     if self.payment_type in ['inbound', 'outbound'] and self.partner_type and self.partner_id and self.currency_id:
+    #         self.payment_invoice_ids = [(6, 0, [])]
+    #
+    #         if self.payment_type == 'inbound' and self.partner_type == 'customer':
+    #             invoice_type = 'out_invoice'
+    #         elif self.payment_type == 'outbound' and self.partner_type == 'customer':
+    #             invoice_type = 'out_refund'
+    #         elif self.payment_type == 'outbound' and self.partner_type == 'supplier':
+    #             invoice_type = 'in_invoice'
+    #         else:
+    #             invoice_type = 'in_refund'
+    #         invoice_recs = self.env['account.move'].search([
+    #             ('partner_id', 'child_of', self.partner_id.id),
+    #             ('state', '=', 'posted'),
+    #             ('move_type', '=', invoice_type),
+    #             ('payment_state', '!=', 'paid'),
+    #             ('currency_id', '=', self.currency_id.id)])
+    #         print(invoice_type)
+    #         print(invoice_recs)
+    #         payment_invoice_values = []
+    #         for invoice_rec in invoice_recs:
+    #             payment_invoice_values.append([0, 0, {'invoice_id': invoice_rec.id}])
+    #         self.payment_invoice_ids = payment_invoice_values
 
     # def action_post(self):
     #     super(AccountPayment, self).action_post()
