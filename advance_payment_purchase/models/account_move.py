@@ -155,18 +155,15 @@ class AccountMoveInherit(models.Model):
             raise UserError('Advance has already been paid')
 
 
-    def action_post(self):
-        active_model = self.env['account.move'].browse(self.env.context.get('active_id'))
-        if self.move_type == 'entry' and self.line_ids[-1].account_id.id == active_model.advance_account.id:
-            print('yes')
-            records = self.env['account.move'].search(
-                ['&', ('ref', '=', active_model.name), ('state', '=', 'posted')])
-            self.draft_validation(active_model, records)
-        self._post(soft=False)
-        return False
-        # self.write({
-        #     'state': 'approve'
-        # })
+    # def action_post(self):
+    #     active_model = self.env['account.move'].browse(self.env.context.get('active_id'))
+    #     if self.move_type == 'entry' and self.line_ids[-1].account_id.id == active_model.advance_account.id:
+    #         print('yes')
+    #         records = self.env['account.move'].search(
+    #             ['&', ('ref', '=', active_model.name), ('state', '=', 'posted')])
+    #         self.draft_validation(active_model, records)
+    #     self._post(soft=False)
+    #     return False
 
     def get_bills_jvs(self):
         return {

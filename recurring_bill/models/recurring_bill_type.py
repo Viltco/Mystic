@@ -44,14 +44,15 @@ class AccountMoveInh(models.Model):
     def action_post(self):
         flag = False
         for record in self:
-            for line in record.invoice_line_ids:
-                if not line.assets_id.state == 'open':
-                    flag = True
-                if flag == True:
-                    raise Warning(_('Please Select the Valid Running Assets in Lines'))
-                else:
-                    rec = super(AccountMoveInh, self).action_post()
-                    return rec
+            if record.move_type == 'in_invoice':
+                for line in record.invoice_line_ids:
+                    if not line.assets_id.state == 'open':
+                        flag = True
+                    if flag == True:
+                        raise Warning(_('Please Select the Valid Running Assets in Lines'))
+                    else:
+                        rec = super(AccountMoveInh, self).action_post()
+                        return rec
 
 
 class AccountMoveLineInh(models.Model):
