@@ -11,7 +11,7 @@ class PaymentWizardInherit(models.TransientModel):
         print('-------------------------------------------')
         return branch_id
 
-    branch_id = fields.Many2one('res.branch', default=_default_branch_id, readonly=True)
+    branch_id = fields.Many2one('res.branch', default=_default_branch_id)
 
     def action_create_payments(self):
         payments = self._create_payments()

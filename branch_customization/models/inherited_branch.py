@@ -4,7 +4,7 @@ from odoo import models, fields, api
 class InheritedBranch(models.Model):
     _inherit = 'res.branch'
 
-    analytical_tag_id = fields.Many2one('account.analytic.tag', string="Analytic Tag")
+    analytical_account_tag_id = fields.Many2one('account.analytic.tag', string="Analytic Tag" , readonly=True)
 
     @api.model
     def create(self, vals):
@@ -13,6 +13,6 @@ class InheritedBranch(models.Model):
             {'name': res['name'],
              'branch_id': res.id,
              })
-        res.analytical_tag_id = result.id
+        res.analytical_account_tag_id = result.id
         return res
 
