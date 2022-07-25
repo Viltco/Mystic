@@ -6,6 +6,9 @@ from odoo import api, fields, models, _
 class ResPartnerIn(models.Model):
     _inherit = 'res.partner'
 
+    def action_view_sale_order(self):
+        pass
+
     def _default_branch_id(self):
         branch_id = self.env['res.users'].browse(self._uid).branch_id.id
         return branch_id
