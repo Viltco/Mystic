@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="return_wizard_form" model="ir.ui.view">
+        <field name="name">return.wizard.form</field>
+        <field name="model">return.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="return_date"/>
+                </group>
+                <group>
+                    <field name="meter_milage"/>
+                </group>
+
+                <footer>
+                    <button name="return_wizard_action" string="Return" class="btn-primary"
+                            type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="return_wizard_action" model="ir.actions.act_window">
+        <field name="name">Return</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">return.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="return_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

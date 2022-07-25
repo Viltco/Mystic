@@ -1,0 +1,86 @@
+<odoo>
+    <template id="nrt_report_id_print">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <style>
+                    table, th, td {
+                    border: 3px solid black;
+                    }
+                </style>
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <!--                    class="text-center"-->
+                    <div>
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <div style="float:right;">
+                                Printed On:
+                                <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                            </div>
+                            <br/>
+                            <h3 class="text-center">Non Revenue Ticket Vehicles</h3>
+                            <br/>
+                            <br/>
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:left;border: 1px solid black;">
+                                                <strong>NRT No.</strong>
+                                            </th>
+                                            <th style="text-align:left;border: 1px solid black;">
+                                                <strong>Vehicle</strong>
+                                            </th>
+                                            <th style="text-align:left;border: 1px solid black;">
+                                                <strong>Reg No.</strong>
+                                            </th>
+                                            <th style="text-align:left;border: 1px solid black;">
+                                                <strong>Purpose</strong>
+                                            </th>
+                                            <th style="text-align:left;border: 1px solid black;">
+                                                <strong>Date Out</strong>
+                                            </th>
+                                            <th style="text-align:left;border: 1px solid black;">
+                                                <strong>KM Out</strong>
+                                            </th>
+                                            <th style="text-align:left;border: 1px solid black;">
+                                                <strong>Return Date</strong>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="data" t-as="o">
+                                            <tr>
+                                                <td style="text-align:left;border: 1px solid black;">
+                                                    <t t-esc="o['number']"/>
+                                                </td>
+                                                <td style="text-align:left;border: 1px solid black;">
+                                                    <t t-esc="o['vehicle_id']['name']"/>
+                                                </td>
+                                                 <td style="text-align:left;border: 1px solid black;">
+                                                    <t t-esc="o['vehicle_id']['license_plate']"/>
+                                                </td>
+                                                 <td style="text-align:left;border: 1px solid black;">
+                                                    <t t-esc="o['purpose']"/>
+                                                </td>
+                                                 <td style="text-align:left;border: 1px solid black;">
+                                                    <t t-esc="o['move_date']"/>
+                                                </td>
+                                                 <td style="text-align:left;border: 1px solid black;">
+                                                    <t t-esc="o['meter_milage']"/>
+                                                </td>
+                                                 <td style="text-align:left;border: 1px solid black;">
+                                                    <t t-esc="o['return_date']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

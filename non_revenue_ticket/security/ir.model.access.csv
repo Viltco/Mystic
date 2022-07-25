@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nonrevenue_ticket,access.nonrevenue.ticket,model_nonrevenue_ticket,,1,1,1,1
+access_move_wizard,access.move.wizard,model_move_wizard,,1,1,1,1
+access_return_wizard,access.return.wizard,model_return_wizard,,1,1,1,1
+access_nrt_report,access.nrt.report,model_nrt_report,,1,1,1,1

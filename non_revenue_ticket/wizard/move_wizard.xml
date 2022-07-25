@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="move_wizard_form" model="ir.ui.view">
+        <field name="name">move.wizard.form</field>
+        <field name="model">move.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="move_date"/>
+                </group>
+                <group>
+                    <field name="current_meter_reading"/>
+                </group>
+
+                <footer>
+                    <button name="move_wizard_action" string="Move" class="btn-primary"
+                            type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="move_wizard_action" model="ir.actions.act_window">
+        <field name="name">Move</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">move.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="move_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

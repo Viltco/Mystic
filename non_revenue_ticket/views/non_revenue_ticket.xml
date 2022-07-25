@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="non_revenue_ticket_tree" model="ir.ui.view">
+        <field name="name">nonrevenue.ticket.tree</field>
+        <field name="model">nonrevenue.ticket</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="number"/>
+                <field name="branch_id"/>
+
+            </tree>
+
+        </field>
+    </record>
+    <record id="non_revenue_ticket_form" model="ir.ui.view">
+        <field name="name">nonrevenue.ticket.form</field>
+        <field name="model">nonrevenue.ticket</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button id="button_move" name="action_move" string="Move"
+                            class="btn-primary" type="object"
+                            attrs="{'invisible':[('state','in',('fleet_moved','fleet_returned','cancel'))]}"/>
+                    <button id="button_return" name="action_return" string="Return"
+                            class="btn-primary" type="object" states="fleet_moved"/>
+                    <button id="button_reset_to_draft" name="action_reset_to_draft" string="Reset to Draft"
+                            class="btn-secondary" type="object"
+                            attrs="{'invisible':[('state','in',('new','fleet_moved'))]}"/>
+                    <button id="button_cancel" name="action_cancel" string="Cancel"
+                            class="btn-secondary" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,fleet_moved,fleet_returned,cancel"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="number" readonly="1" force_save="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="branch_id"
+                                   attrs="{'readonly': [('state', 'in',('fleet_moved','fleet_returned'))]}"/>
+                        </group>
+                        <group>
+                            <field name="vehicle_id"
+                                   attrs="{'readonly': [('state', 'in',('fleet_moved','fleet_returned'))]}"
+                                   domain="[('id','in', brand_ids)]" options="{'no_create': True}"/>
+                            <!--                             <field name="brand_id" attrs="{'readonly': [('state', '=', 'confirm')]}"-->
+                            <!--                                    options="{'no_create': True}"/>-->
+                            <field name="brand_ids" widget="many2many_tags" invisible="1"/>
+                            <!--                            <field name="vehicle_id"-->
+                            <!--                                   attrs="{'readonly': [('state', 'in',('fleet_moved','fleet_returned'))]}"/>-->
+                        </group>
+                        <group>
+                            <field name="purpose"
+                                   attrs="{'readonly': [('state', 'in',('fleet_moved','fleet_returned'))]}"/>
+                        </group>
+                        <group>
+                            <field name="move_date"
+                                   attrs="{'readonly': [('state', 'in',('fleet_moved','fleet_returned'))] ,'invisible':[('state','=','new')]}"/>
+                            <field name="current_meter_reading" readonly="1"
+                                   attrs="{'invisible':[('state','=','new')]}"/>
+                            <field name="return_date"
+                                   attrs="{'readonly': [('state', 'in',('fleet_moved','fleet_returned'))] ,'invisible':[('state','in',('new','fleet_moved'))]}"/>
+                            <field name="meter_milage" readonly="1" attrs="{'invisible':[('state','in',('new','fleet_moved'))]}"/>
+                            <field name="driven" readonly="1"/>
+                            <field name="created_on" invisible="1"/>
+                        </group>
+                    </group>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="non_revenue_ticket_action" model="ir.actions.act_window">
+        <field name="name">Non Revenue Ticket</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">nonrevenue.ticket</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                create your Non Revenue Ticket!
+            </p>
+        </field>
+    </record>
+
+
+    <menuitem id="management_details"
+              name="Management"
+              parent="fleet.menu_root"
+              sequence="100"/>
+
+    <menuitem id="non_revenue_ticket_details"
+              name="Non Revenue Ticket"
+              parent="management_details"
+              action="non_revenue_ticket_action"
+              sequence="1"/>
+
+</odoo>
