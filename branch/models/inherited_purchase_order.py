@@ -64,7 +64,7 @@ class PurchaseOrder(models.Model):
         create_bill = self.env.context.get('create_bill', False)
         # override the context to get rid of the default filtering
         result['context'] = {
-            'default_move_type': 'in_invoice',
+            'default_type': 'in_invoice',
             'default_company_id': self.company_id.id,
             'default_purchase_id': self.id,
             'branch_id': self.branch_id.id,
