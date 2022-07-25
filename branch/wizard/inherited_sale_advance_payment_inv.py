@@ -44,7 +44,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             'name': order.client_order_ref or order.name,
             'branch_id':order.branch_id.id,
             'origin': order.name,
-            'type': 'out_invoice',
+            'move_type': 'out_invoice',
             'reference': False,
             'account_id': order.partner_id.property_account_receivable_id.id,
             'partner_id': order.partner_invoice_id.id,
