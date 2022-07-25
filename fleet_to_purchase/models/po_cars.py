@@ -24,6 +24,12 @@ class PurchaseCars(models.Model):
         ('purchase', 'PURCHASED'),
         ('not_purchase', 'NOT PURCHASED')], default='not_purchase', string="Stage ID")
 
+    state = fields.Selection(
+        [('draft', 'Draft'), ('po_created', 'PO Created'),
+         ('register', 'Registered')],
+        default='draft',
+        string="State", tracking=True)
+
     @api.model
     def create(self, values):
         values['number'] = self.env['ir.sequence'].next_by_code('po.cars') or _('New')
@@ -153,7 +159,7 @@ class PurchaseCars(models.Model):
     #     }
     #     record = self.env['purchase.order'].create(po)
 
-    def action_server_multiple_invoice(self):
+    def action_server_multiple_purchase_order(self):
         selected_ids = self.env.context.get('active_ids', [])
         selected_records = self.env['po.cars'].browse(selected_ids)
         line_vals = []
@@ -196,7 +202,8 @@ class PurchaseCars(models.Model):
             # 'fleet_vehicle_id': self.vehicle_id.id,
         }
         self.write({
-            'stage_id': 'purchase'
+            'stage_id': 'purchase',
+            'state': 'po_created'
         })
         ac = purchase_obj.create(vals)
 

@@ -36,6 +36,10 @@ class RegisterWizard(models.TransientModel):
                 'name': p,
             })
             r.car_counter_id.vehicle_id.active= True
+        res = self.env['po.cars'].browse(self.env.context.get('active_id'))
+        res.write({
+            'state': 'register'
+        })
 
 
             # r.car_counter_id.product_id.name = r.license_plate

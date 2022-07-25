@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="model_id"/>
-<!--                <field name="branch_id"/>-->
+                <!--                <field name="branch_id"/>-->
                 <field name="number"/>
                 <field name="stage_id" widget="badge" decoration-muted="stage_id == 'not_purchase'"
                        decoration-success="stage_id == 'purchase'"/>
@@ -26,6 +26,7 @@
                             attrs="{'invisible':['|' , ('stage_id','!=','purchase'),('button_show', '=', True)]}"/>
                     <!--                    <button id="button_create_po" name="action_create_po" string="Create PO"-->
                     <!--                            class="btn-primary" type="object" attrs="{'invisible': [('button_po_show','=',True)]}"/>-->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,po_created,register"/>
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
@@ -45,7 +46,7 @@
                     <group>
                         <group>
                             <field name="model_id"/>
-<!--                            <field name="branch_id"/>-->
+                            <!--                            <field name="branch_id"/>-->
                         </group>
                         <group>
                             <field name="number"/>
@@ -73,20 +74,20 @@
         </field>
     </record>
 
-<!--     <record id="action_create_purchase_vehicle" model="ir.actions.server">-->
-<!--      <field name="name">Create Purchase Order</field>-->
-<!--      <field name="model_id" ref="fleet_to_purchase.model_po_cars"/>-->
-<!--      <field name="binding_model_id" ref="fleet_to_purchase.model_po_cars"/>-->
-<!--      <field name="state">code</field>-->
-<!--      <field name="code"> if records: action = records.action_server_invoice()</field>-->
-<!--    </record>-->
+    <!--     <record id="action_create_purchase_vehicle" model="ir.actions.server">-->
+    <!--      <field name="name">Create Purchase Order</field>-->
+    <!--      <field name="model_id" ref="fleet_to_purchase.model_po_cars"/>-->
+    <!--      <field name="binding_model_id" ref="fleet_to_purchase.model_po_cars"/>-->
+    <!--      <field name="state">code</field>-->
+    <!--      <field name="code"> if records: action = records.action_server_invoice()</field>-->
+    <!--    </record>-->
 
-     <record id="action_create_multiple_purchase_vehicle" model="ir.actions.server">
-      <field name="name">Create Purchase Order</field>
-      <field name="model_id" ref="fleet_to_purchase.model_po_cars"/>
-      <field name="binding_model_id" ref="fleet_to_purchase.model_po_cars"/>
-      <field name="state">code</field>
-      <field name="code"> if records: action = records.action_server_multiple_invoice()</field>
+    <record id="action_create_multiple_purchase_vehicle" model="ir.actions.server">
+        <field name="name">Create Purchase Order</field>
+        <field name="model_id" ref="fleet_to_purchase.model_po_cars"/>
+        <field name="binding_model_id" ref="fleet_to_purchase.model_po_cars"/>
+        <field name="state">code</field>
+        <field name="code">if records: action = records.action_server_multiple_purchase_order()</field>
     </record>
 
 
