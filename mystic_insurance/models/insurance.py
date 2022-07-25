@@ -29,10 +29,11 @@ class FleetInsuranceLines(models.Model):
 
     @api.depends('fleet_vehicle_id')
     def _compute_branch_id(self):
-        if self.fleet_vehicle_id.branch_id:
-            self.branch_id = self.fleet_vehicle_id.branch_id.id
-        else:
-            self.branch_id = []
+        for rec in self:
+            if rec.fleet_vehicle_id.branch_id:
+                rec.branch_id = rec.fleet_vehicle_id.branch_id.id
+            else:
+                rec.branch_id = []
 
     date_from = fields.Date(string='From Date')
     date_to = fields.Date(string='Date To')

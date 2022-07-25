@@ -30,10 +30,11 @@ class TrackingChargesLines(models.Model):
 
     @api.depends('tracking_charge_id')
     def _compute_branch_id(self):
-        if self.tracking_charge_id.branch_id:
-            self.branch_id = self.tracking_charge_id.branch_id.id
-        else:
-            self.branch_id = []
+        for rec in self:
+            if rec.tracking_charge_id.branch_id:
+                rec.branch_id = rec.tracking_charge_id.branch_id.id
+            else:
+                rec.branch_id = []
 
     date_from = fields.Date(string='From Date')
     date_to = fields.Date(string='Date To')
