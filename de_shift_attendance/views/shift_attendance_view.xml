@@ -1,0 +1,92 @@
+<odoo>
+
+    <record id="view_shift_type_form" model="ir.ui.view">
+		<field name="name">shift.type.form</field>
+		<field name="model">hr.shift</field>
+		<field name="arch" type="xml">
+			<form string="Shift">
+				<sheet>
+					<h4>Shift Form</h4>
+					<group>
+						<group>
+							<field name="shift_name"/>
+							<field name="shift_desc"/>
+							<field name="time_in" widget="float_time"/>
+                            <field name="time_out" widget="float_time"/>
+						</group>
+						<group>
+							<field name="shift_duration"/>
+							<field name="shift_type"/>
+                            <field name="company"/>
+<!--                            <field name="location"/>-->
+						</group>
+<!--						<group>-->
+<!--                            <field name="min_hours_halfday" widget="float_time"/>-->
+<!--                            <field name="min_hours_fullday" widget="float_time"/>-->
+<!--						</group>-->
+						<group>
+							<field name="department"/>
+							<field name="grace_period" widget="float_time"/>
+							<field name="is_night_shift"/>
+                            <field name="is_overtime_allowed"/>
+                            <field name="is_driver_shift"/>
+                            <field name="arrival_before_departure" attrs="{'invisible': [('is_driver_shift','=', False)]}" widget="float_time"/>
+                            <field name="early_in" attrs="{'invisible': [('is_driver_shift','=', False)]}" widget="float_time"/>
+                            <field name="late_out" attrs="{'invisible': [('is_driver_shift','=', False)]}" widget="float_time"/>
+                            <field name="branch_id"/>
+						</group>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="view_shift_type_tree" model="ir.ui.view">
+		<field name="name">shift.type.tree</field>
+		<field name="model">hr.shift</field>
+		<field name="arch" type="xml">
+			<tree string="Shift Type">
+                <field name="shift_name"/>
+                <field name="shift_type"/>
+                <field name="company"/>
+                <field name="location"/>
+                <field name="department"/>
+			</tree>
+		</field>
+	</record>
+
+	<record id="view_shift_type_search" model="ir.ui.view">
+		<field name="name">shift.type.search</field>
+		<field name="model">hr.shift</field>
+		<field name="arch" type="xml">
+			<search string="Shift Type">
+                <field name="shift_name"/>
+                <field name="shift_type"/>
+                <field name="company"/>
+                <field name="location"/>
+                <field name="department"/>
+			</search>
+		</field>
+	</record>
+
+    <record id="action_shift_type_view" model="ir.actions.act_window">
+		<field name="name">Shift</field>
+		<field name="res_model">hr.shift</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field>
+		<field name="context">{}</field>
+		<field name="search_view_id" ref="view_shift_type_search"/>
+		<field name="view_id" ref="view_shift_type_tree"/>
+		<field name="help" type="html">
+			<p class="o_view_nocontent_smiling_face">
+				Add Shifts .............
+			</p>
+		</field>
+	</record>
+
+    <menuitem
+		  id="shift_type_menu" name="Shift" parent="hr_attendance.menu_hr_attendance_settings"
+		  action="de_shift_attendance.action_shift_type_view" sequence="0"/>
+
+</odoo>

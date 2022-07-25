@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+
+        <record id="seq_num_view" model="ir.sequence">
+            <field name="name">Allocated Shifts</field>
+            <field name="code">hr.shift.allocation.sequence</field>
+            <field name="prefix">Shift</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+	    </record>
+
+    </data>
+
+</odoo>

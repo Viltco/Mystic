@@ -1,0 +1,132 @@
+<odoo>
+
+    <record id="view_shift_allocation_form" model="ir.ui.view">
+		<field name="name">shift.allocation.form</field>
+		<field name="model">hr.shift.allocation</field>
+		<field name="arch" type="xml">
+
+			<form string="Shift Allocation">
+				<header>
+                    <button name="create_management_data"
+							type="object"
+							string="Proceed"
+                            class='oe_highlight' attrs="{'invisible': [('is_proceed','=',True)]}"
+							/>
+					 <button name="action_add_shift"
+							type="object"
+							string="Add Shift"
+                            class='oe_highlight'
+							/>
+<!--					attrs="{'invisible': [('is_proceed','=',True)]}"-->
+                </header>
+
+				<sheet>
+
+					<h1><field name="name"/></h1>
+
+					<group>
+
+						<group>
+                            <field name="department_id"/>
+                            <field name="employee_id" widget="many2many_tags"/>
+<!--                            <field name="max_shift_day"/>-->
+							<field name="shift_id"/>
+							<field name="branch_id"/>
+							<field name="is_proceed"/>
+						</group>
+
+                        <group>
+							<field name="date_start"/>
+							<field name="date_end"/>
+						</group>
+
+					</group>
+
+					<notebook>
+						<page string="Allocated Shifts">
+							<field name="allocation_lines">
+								<tree  editable="bottom">
+									<field name="date" readonly="1"/>
+									<field name="day" readonly="1"/>
+									<field name="shift_one"/>
+									<field name="shift_one_type"
+										   attrs="{'readonly': [('shift_one','=',False)]}"/>
+									<field name="shift_two"/>
+									<field name="shift_two_type"
+										   attrs="{'readonly':[('shift_two','=',False)]}"/>
+<!--									,'invisible':[('hide_field','=', True)]-->
+<!--									<field name="hide_field" invisible="1"/>-->
+									<field name="rest_day"/>
+									<field name="rel_allocation"
+										   invisible="1"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+
+				</sheet>
+			</form>
+
+		</field>
+	</record>
+
+	<record id="view_shift_allocation_tree" model="ir.ui.view">
+		<field name="name">shift.allocation.tree</field>
+		<field name="model">hr.shift.allocation</field>
+		<field name="arch" type="xml">
+
+			<tree string="Shift Allocation">
+				<field name="name"/>
+<!--                <field name="max_shift_day"/>-->
+                <field name="date_start"/>
+                <field name="date_end"/>
+			</tree>
+
+		</field>
+	</record>
+
+	<record id="view_shift_allocation_search" model="ir.ui.view">
+		<field name="name">shift.allocation.search</field>
+		<field name="model">hr.shift.allocation</field>
+		<field name="arch" type="xml">
+
+			<search string="Shift Allocation">
+				<field name="name"/>
+<!--                <field name="max_shift_day"/>-->
+			</search>
+
+		</field>
+	</record>
+
+    <record id="action_shift_allocation_view" model="ir.actions.act_window">
+		<field name="name">Shift Allocation</field>
+		<field name="res_model">hr.shift.allocation</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field>
+		<field name="context">{}</field>
+		<field name="search_view_id" ref="view_shift_allocation_search"/>
+		<field name="view_id" ref="view_shift_allocation_tree"/>
+		<field name="help" type="html">
+
+			<p class="o_view_nocontent_smiling_face">
+				Add Shift Allocations .............
+			</p>
+
+		</field>
+	</record>
+
+	<menuitem
+		  id="shift_allocation_menu"
+		  name="Shift Allocation"
+		  parent="hr_attendance.menu_hr_attendance_settings"
+		  action="de_shift_attendance.action_shift_allocation_view"
+		  sequence="1"
+	/>
+
+</odoo>
+
+
+
+
+

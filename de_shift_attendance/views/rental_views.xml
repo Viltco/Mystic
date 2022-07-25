@@ -1,0 +1,16 @@
+<odoo>
+
+     <record id="view_rental_progress_form_inherit" model="ir.ui.view">
+            <field name="name">rental.progress.form.inherit</field>
+            <field name="model">rental.progress</field>
+            <field name="inherit_id" ref="vehicle_reservation.rental_progress_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//header" position="inside">
+                    <button string="Update Roaster" type="object" name="action_update_roaster"/>
+                </xpath>
+
+            </field>
+        </record>
+
+</odoo>

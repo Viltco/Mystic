@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+1,access_hr_shift,model_hr_shift,base.group_user,1,1,1,1
+2,access_hr_shift_allocation,model_hr_shift_allocation,base.group_user,1,1,1,1
+3,access_hr_shift_allocation_line,model_hr_shift_allocation_line,base.group_user,1,1,1,1
+4,access_hr_shift_management,model_hr_shift_management,base.group_user,1,1,1,1
+5,access_hr_shift_management_line,model_hr_shift_management_line,base.group_user,1,1,1,1
+

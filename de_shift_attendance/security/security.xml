@@ -1,0 +1,39 @@
+<odoo>
+
+    <data>
+        <record model="ir.module.category" id="shift_attendance_groups_root">
+            <field name="name">Shift Attendance</field>
+            <field name="description">Manage Shift Attendance Security</field>
+        </record>
+    </data>
+
+    <data>
+        <record model="res.groups" id="allow_parent_allocation_deletion">
+            <field name="name">Allow Deletion of Parent Allocation</field>
+            <field name="category_id" ref="shift_attendance_groups_root"/>
+        </record>
+    </data>
+
+    <data>
+        <record model="res.groups" id="allow_allocation_deletion">
+            <field name="name">Allow Deletion of Allocation Lines</field>
+            <field name="category_id" ref="shift_attendance_groups_root"/>
+        </record>
+    </data>
+
+    <data>
+        <record model="res.groups" id="allow_parent_management_deletion">
+            <field name="name">Allow Deletion of Parent Management</field>
+            <field name="category_id" ref="shift_attendance_groups_root"/>
+        </record>
+    </data>
+
+    <data>
+        <record model="res.groups" id="allow_management_deletion">
+            <field name="name">Allow Deletion of Management Lines</field>
+            <field name="category_id" ref="shift_attendance_groups_root"/>
+        </record>
+    </data>
+
+</odoo>
+
