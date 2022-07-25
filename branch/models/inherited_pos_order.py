@@ -291,7 +291,7 @@ class pos_order(models.Model):
                     'date_done': order.date_order,
                     'picking_type_id': picking_type.id,
                     'company_id': order.company_id.id,
-                    'type': 'direct',
+                    'move_type': 'direct',
                     'note': order.note or "",
                     'location_id': location_id,
                     'location_dest_id': destination_id,
