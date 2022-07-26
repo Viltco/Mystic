@@ -12,7 +12,7 @@ class InsuranceWizard(models.TransientModel):
     _description = 'Insurance Wizard'
 
     date = fields.Date(string='Date', default=date.today())
-    partner_id = fields.Many2one('res.partner', string='Vendor', domain=lambda self: [("supplier_rank", ">", 1)])
+    partner_id = fields.Many2one('res.partner', string='Vendor', domain=lambda self: [("supplier_rank", ">=", 1)])
     journal_id = fields.Many2one('account.journal', string='Journal', domain=lambda self: [("type", "=", 'purchase')])
     product_id = fields.Many2one('product.product', string='Insurance Expense', domain=lambda self: [("type", "=", 'service')])
 
