@@ -12,6 +12,14 @@ class FleetVehicleTrk(models.Model):
 
     tracking_charges_lines = fields.One2many('tracking.charges.line', 'tracking_charge_id')
 
+    active = fields.Boolean('Active', default=True)
+
+    def toggle_active(self):
+        for record in self.tracking_charges_lines:
+            record.tracking_status = 'inactive'
+        res = super(FleetVehicleTrk, self).toggle_active()
+        return res
+
 
 class TrackingChargesLines(models.Model):
     _name = 'tracking.charges.line'
@@ -19,6 +27,7 @@ class TrackingChargesLines(models.Model):
     _rec_name = 'date_from'
 
     tracking_charge_id = fields.Many2one('fleet.vehicle')
+    active = fields.Boolean('Active', default=True)
 
     # @api.depends('tracking_charge_id')
     # def default_branch_id(self):

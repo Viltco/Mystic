@@ -6,10 +6,14 @@
         <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
+                <field name="active" invisible="1" widget="boolean_toggle"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
                 <notebook>
                     <page string="Insurance Lines">
                         <field name="fleet_insurance_lines">
                             <tree editable="bottom">
+                                <field name="active" invisible="1" widget="boolean_toggle"/>
                                 <field name="fleet_vehicle_id" invisible="1"/>
                                 <field name="date_from" required="1"/>
                                 <field name="date_to" required="1"/>

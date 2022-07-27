@@ -12,6 +12,14 @@ class FleetVehicleInh(models.Model):
 
     fleet_insurance_lines = fields.One2many('fleet.insurance.line', 'fleet_vehicle_id')
 
+    active = fields.Boolean('Active', default=True)
+
+    def toggle_active(self):
+        for record in self.fleet_insurance_lines:
+            record.insurance_status = 'inactive'
+        res = super(FleetVehicleInh, self).toggle_active()
+        return res
+
 
 class FleetInsuranceLines(models.Model):
     _name = 'fleet.insurance.line'
@@ -19,6 +27,7 @@ class FleetInsuranceLines(models.Model):
     _rec_name = 'date_from'
 
     fleet_vehicle_id = fields.Many2one('fleet.vehicle')
+    active = fields.Boolean('Active', default=True)
 
     # def default_branch_id(self):
     #     return self.fleet_vehicle_id.branch_id.id
