@@ -10,7 +10,7 @@
         Long description of module's purpose
     """,
 
-    'author': "My Company",
+    'author': "M.Rizwan",
     'website': "http://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
@@ -29,6 +29,7 @@
         'views/inherited_account_tag_view.xml',
         'views/inherited_account_invoice.xml',
         'views/inherited_account_payment_wizard_view.xml',
+        'views/inherited_account_journal.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
