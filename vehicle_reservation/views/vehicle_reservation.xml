@@ -46,30 +46,30 @@
                     </div>
                     <group>
                         <group string="Renting Station">
-                            <field name="branch_id" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="branch_id" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
 <!--                            <field name="booking_id" attrs="{'readonly': [('state', '=', 'confirm')]}"/>-->
                         </group>
                         <group string="Customer">
                             <!--                            <field name="partner_id" attrs="{'readonly': [('state', '=', 'confirm')]}" widget="res_partner_many2one"/>-->
                             <field name="partner_id" widget="res_partner_many2one"
                                    context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
-                                   options='{"always_reload": True}' attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                                   options='{"always_reload": True}' attrs="{'readonly': [('state', '=', 'confirm')]}"  required="1"/>
                             <field name="rentee_name"/>
                         </group>
                         <group string="Booking">
                             <field name="booking" widget="radio" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
                             <field name="guard" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
-                            <field name="based_on" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
-                            <field name="payment_type" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="based_on" attrs="{'readonly': [('state', '=', 'confirm')]}"  required="1"/>
+                            <field name="payment_type" attrs="{'readonly': [('state', '=', 'confirm')]}"  required="1"/>
                         </group>
                         <group string="Booking Time">
-                            <field name="vehicle_out" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
-                            <field name="report_timing" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="vehicle_out" attrs="{'readonly': [('state', '=', 'confirm')]}"  required="1"/>
+                            <field name="report_timing" attrs="{'readonly': [('state', '=', 'confirm')]}"  required="1"/>
                         </group>
                         <group string="Demand Vehicle">
                             <field name="model_id" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
                             <field name="brand_id" attrs="{'readonly': [('state', '=', 'confirm')]}"
-                                   domain="[('id','in', brand_ids)]" options="{'no_create': True}"/>
+                                   domain="[('id','in', brand_ids)]" options="{'no_create': True}"  required="1"/>
 <!--                             <field name="brand_id" attrs="{'readonly': [('state', '=', 'confirm')]}"-->
 <!--                                    options="{'no_create': True}"/>-->
                             <field name="brand_ids" widget="many2many_tags" invisible="1"/>

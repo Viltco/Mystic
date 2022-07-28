@@ -42,7 +42,8 @@ class AccountaSSET(models.Model):
     @api.onchange("original_move_line_ids")
     def _onchange_branch_id(self):
         self.branch_id = self.original_move_line_ids.branch_id
-        self.analytic_tag_ids = self.branch_id.analytical_account_tag_id.ids
+        tags = self.env['account.analytic.tag'].search([('branch_id', '=', self.branch_id.id)])
+        self.analytic_tag_ids = tags
 
     def compute_depreciation_board(self):
         res = super(AccountaSSET, self).compute_depreciation_board()

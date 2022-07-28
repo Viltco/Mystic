@@ -161,6 +161,7 @@ class RentalProgress(models.Model):
                 hours = datetime.strptime(str(td), "%H:%M:%S").hour
                 print("hour" , hours)
                 minutes = datetime.strptime(str(td), "%H:%M:%S").minute
+                print("minute" , minutes)
                 overtime = self.hours - record.apply_over_time
                 print("over time" , overtime)
                 self.driven = self.km_in - self.km_out
@@ -173,31 +174,25 @@ class RentalProgress(models.Model):
                         if self.based_on == 'time_and_mileage':
                             total_hours = ((total_days.days * 24) + (total_days.seconds / 3600))
                             print("total_hours" , total_hours)
-                            self.hours = total_hours
-                            self.per_hour_rate = j.per_hour_rate
+                            if minutes > 0:
+                                self.hours = total_hours + 1
+                                self.per_hour_rate = j.per_hour_rate
+                            else:
+                                self.hours = total_hours
+                                self.per_hour_rate = j.per_hour_rate
                             # self.hours = hours
                             # self.per_hour_rate = j.per_hour_rate
                             self.hours_value = self.hours * self.per_hour_rate
                             self.km_value = self.driven * j.per_km_rate
                             self.total_rate = self.hours_value + self.km_value
-                            if overtime > 0:
-                                self.over_time = True
-                                self.apply_over_time = record.apply_over_time
-                                self.over_time_rate = j.over_time
-                                self.over_time_value = overtime * j.over_time
-                            else:
-                                self.over_time = False
-                                self.apply_over_time = 0
-                                self.over_time_rate = 0
-                                self.over_time_value = 0
                             self.apply_out_station = record.apply_out_station
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance + self.over_time_value
+                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance
                             else:
                                 self.out_of_station = False
-                                self.net_amount = self.total_rate + toll_allowance + self.over_time_value
+                                self.net_amount = self.total_rate + toll_allowance
                                 self.out_station_rate = 0
                         elif self.based_on == 'daily':
                             if minutes > 0:
