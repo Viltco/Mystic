@@ -1,7 +1,7 @@
 from odoo import api, models, fields
 
 
-class InheritedHrEmployee(models.Model):
+class InheritedHrContact(models.Model):
     _inherit = 'hr.contract'
 
     branch_id = fields.Many2one('res.branch', related='employee_id.branch_id', readonly=True)
@@ -19,6 +19,6 @@ class InheritedHrEmployee(models.Model):
 
     @api.onchange('branch_id')
     def set_contract_branch(self):
-        record = self.env['account.analytic.tag'].search([('branch_id', '=', self.branch_id.id)])
-        print(record.name)
-        self.analytic_tag_id = record
+        for rec in self:
+            record = self.env['account.analytic.tag'].search([('branch_id', '=', rec.branch_id.id)])
+            rec.analytic_tag_id = record
