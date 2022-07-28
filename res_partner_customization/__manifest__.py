@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base' , 'hr','contacts' , 'select_multiple_models'],
+    'depends': ['base' , 'hr','contacts' , 'select_multiple_models' ,'de_shift_attendance'],
 
     # always loaded
     'data': [

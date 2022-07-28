@@ -23,7 +23,7 @@ class RentalProgress(models.Model):
     based_on = fields.Selection([
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'), ('airport', 'Airport')], default='daily', string="Based On")
+        ('monthly', 'Monthly'), ('drop_off_duty', 'Drop Off Duty'),('time_and_mileage', 'Time And Mileage')], default='daily', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -51,15 +51,16 @@ class RentalProgress(models.Model):
     mobil_oil_rate = fields.Float(string='Mobil Oil Rate')
     oil_filter_rate = fields.Float(string='Oil Filter Rate')
     air_filter_rate = fields.Float(string='Air Filter Rate')
-    airport_rate = fields.Integer(string='Airport Rate')
-    extra_airport_km = fields.Integer(string='Extra KMs(Airport)')
-    extra_airport_hour = fields.Integer(string='Extra Hours(Airport)')
+    drop_off_rate = fields.Integer(string='Drop Off Duty Rate')
+    extra_drop_off_km = fields.Integer(string='Extra KMs(Drop Off Duty)')
+    extra_drop_off_hour = fields.Integer(string='Extra Hours(Drop Off Duty)')
 
     hours_value = fields.Integer(string='Hours Value')
     days_value = fields.Integer(string='Days Value')
     weeks_value = fields.Integer(string='Weeks Value')
     month_value = fields.Integer(string='Monthly Value')
-    airport_value = fields.Integer(string='Airport Value')
+    drop_off_value = fields.Integer(string='Drop Off Duty Value')
+    km_value = fields.Integer(string='KM Value')
     over_time_value = fields.Integer(string='Over Time Value')
 
     total_rate = fields.Integer(string='Total Rate')
@@ -89,7 +90,7 @@ class RentalProgress(models.Model):
     #     self.net_amount = a + self.toll + self.allowa
     #     print("After Plus",self.net_amount)
 
-    @api.onchange('out_of_station', 'driven')
+    @api.onchange('out_of_station')
     def _onchange_out_station(self):
         if self.out_of_station:
             record = self.env['res.contract'].search(
@@ -149,6 +150,7 @@ class RentalProgress(models.Model):
     def _onchange_calculate_dwm(self):
         if self.time_out and self.time_in:
             total_days = (self.time_in - self.time_out)
+            print("total days" , total_days)
             if total_days:
                 record = self.env['res.contract'].search(
                     [('partner_id', '=', self.name.id),
@@ -157,16 +159,47 @@ class RentalProgress(models.Model):
                 td = str(total_days).split(',')
                 td = td[-1].replace(' ', '')
                 hours = datetime.strptime(str(td), "%H:%M:%S").hour
+                print("hour" , hours)
                 minutes = datetime.strptime(str(td), "%H:%M:%S").minute
                 overtime = self.hours - record.apply_over_time
                 print("over time" , overtime)
                 self.driven = self.km_in - self.km_out
                 toll_allowance = self.toll + self.allowa
                 extra_km_rate = 0
+                total_hours = 0
                 for j in record.contract_lines_id:
                     if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
                         # self.per_hour_rate = j.per_hour_rate
-                        if self.based_on == 'daily':
+                        if self.based_on == 'time_and_mileage':
+                            total_hours = ((total_days.days * 24) + (total_days.seconds / 3600))
+                            print("total_hours" , total_hours)
+                            self.hours = total_hours
+                            self.per_hour_rate = j.per_hour_rate
+                            # self.hours = hours
+                            # self.per_hour_rate = j.per_hour_rate
+                            self.hours_value = self.hours * self.per_hour_rate
+                            self.km_value = self.driven * j.per_km_rate
+                            self.total_rate = self.hours_value + self.km_value
+                            if overtime > 0:
+                                self.over_time = True
+                                self.apply_over_time = record.apply_over_time
+                                self.over_time_rate = j.over_time
+                                self.over_time_value = overtime * j.over_time
+                            else:
+                                self.over_time = False
+                                self.apply_over_time = 0
+                                self.over_time_rate = 0
+                                self.over_time_value = 0
+                            self.apply_out_station = record.apply_out_station
+                            if self.apply_out_station <= self.driven:
+                                self.out_of_station = True
+                                self.out_station_rate = j.out_station
+                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance + self.over_time_value
+                            else:
+                                self.out_of_station = False
+                                self.net_amount = self.total_rate + toll_allowance + self.over_time_value
+                                self.out_station_rate = 0
+                        elif self.based_on == 'daily':
                             if minutes > 0:
                                 self.hours = hours + 1
                                 self.per_hour_rate = j.per_hour_rate
@@ -295,24 +328,24 @@ class RentalProgress(models.Model):
                                 self.out_of_station = False
                                 self.net_amount = self.total_rate + toll_allowance + self.over_time_value
                                 self.out_station_rate = 0
-                        elif self.based_on == 'airport':
-                            self.airport_rate = j.airport_rate
+                        elif self.based_on == 'drop_off_duty':
+                            self.drop_off_rate = j.drop_off_rate
                             extra_km = self.driven - record.km_limit
                             extra_hour = hours - record.hourly_limit
                             if extra_km > 0:
-                                self.extra_airport_km = extra_km
+                                self.extra_drop_off_km = extra_km
                                 extra_km_rate = extra_km * record.addit_km_rate
                             if extra_hour > 0:
                                 if minutes > 0:
                                     self.hours = hours + 1
                                     self.per_hour_rate = record.addit_hour_rate
-                                    self.extra_airport_hour = extra_hour + 1
+                                    self.extra_drop_off_hour = extra_hour + 1
                                 else:
                                     self.hours = hours
                                     self.per_hour_rate = record.addit_hour_rate
-                                    self.extra_airport_hour = extra_hour
-                            self.airport_value = ((self.extra_airport_hour * record.addit_hour_rate) + self.airport_rate + extra_km_rate)
-                            self.total_rate = self.airport_value
+                                    self.extra_drop_off_hour = extra_hour
+                            self.drop_off_value = ((self.extra_drop_off_hour * record.addit_hour_rate) + self.drop_off_rate + extra_km_rate)
+                            self.total_rate = self.drop_off_value
                             self.net_amount = self.total_rate
 
                     # else:
@@ -329,7 +362,7 @@ class RentalProgress(models.Model):
                 self.day_rate = 0
                 self.week_rate = 0
                 self.month_rate = 0
-                self.airport_rate = 0
+                self.drop_off_rate = 0
         else:
             self.days = 0
             self.weeks = 0
@@ -337,7 +370,7 @@ class RentalProgress(models.Model):
             self.day_rate = 0
             self.week_rate = 0
             self.month_rate = 0
-            self.airport_rate = 0
+            self.drop_off_rate = 0
 
     @api.model
     def create(self, values):
@@ -670,10 +703,10 @@ class RentalProgress(models.Model):
                         'rentee_name': rec.rentee_name,
                         'price_unit': rec.air_filter_rate,
                     }))
-            if rec.airport_value > 0:
+            if rec.drop_off_value > 0:
                 if rec.vehicle_no.booleans == 'pool_id':
                     print("pool")
-                    service = self.env['service.lines'].search([('service_type' ,'=','airport')])
+                    service = self.env['service.lines'].search([('service_type' ,'=','drop_off_duty')])
                     print("service" ,service.pool_id.name)
                     line_vals.append((0, 0, {
                         'product_id': service.pool_id.id,
@@ -681,11 +714,11 @@ class RentalProgress(models.Model):
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
                         'rentee_name': rec.rentee_name,
-                        'price_unit': rec.airport_value,
+                        'price_unit': rec.drop_off_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
                     print("Non pool")
-                    service = self.env['service.lines'].search([('service_type', '=', 'airport')])
+                    service = self.env['service.lines'].search([('service_type', '=', 'drop_off_duty')])
                     print("service", service.pool_id.name)
                     line_vals.append((0, 0, {
                         'product_id': service.non_pool_id.id,
@@ -693,11 +726,11 @@ class RentalProgress(models.Model):
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
                         'rentee_name': rec.rentee_name,
-                        'price_unit': rec.airport_value,
+                        'price_unit': rec.drop_off_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
                     print("Non pool Other")
-                    service = self.env['service.lines'].search([('service_type', '=', 'airport')])
+                    service = self.env['service.lines'].search([('service_type', '=', 'drop_off_duty')])
                     print("service", service.pool_id.name)
                     line_vals.append((0, 0, {
                         'product_id': service.non_pool_other_id.id,
@@ -705,7 +738,7 @@ class RentalProgress(models.Model):
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
                         'rentee_name': rec.rentee_name,
-                        'price_unit': rec.airport_value,
+                        'price_unit': rec.drop_off_value,
                     }))
             if rec.over_time_value > 0:
                 if rec.vehicle_no.booleans == 'pool_id':
@@ -1070,10 +1103,10 @@ class RentalProgress(models.Model):
                             'rentee_name': r.rentee_name,
                             'price_unit': r.air_filter_rate,
                         }))
-                if r.airport_value > 0:
+                if r.drop_off_value > 0:
                     if r.vehicle_no.booleans == 'pool_id':
                         print("pool")
-                        service = self.env['service.lines'].search([('service_type', '=', 'airport')])
+                        service = self.env['service.lines'].search([('service_type', '=', 'drop_off_duty')])
                         print("service", service.pool_id.name)
                         line_vals.append((0, 0, {
                             'product_id': service.pool_id.id,
@@ -1081,11 +1114,11 @@ class RentalProgress(models.Model):
                             'date_rental': r.time_out,
                             'rental_id': r.id,
                             'rentee_name': r.rentee_name,
-                            'price_unit': r.airport_value,
+                            'price_unit': r.drop_off_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
                         print("Non pool")
-                        service = self.env['service.lines'].search([('service_type', '=', 'airport')])
+                        service = self.env['service.lines'].search([('service_type', '=', 'drop_off_duty')])
                         print("service", service.pool_id.name)
                         line_vals.append((0, 0, {
                             'product_id': service.non_pool_id.id,
@@ -1093,11 +1126,11 @@ class RentalProgress(models.Model):
                             'date_rental': r.time_out,
                             'rental_id': r.id,
                             'rentee_name': r.rentee_name,
-                            'price_unit': r.airport_value,
+                            'price_unit': r.drop_off_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
                         print("Non pool Other")
-                        service = self.env['service.lines'].search([('service_type', '=', 'airport')])
+                        service = self.env['service.lines'].search([('service_type', '=', 'drop_off_duty')])
                         print("service", service.pool_id.name)
                         line_vals.append((0, 0, {
                             'product_id': service.non_pool_other_id.id,
@@ -1105,7 +1138,7 @@ class RentalProgress(models.Model):
                             'date_rental': r.time_out,
                             'rental_id': r.id,
                             'rentee_name': r.rentee_name,
-                            'price_unit': r.airport_value,
+                            'price_unit': r.drop_off_value,
                         }))
                 if r.over_time_value > 0:
                     if r.vehicle_no.booleans == 'pool_id':

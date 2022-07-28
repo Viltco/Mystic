@@ -7,13 +7,17 @@
             <form string="Registration">
                 <group>
                     <group>
+                        <field name="branch_id"/>
                         <field name="partner_id"/>
                         <field name="model_id"/>
                     </group>
                     <group>
                         <field name="booking" widget="radio"/>
-                        <field name="based_on"/>
                         <field name="payment_type"/>
+                    </group>
+                    <group string="Address">
+                        <field name="pickup"/>
+                        <field name="program"/>
                     </group>
                     <group>
                         <field name="vehicle_out"/>
