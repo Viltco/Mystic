@@ -22,7 +22,7 @@ class VehicleReservation(models.Model):
     based_on = fields.Selection([
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'),('airport', 'Airport')], default='daily', string="Based On")
+        ('monthly', 'Monthly'),('drop_off_duty', 'Drop Off Duty'),('time_and_mileage', 'Time And Mileage')], default='daily', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")

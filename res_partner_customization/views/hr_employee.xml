@@ -9,6 +9,38 @@
             <xpath expr="//field[@name='mobile_phone']" position="before">
                 <field name="is_driver"/>
             </xpath>
+            <xpath expr="//field[@name='branch_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='pin']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="partner_id"/>
+            </xpath>
+            <xpath expr="//field[@name='identification_id']" position="after">
+                <field name="nic_issuence_date"/>
+                <field name="nic_expiry_date"/>
+                <field name="license_type"/>
+                <field name="license_issuence_date"/>
+                <field name="license_expiry_date"/>
+                <field name="nic_issuence_date"/>
+            </xpath>
+            <xpath expr="//field[@name='marital']" position="after">
+                <field name="caste"/>
+            </xpath>
+            <xpath expr="//field[@name='passport_id']" position="after">
+                <field name="police_verification"/>
+            </xpath>
+            <xpath expr="//field[@name='identification_id']" position="attributes">
+                <attribute name="string">NIC No</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@name='hr_settings']/group/group[@name='identification_group']/div[hasclass('o_row')]"
+                   position="after">
+                <group>
+                    <field name="shift_id"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

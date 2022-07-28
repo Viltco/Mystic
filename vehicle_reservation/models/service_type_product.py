@@ -20,7 +20,7 @@ class ServiceType(models.Model):
                 (0, 0, {'service_type': 'mobil_oil'}),
                 (0, 0, {'service_type': 'oil_filter'}),
                 (0, 0, {'service_type': 'air_filter'}),
-                (0, 0, {'service_type': 'airport'}),
+                (0, 0, {'service_type': 'drop_off_duty'}),
                 (0, 0, {'service_type': 'over_time'}),
                 (0, 0, {'service_type': 'over_night'}),
                 (0, 0, {'service_type': 'out_station'}),
@@ -41,7 +41,7 @@ class ServiceTypeLines(models.Model):
         ('mobil_oil', 'Mobil Oil'),
         ('oil_filter', 'Oil Filter'),
         ('air_filter', 'Air Filter'),
-        ('airport', 'Airport') ,
+        ('drop_off_duty', 'Drop Off Duty') ,
         ('over_time', 'OverTime') ,
         ('over_night', 'Over Night') ,
         ('out_station', 'Out station')], string="Service Type")
