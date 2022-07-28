@@ -15,7 +15,7 @@
                 <field name="mobil_oil_rate"/>
                 <field name="oil_filter_rate"/>
                 <field name="air_filter_rate"/>
-                <field name="drop_off_rate"/>
+                <field name="airport_rate"/>
                 <field name="over_time"/>
                 <field name="over_night"/>
                 <field name="out_station"/>
@@ -43,7 +43,7 @@
                             <field name="mobil_oil_rate"/>
                             <field name="oil_filter_rate"/>
                             <field name="air_filter_rate"/>
-                            <field name="drop_off_rate"/>
+                            <field name="airport_rate"/>
                             <field name="over_time"/>
                             <field name="over_night"/>
                             <field name="out_station"/>

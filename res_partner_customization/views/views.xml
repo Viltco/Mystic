@@ -17,7 +17,6 @@
                 </xpath>
                 <xpath expr="/form/sheet/div[hasclass('oe_title')]" position="after">
                     <group>
-                        <field name="pin_code" readonly="1"/>
                         <field name="partner_type" widget="radio"/>
                     </group>
                 </xpath>
@@ -29,17 +28,6 @@
                 </xpath>
             </field>
         </record>
-
-        <record id="view_pin_search_inherited" model="ir.ui.view">
-        <field name="name">res.partner.inherited</field>
-        <field name="inherit_id" ref="base.view_res_partner_filter"/>
-        <field name="model">res.partner</field>
-        <field type="xml" name="arch">
-            <search>
-                <field name="pin_code"/>
-            </search>
-        </field>
-    </record>
 
         <record id="action_customer_view" model="ir.actions.act_window">
             <field name="name">Customer</field>
@@ -116,6 +104,22 @@
         <record model="ir.ui.menu" id="contacts.res_partner_menu_contacts">
             <field name="name">All Contacts</field>
         </record>
+
+        <!--        <record id="view_driver_customer_search_inherited" model="ir.ui.view">-->
+        <!--            <field name="name">res.partner.inherited</field>-->
+        <!--            <field name="inherit_id" ref="base.view_res_partner_filter"/>-->
+        <!--            <field name="model">res.partner</field>-->
+        <!--            <field type="xml" name="arch">-->
+        <!--                <search>-->
+        <!--                    <field name="is_customer"/>-->
+        <!--                    <field name="is_vendor"/>-->
+        <!--                    <field name="is_driver"/>-->
+        <!--                    <filter string="Is Driver" name="is_driver" domain="[('is_driver','=',True)]"/>-->
+        <!--                    <filter string="Is Customer" name="is_customer" domain="[('is_customer','=',True)]"/>-->
+        <!--                    <filter string="Is Vendor" name="is_vendor" domain="[('is_vendor','=',True)]"/>-->
+        <!--                </search>-->
+        <!--            </field>-->
+        <!--        </record>-->
     </data>
 
 </odoo>

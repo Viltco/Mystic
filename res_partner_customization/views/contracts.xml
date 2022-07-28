@@ -67,12 +67,12 @@
                             <field name="mobil_oil_rate"/>
                             <field name="oil_filter_rate"/>
                             <field name="air_filter_rate"/>
-                            <field name="drop_off_rate"/>
+                            <field name="airport_rate"/>
                             <field name="over_time"/>
                             <field name="over_night"/>
                             <field name="out_station"/>
                         </group>
-                        <group string="Drop Off Duty">
+                        <group string="Airport">
                             <label for="addit_hour_rate"/>
                             <div class="o_row">
                                 <field name="addit_hour_rate"/>
@@ -109,7 +109,7 @@
                                     <field name="mobil_oil_rate" optional="hide"/>
                                     <field name="oil_filter_rate" optional="hide"/>
                                     <field name="air_filter_rate" optional="hide"/>
-                                    <field name="drop_off_rate"/>
+                                    <field name="airport_rate"/>
                                     <field name="over_time"/>
                                     <field name="over_night"/>
                                     <field name="out_station"/>
