@@ -243,19 +243,40 @@ class ChauffeurInWizard(models.TransientModel):
                                 extra_hour =  hours - record.hourly_limit
                                 if extra_km > 0:
                                     res.extra_drop_off_km = extra_km
-                                    extra_km_rate = extra_km * record.addit_km_rate
+                                    res.extra_drop_off_km_rate = record.addit_km_rate
+                                    extra_km_rate = res.extra_drop_off_km * res.extra_drop_off_km_rate
                                 if extra_hour > 0:
                                     if minutes > 0:
                                         res.hours = hours + 1
-                                        res.per_hour_rate = record.addit_hour_rate
+                                        res.extra_drop_off_hour_rate = record.addit_hour_rate
                                         res.extra_drop_off_hour = extra_hour + 1
                                     else:
                                         res.hours = hours
-                                        res.per_hour_rate = record.addit_hour_rate
+                                        res.extra_drop_off_hour_rate = record.addit_hour_rate
                                         res.extra_drop_off_hour = extra_hour
-                                res.drop_off_value = ((res.extra_drop_off_hour * record.addit_hour_rate) + res.drop_off_rate + extra_km_rate)
+                                res.drop_off_value = ((res.extra_drop_off_hour * res.extra_drop_off_km_rate) + res.drop_off_rate + extra_km_rate)
                                 res.total_rate = res.drop_off_value
-                                res.net_amount = res.total_rate
+                                res.net_amount = res.total_rate + + toll_allowance
+                            elif res.based_on == 'airport_duty':
+                                res.airport_duty_rate = j.airport_duty_rate
+                                extra_km = res.driven - record.km_airport_limit
+                                extra_hour = hours - record.hourly_airport_limit
+                                if extra_km > 0:
+                                    res.extra_airport_km = extra_km
+                                    res.extra_airport_km_rate = record.addit_airport_km_rate
+                                    extra_km_rate = res.extra_airport_km * res.extra_airport_km_rate
+                                if extra_hour > 0:
+                                    if minutes > 0:
+                                        res.hours = hours + 1
+                                        res.extra_airport_hour_rate = record.addit_airport_hour_rate
+                                        res.extra_airport_hour = extra_hour + 1
+                                    else:
+                                        res.hours = hours
+                                        res.extra_airport_hour_rate = record.addit_airport_hour_rate
+                                        res.extra_airport_hour = extra_hour
+                                res.airport_duty_value = ((res.extra_airport_hour * res.extra_airport_hour_rate) + res.airport_duty_rate + extra_km_rate)
+                                res.total_rate = res.airport_duty_value
+                                res.net_amount = res.total_rate + toll_allowance
                 else:
                     res.days = 0
                     res.weeks = 0

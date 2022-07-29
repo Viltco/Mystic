@@ -30,7 +30,7 @@ class VehicleReservation(models.Model):
         ('drop_off_duty', 'Drop Off Duty'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly')], default='time_and_mileage', string="Based On")
+        ('monthly', 'Monthly'), ('airport_duty', 'Airport Transfer')], default='time_and_mileage', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -102,7 +102,7 @@ class VehicleReservation(models.Model):
                                 'mobile': rec.partner_id.mobile,
                                 'time_out': rec.vehicle_out,
                                 'branch_id': rec.branch_id.id,
-                                'source': rec.reservation_bf,
+                                'source': rec.id,
                                 'based_on': rec.based_on,
                                 'payment_type': rec.payment_type,
                                 'reservation_id': rec.id,

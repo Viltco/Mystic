@@ -58,20 +58,7 @@
                                 <span>Km</span>
                             </div>
                         </group>
-                        <group>
-                            <field name="per_hour_rate"/>
-                            <field name="per_km_rate"/>
-                            <field name="per_day_rate"/>
-                            <field name="per_week_rate"/>
-                            <field name="per_month_rate"/>
-                            <field name="mobil_oil_rate"/>
-                            <field name="oil_filter_rate"/>
-                            <field name="air_filter_rate"/>
-                            <field name="drop_off_rate"/>
-                            <field name="over_time"/>
-                            <field name="over_night"/>
-                            <field name="out_station"/>
-                        </group>
+
                         <group string="Drop Off Duty">
                             <label for="addit_hour_rate"/>
                             <div class="o_row">
@@ -92,6 +79,41 @@
                                 <field name="km_limit"/>
                             </div>
                         </group>
+                        <group string="Airport Duty">
+                            <label for="addit_airport_hour_rate"/>
+                            <div class="o_row">
+                                <field name="addit_airport_hour_rate"/>
+                                <span>Per Hour</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="hourly_airport_limit"/>
+                            </div>
+                            <label for="addit_airport_km_rate"/>
+                            <div class="o_row">
+                                <field name="addit_airport_km_rate"/>
+                                <span>Per KM</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="km_airport_limit"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="per_hour_rate"/>
+                            <field name="per_km_rate"/>
+                            <field name="per_day_rate"/>
+                            <field name="per_week_rate"/>
+                            <field name="per_month_rate"/>
+                            <field name="mobil_oil_rate"/>
+                            <field name="oil_filter_rate"/>
+                            <field name="air_filter_rate"/>
+                            <field name="airport_duty_rate"/>
+                            <field name="drop_off_rate"/>
+                            <field name="over_time"/>
+                            <field name="over_night"/>
+                            <field name="out_station"/>
+                        </group>
                     </group>
                     <notebook>
                         <page>
@@ -109,6 +131,7 @@
                                     <field name="mobil_oil_rate" optional="hide"/>
                                     <field name="oil_filter_rate" optional="hide"/>
                                     <field name="air_filter_rate" optional="hide"/>
+                                    <field name="airport_duty_rate"/>
                                     <field name="drop_off_rate"/>
                                     <field name="over_time"/>
                                     <field name="over_night"/>

@@ -18,7 +18,7 @@ class RentalProgress(models.Model):
                                 domain=[('partner_type', '=', 'is_driver')])
     odometer = fields.Integer(compute='_get_odometer', string='Current Meter Reading',
                               help='Odometer measure of the vehicle at the moment of this log')
-    source = fields.Char(string='Source')
+    source = fields.Many2one('vehicle.reservation', string="Source", tracking=True)
     rentee_type = fields.Selection([
         ('mr', 'MR.'),
         ('mrs', 'MRS.'),
@@ -28,9 +28,11 @@ class RentalProgress(models.Model):
     first_name = fields.Char(string='First Name')
     last_name = fields.Char(string='Last Name')
     based_on = fields.Selection([
+        ('time_and_mileage', 'Time And Mileage'),
+        ('drop_off_duty', 'Drop Off Duty'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'), ('drop_off_duty', 'Drop Off Duty'),('time_and_mileage', 'Time And Mileage')], default='daily', string="Based On")
+        ('monthly', 'Monthly'),('airport_duty', 'Airport Transfer')], default='time_and_mileage', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -60,13 +62,21 @@ class RentalProgress(models.Model):
     air_filter_rate = fields.Float(string='Air Filter Rate')
     drop_off_rate = fields.Integer(string='Drop Off Duty Rate')
     extra_drop_off_km = fields.Integer(string='Extra KMs(Drop Off Duty)')
+    extra_drop_off_km_rate = fields.Integer(string='Extra KM Rate(Drop Off Duty)')
     extra_drop_off_hour = fields.Integer(string='Extra Hours(Drop Off Duty)')
+    extra_drop_off_hour_rate = fields.Integer(string='Extra Hour Rate(Drop Off Duty)')
+    airport_duty_rate = fields.Integer(string='Airport Duty Rate')
+    extra_airport_km_rate = fields.Integer(string='Extra KM Rate(Airport Duty)')
+    extra_airport_km = fields.Integer(string='Extra KMs(Airport Duty)')
+    extra_airport_hour_rate = fields.Integer(string='Extra Hour Rate(Airport Duty)')
+    extra_airport_hour = fields.Integer(string='Extra Hours(Airport Duty)')
 
     hours_value = fields.Integer(string='Hours Value')
     days_value = fields.Integer(string='Days Value')
     weeks_value = fields.Integer(string='Weeks Value')
     month_value = fields.Integer(string='Monthly Value')
     drop_off_value = fields.Integer(string='Drop Off Duty Value')
+    airport_duty_value = fields.Integer(string='Airport Duty Value')
     km_value = fields.Integer(string='KM Value')
     over_time_value = fields.Integer(string='Over Time Value')
 
@@ -336,18 +346,39 @@ class RentalProgress(models.Model):
                             extra_hour = hours - record.hourly_limit
                             if extra_km > 0:
                                 self.extra_drop_off_km = extra_km
-                                extra_km_rate = extra_km * record.addit_km_rate
+                                self.extra_drop_off_km_rate = record.addit_km_rate
+                                extra_km_rate = self.extra_drop_off_km * self.extra_drop_off_km_rate
                             if extra_hour > 0:
                                 if minutes > 0:
                                     self.hours = hours + 1
-                                    self.per_hour_rate = record.addit_hour_rate
+                                    self.extra_drop_off_hour_rate = record.addit_hour_rate
                                     self.extra_drop_off_hour = extra_hour + 1
                                 else:
                                     self.hours = hours
-                                    self.per_hour_rate = record.addit_hour_rate
+                                    self.extra_drop_off_hour_rate = record.addit_hour_rate
                                     self.extra_drop_off_hour = extra_hour
-                            self.drop_off_value = ((self.extra_drop_off_hour * record.addit_hour_rate) + self.drop_off_rate + extra_km_rate)
+                            self.drop_off_value = ((self.extra_drop_off_hour * self.extra_drop_off_km_rate) + self.drop_off_rate + extra_km_rate)
                             self.total_rate = self.drop_off_value
+                            self.net_amount = self.total_rate
+                        elif self.based_on == 'airport_duty':
+                            self.airport_duty_rate = j.airport_duty_rate
+                            extra_km = self.driven - record.km_airport_limit
+                            extra_hour = hours - record.hourly_airport_limit
+                            if extra_km > 0:
+                                self.extra_airport_km = extra_km
+                                self.extra_airport_km_rate = record.addit_airport_km_rate
+                                extra_km_rate = self.extra_airport_km * self.extra_airport_km_rate
+                            if extra_hour > 0:
+                                if minutes > 0:
+                                    self.hours = hours + 1
+                                    self.extra_airport_hour_rate = record.addit_airport_hour_rate
+                                    self.extra_airport_hour = extra_hour + 1
+                                else:
+                                    self.hours = hours
+                                    self.extra_airport_hour_rate = record.addit_airport_hour_rate
+                                    self.extra_airport_hour = extra_hour
+                            self.airport_duty_value = ((self.extra_airport_hour * self.extra_airport_hour_rate) + self.airport_duty_rate + extra_km_rate)
+                            self.total_rate = self.airport_duty_value
                             self.net_amount = self.total_rate
 
                     # else:

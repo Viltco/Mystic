@@ -18,6 +18,11 @@ class Contracts(models.Model):
     addit_km_rate = fields.Integer(string='Additional KM Rate')
     km_limit = fields.Integer(string='KM Limit')
 
+    addit_airport_hour_rate = fields.Integer(string='Additional Hourly Rate')
+    hourly_airport_limit = fields.Integer(string='Hourly Limit')
+    addit_airport_km_rate = fields.Integer(string='Additional KM Rate')
+    km_airport_limit = fields.Integer(string='KM Limit')
+
     per_hour_rate = fields.Float(string='Hour')
     per_km_rate = fields.Float(string='KM')
     per_day_rate = fields.Float(string='Daily')
@@ -27,6 +32,7 @@ class Contracts(models.Model):
     oil_filter_rate = fields.Float(string='Oil Filter Rate')
     air_filter_rate = fields.Float(string='Air Filter Rate')
     drop_off_rate = fields.Float(string='Drop Off Duty')
+    airport_duty_rate = fields.Float(string='Airport Duty')
     over_time = fields.Float(string='OverTime')
     over_night = fields.Float(string='OverNight')
     out_station = fields.Float(string='OutStation')
@@ -90,6 +96,7 @@ class Contracts(models.Model):
                     r.oil_filter_rate = rec.oil_filter_rate
                     r.air_filter_rate = rec.air_filter_rate
                     r.drop_off_rate = rec.drop_off_rate
+                    r.airport_duty_rate = rec.airport_duty_rate
                     r.over_time = rec.over_time
                     r.over_night = rec.over_night
                     r.out_station = rec.out_station
@@ -110,6 +117,7 @@ class ContractLines(models.Model):
     mobil_oil_rate = fields.Float(string='Mobil Oil Rate')
     oil_filter_rate = fields.Float(string='Oil Filter Rate')
     air_filter_rate = fields.Float(string='Air Filter Rate')
+    airport_duty_rate = fields.Float(string='Airport Duty')
     drop_off_rate = fields.Float(string='Drop Off Duty')
     over_time = fields.Float(string='OverTime')
     over_night = fields.Float(string='OverNight')
