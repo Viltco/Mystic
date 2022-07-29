@@ -12,7 +12,6 @@ class RentalProgress(models.Model):
 
     rental_seq = fields.Char(string='Rental', copy=False, readonly=True, default='New')
     name = fields.Many2one('res.partner', string="Customer", tracking=True)
-    rentee_name = fields.Char(string='Rentee Name')
     branch_id = fields.Many2one('res.branch', string="Branch", tracking=True, required=True)
     vehicle_no = fields.Many2one('fleet.vehicle', string="Vehicle", tracking=True)
     driver_id = fields.Many2one('res.partner', string="Driver", tracking=True,
@@ -20,6 +19,14 @@ class RentalProgress(models.Model):
     odometer = fields.Integer(compute='_get_odometer', string='Current Meter Reading',
                               help='Odometer measure of the vehicle at the moment of this log')
     source = fields.Char(string='Source')
+    rentee_type = fields.Selection([
+        ('mr', 'MR.'),
+        ('mrs', 'MRS.'),
+        ('prof', 'Prof.'),
+        ('dr', 'Dr.'),
+    ], default='mr', string="Rentee Name")
+    first_name = fields.Char(string='First Name')
+    last_name = fields.Char(string='Last Name')
     based_on = fields.Selection([
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),

@@ -57,7 +57,16 @@
                     <group>
                         <group string="Customer">
                             <field name="name"/>
-                            <field name="rentee_name"/>
+                            <div class="o_row">
+                                <span>
+                                    <strong>
+                                        Rentee Name
+                                    </strong>
+                                </span>
+                                <field name="rentee_type" required="1"/>
+                                <field name="first_name" required="1" placeholder="First Name"/>
+                                <field name="last_name" required="1" placeholder="Last Name"/>
+                            </div>
                             <field name="branch_id"/>
                             <field name="source"/>
                             <field name="reservation_id" invisible="1"/>

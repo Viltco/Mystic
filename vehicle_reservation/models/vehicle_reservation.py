@@ -13,16 +13,24 @@ class VehicleReservation(models.Model):
     # booking_id = fields.Many2one('booking.wizard', string="Booking", tracking=True)
     partner_id = fields.Many2one('res.partner', string="Customer", tracking=True,
                                  domain=[('partner_type', '=', 'is_customer')])
-    rentee_name = fields.Char(string='Rentee Name')
+    rentee_type = fields.Selection([
+        ('mr', 'MR.'),
+        ('mrs', 'MRS.'),
+        ('prof', 'Prof.'),
+        ('dr', 'Dr.'),
+    ], default='mr' ,string="Rentee Name")
+    first_name = fields.Char(string='First Name')
+    last_name = fields.Char(string='Last Name')
     booking = fields.Selection([
         ('chauffeur_driven', 'Chauffeur Driven'),
         ('self_drive', 'Self Drive'),
         ('driver', 'Driver')], default='chauffeur_driven', string="Booking")
-    guard = fields.Boolean(string='Guard')
     based_on = fields.Selection([
+        ('time_and_mileage', 'Time And Mileage'),
+        ('drop_off_duty', 'Drop Off Duty'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'),('drop_off_duty', 'Drop Off Duty'),('time_and_mileage', 'Time And Mileage')], default='daily', string="Based On")
+        ('monthly', 'Monthly')], default='time_and_mileage', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -38,8 +46,7 @@ class VehicleReservation(models.Model):
     ], default='on_call', string="Booking Received")
     source_name = fields.Char(string='Source Name')
     source_mobile_number = fields.Char(string='Source Mobile Number')
-    user_name = fields.Char(string='User Name')
-    user_mobile_number = fields.Char(string='User Mobile Number')
+    rentee_mobile_number = fields.Char(string='Rentee Mobile Number')
 
     pickup = fields.Text(string='Pickup')
     program = fields.Text(string='Program')
@@ -67,6 +74,7 @@ class VehicleReservation(models.Model):
         user = super(VehicleReservation, self).write(vals)
         return user
 
+
     def action_confirm(self):
         for rec in self:
             record = self.env['res.contract'].search(
@@ -87,7 +95,9 @@ class VehicleReservation(models.Model):
                             rec.state = 'confirm'
                             vals = {
                                 'name': rec.partner_id.id,
-                                'rentee_name': rec.rentee_name,
+                                'rentee_type': rec.rentee_type,
+                                'first_name': rec.first_name,
+                                'last_name': rec.last_name,
                                 'vehicle_no': rec.brand_id.id,
                                 'mobile': rec.partner_id.mobile,
                                 'time_out': rec.vehicle_out,
