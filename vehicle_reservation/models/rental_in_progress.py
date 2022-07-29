@@ -32,7 +32,7 @@ class RentalProgress(models.Model):
         ('drop_off_duty', 'Drop Off Duty'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'),('airport_duty', 'Airport Transfer')], default='time_and_mileage', string="Based On")
+        ('monthly', 'Monthly'),('airport_duty', 'Airport Transfer') ,('out_station', 'Out Station')], default='time_and_mileage', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -78,7 +78,9 @@ class RentalProgress(models.Model):
     drop_off_value = fields.Integer(string='Drop Off Duty Value')
     airport_duty_value = fields.Integer(string='Airport Duty Value')
     km_value = fields.Integer(string='KM Value')
+    km_rate = fields.Integer(string='KM Rate')
     over_time_value = fields.Integer(string='Over Time Value')
+    out_of_station_value = fields.Integer(string='Out of Station Value')
 
     total_rate = fields.Integer(string='Total Rate')
     driven = fields.Integer(string="Driven", tracking=True)
@@ -99,6 +101,8 @@ class RentalProgress(models.Model):
     stage_id = fields.Selection([
         ('billed', 'BILLED'),
         ('not_billed', 'NOT BILLED')], default='not_billed', string="Stage ID")
+    pickup = fields.Text(string='Pickup')
+    program = fields.Text(string='Program')
 
     # @api.onchange('toll', 'allowa', 'net_amount')
     # def _onchange_net_amount(self):
@@ -200,13 +204,15 @@ class RentalProgress(models.Model):
                             # self.hours = hours
                             # self.per_hour_rate = j.per_hour_rate
                             self.hours_value = self.hours * self.per_hour_rate
-                            self.km_value = self.driven * j.per_km_rate
+                            self.km_rate = j.per_km_rate
+                            self.km_value = self.driven * self.km_rate
                             self.total_rate = self.hours_value + self.km_value
                             self.apply_out_station = record.apply_out_station
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance
+                                self.out_of_station_value = self.out_station_rate
+                                self.net_amount = self.total_rate + self.out_of_station_value + toll_allowance
                             else:
                                 self.out_of_station = False
                                 self.net_amount = self.total_rate + toll_allowance
@@ -240,7 +246,8 @@ class RentalProgress(models.Model):
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance + self.over_time_value
+                                self.out_of_station_value = self.out_station_rate
+                                self.net_amount = self.total_rate + self.out_of_station_value + toll_allowance
                             else:
                                 self.out_of_station = False
                                 self.net_amount = self.total_rate + toll_allowance + self.over_time_value
@@ -282,7 +289,8 @@ class RentalProgress(models.Model):
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + toll_allowance + self.out_station_rate + self.over_time_value
+                                self.out_of_station_value = self.out_station_rate
+                                self.net_amount = self.total_rate + self.out_of_station_value + toll_allowance
                             else:
                                 self.out_of_station = False
                                 self.net_amount = self.total_rate + toll_allowance + self.over_time_value
@@ -335,7 +343,8 @@ class RentalProgress(models.Model):
                             if self.apply_out_station <= self.driven:
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
-                                self.net_amount = self.total_rate + self.out_station_rate + toll_allowance + self.over_time_value
+                                self.out_of_station_value = self.out_station_rate
+                                self.net_amount = self.total_rate + self.out_of_station_value + toll_allowance
                             else:
                                 self.out_of_station = False
                                 self.net_amount = self.total_rate + toll_allowance + self.over_time_value
@@ -380,6 +389,12 @@ class RentalProgress(models.Model):
                             self.airport_duty_value = ((self.extra_airport_hour * self.extra_airport_hour_rate) + self.airport_duty_rate + extra_km_rate)
                             self.total_rate = self.airport_duty_value
                             self.net_amount = self.total_rate
+                        elif self.based_on == 'out_station':
+                            self.days = total_days.days
+                            self.out_station_rate = j.out_station
+                            self.out_of_station_value = self.days * self.out_station_rate
+                            self.total_rate = self.out_of_station_value
+                            self.net_amount = self.total_rate + toll_allowance
 
                     # else:
                     #     self.days = 0

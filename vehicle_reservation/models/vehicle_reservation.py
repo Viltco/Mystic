@@ -30,7 +30,7 @@ class VehicleReservation(models.Model):
         ('drop_off_duty', 'Drop Off Duty'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'), ('airport_duty', 'Airport Transfer')], default='time_and_mileage', string="Based On")
+        ('monthly', 'Monthly'), ('airport_duty', 'Airport Transfer') ,('out_station', 'Out Station')], default='time_and_mileage', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -105,6 +105,8 @@ class VehicleReservation(models.Model):
                                 'source': rec.id,
                                 'based_on': rec.based_on,
                                 'payment_type': rec.payment_type,
+                                'pickup': rec.pickup,
+                                'program': rec.program,
                                 'reservation_id': rec.id,
                             }
                             self.env['rental.progress'].create(vals)

@@ -84,7 +84,8 @@ class ChauffeurInWizard(models.TransientModel):
                                 res.hours = total_hours
                                 res.per_hour_rate = j.per_hour_rate
                                 res.hours_value = res.hours * res.per_hour_rate
-                                res.km_value = res.driven * j.per_km_rate
+                                res.km_rate = j.per_km_rate
+                                res.km_value = res.driven * res.km_rate
                                 res.total_rate = res.hours_value + res.km_value
                                 overtime = res.hours - record.apply_over_time
                                 if overtime > 0:
@@ -101,7 +102,8 @@ class ChauffeurInWizard(models.TransientModel):
                                 if res.apply_out_station <= res.driven:
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
-                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance + res.over_time_value
+                                    res.out_of_station_value = res.out_station_rate
+                                    res.net_amount = res.total_rate + res.out_of_station_value + toll_allowance + res.over_time_value
                                 else:
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + res.over_time_value
@@ -136,7 +138,8 @@ class ChauffeurInWizard(models.TransientModel):
                                 if res.apply_out_station <= res.driven:
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
-                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance + res.over_time_value
+                                    res.out_of_station_value = res.out_station_rate
+                                    res.net_amount = res.total_rate + res.out_of_station_value + toll_allowance + res.over_time_value
                                 else:
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + res.over_time_value
@@ -179,7 +182,8 @@ class ChauffeurInWizard(models.TransientModel):
                                 if res.apply_out_station <= res.driven:
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
-                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance + res.over_time_value
+                                    res.out_of_station_value = res.out_station_rate
+                                    res.net_amount = res.total_rate + res.out_of_station_value + toll_allowance + res.over_time_value
                                 else:
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + + res.over_time_value
@@ -232,7 +236,8 @@ class ChauffeurInWizard(models.TransientModel):
                                 if res.apply_out_station <= res.driven:
                                     res.out_of_station = True
                                     res.out_station_rate = j.out_station
-                                    res.net_amount = res.total_rate + res.out_station_rate + toll_allowance + res.over_time_value
+                                    res.out_of_station_value = res.out_station_rate
+                                    res.net_amount = res.total_rate + res.out_of_station_value + toll_allowance + res.over_time_value
                                 else:
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + res.over_time_value
@@ -276,6 +281,12 @@ class ChauffeurInWizard(models.TransientModel):
                                         res.extra_airport_hour = extra_hour
                                 res.airport_duty_value = ((res.extra_airport_hour * res.extra_airport_hour_rate) + res.airport_duty_rate + extra_km_rate)
                                 res.total_rate = res.airport_duty_value
+                                res.net_amount = res.total_rate + toll_allowance
+                            elif res.based_on == 'out_station':
+                                res.days = total_days.days
+                                res.out_station_rate = j.out_station
+                                res.out_of_station_value = res.days * res.out_station_rate
+                                res.total_rate = res.out_of_station_value
                                 res.net_amount = res.total_rate + toll_allowance
                 else:
                     res.days = 0

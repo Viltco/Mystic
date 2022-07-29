@@ -8,6 +8,7 @@
             <tree>
                 <field name="rental_seq"/>
                 <field name="name"/>
+                <field name="first_name" string="Rentee Name"/>
                 <field name="vehicle_no"/>
                 <field name="driver_id"/>
                 <field name="km_in"/>
@@ -16,6 +17,8 @@
                 <field name="time_in"/>
                 <field name="time_out"/>
                 <field name="state"/>
+                <field name="pickup" force_save="1"/>
+                <field name="program" force_save="1"/>
                 <field name="stage_id" widget="badge" decoration-muted="stage_id == 'not_billed'"
                        decoration-success="stage_id == 'billed'"/>
             </tree>
@@ -96,69 +99,147 @@
                         <group string="Actual Activities">
                             <field name="note"/>
                         </group>
+                        <!--                        <group string="Calculations">-->
+                        <!--                            <group>-->
+                        <!--                                <field name="hours" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="per_hour_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="hours_value" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="days" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="day_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="days_value" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="weeks" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="week_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="weeks_value" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="months" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="month_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="month_value" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="mobil_oil_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="oil_filter_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="air_filter_rate" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="drop_off_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_drop_off_km" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_drop_off_km_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_drop_off_hour" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_drop_off_hour_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="drop_off_value" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="airport_duty_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_airport_km" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_airport_km_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_airport_hour" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="extra_airport_hour_rate" force_save="1" readonly="1"/>-->
+                        <!--                                <field name="airport_duty_value" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="km_value" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="total_rate" readonly="1" force_save="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="driven" readonly="1" force_save="1"/>-->
+                        <!--                                <label for="apply_out_station"/>-->
+                        <!--                                <div class="o_row">-->
+                        <!--                                    <field name="apply_out_station" readonly="1" force_save="1"/>-->
+                        <!--                                    <span>Km</span>-->
+                        <!--                                </div>-->
+                        <!--                                <field name="out_station_rate" readonly="1" force_save="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="apply_over_time" readonly="1" force_save="1"/>-->
+                        <!--                                <field name="over_time_rate" readonly="1" force_save="1"/>-->
+                        <!--                                <field name="over_time_value" readonly="1" force_save="1"/>-->
+                        <!--                            </group>-->
+                        <!--                            <group>-->
+                        <!--                                <field name="net_amount" force_save="1" readonly="1"/>-->
+                        <!--                            </group>-->
+                        <!--                        </group>-->
                         <group string="Calculations">
                             <group>
-                                <field name="hours" force_save="1" readonly="1"/>
-                                <field name="per_hour_rate" force_save="1" readonly="1"/>
-                                <field name="hours_value" force_save="1" readonly="1"/>
+                                <group>
+                                    <field name="hours" force_save="1" readonly="1"/>
+                                    <field name="per_hour_rate" force_save="1" readonly="1"/>
+                                    <field name="hours_value" force_save="1" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="days" force_save="1" readonly="1"/>
+                                    <field name="day_rate" force_save="1" readonly="1"/>
+                                    <field name="days_value" force_save="1" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="driven" readonly="1" force_save="1"/>
+                                </group>
+                                <group>
+                                    <field name="km_rate" force_save="1" readonly="1"/>
+                                    <field name="km_value" force_save="1" readonly="1"/>
+                                </group>
+                                <group>
+                                    <label for="apply_out_station"/>
+                                    <div class="o_row">
+                                        <field name="apply_out_station" readonly="1" force_save="1"/>
+                                        <span>Km</span>
+                                    </div>
+                                    <field name="out_station_rate" readonly="1" force_save="1"/>
+                                    <field name="out_of_station_value" readonly="1" force_save="1"/>
+                                </group>
+                                <group>
+                                    <field name="airport_duty_rate" force_save="1" readonly="1"/>
+                                    <field name="extra_airport_km" force_save="1" readonly="1"/>
+                                    <field name="extra_airport_km_rate" force_save="1" readonly="1"/>
+                                    <field name="extra_airport_hour" force_save="1" readonly="1"/>
+                                    <field name="extra_airport_hour_rate" force_save="1" readonly="1"/>
+                                    <field name="airport_duty_value" force_save="1" readonly="1"/>
+                                </group>
                             </group>
                             <group>
-                                <field name="days" force_save="1" readonly="1"/>
-                                <field name="day_rate" force_save="1" readonly="1"/>
-                                <field name="days_value" force_save="1" readonly="1"/>
+                                <group>
+                                    <field name="weeks" force_save="1" readonly="1"/>
+                                    <field name="week_rate" force_save="1" readonly="1"/>
+                                    <field name="weeks_value" force_save="1" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="months" force_save="1" readonly="1"/>
+                                    <field name="month_rate" force_save="1" readonly="1"/>
+                                    <field name="month_value" force_save="1" readonly="1"/>
+                                    <field name="mobil_oil_rate" force_save="1" readonly="1"/>
+                                    <field name="oil_filter_rate" force_save="1" readonly="1"/>
+                                    <field name="air_filter_rate" force_save="1" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="total_rate" readonly="1" force_save="1"/>
+                                </group>
+                                <group>
+                                    <field name="apply_over_time" readonly="1" force_save="1"/>
+                                    <field name="over_time_rate" readonly="1" force_save="1"/>
+                                    <field name="over_time_value" readonly="1" force_save="1"/>
+                                </group>
+                                <group>
+                                    <field name="drop_off_rate" force_save="1" readonly="1"/>
+                                    <field name="extra_drop_off_km" force_save="1" readonly="1"/>
+                                    <field name="extra_drop_off_km_rate" force_save="1" readonly="1"/>
+                                    <field name="extra_drop_off_hour" force_save="1" readonly="1"/>
+                                    <field name="extra_drop_off_hour_rate" force_save="1" readonly="1"/>
+                                    <field name="drop_off_value" force_save="1" readonly="1"/>
+                                </group>
                             </group>
                             <group>
-                                <field name="weeks" force_save="1" readonly="1"/>
-                                <field name="week_rate" force_save="1" readonly="1"/>
-                                <field name="weeks_value" force_save="1" readonly="1"/>
+                                <group>
+                                    <field name="net_amount" force_save="1" readonly="1"/>
+                                </group>
                             </group>
-                            <group>
-                                <field name="months" force_save="1" readonly="1"/>
-                                <field name="month_rate" force_save="1" readonly="1"/>
-                                <field name="month_value" force_save="1" readonly="1"/>
-                                <field name="mobil_oil_rate" force_save="1" readonly="1"/>
-                                <field name="oil_filter_rate" force_save="1" readonly="1"/>
-                                <field name="air_filter_rate" force_save="1" readonly="1"/>
-                            </group>
-                            <group>
-                                <field name="drop_off_rate" force_save="1" readonly="1"/>
-                                <field name="extra_drop_off_km" force_save="1" readonly="1"/>
-                                <field name="extra_drop_off_km_rate" force_save="1" readonly="1"/>
-                                <field name="extra_drop_off_hour" force_save="1" readonly="1"/>
-                                <field name="extra_drop_off_hour_rate" force_save="1" readonly="1"/>
-                                <field name="drop_off_value" force_save="1" readonly="1"/>
-                            </group>
-                            <group>
-                                <field name="airport_duty_rate" force_save="1" readonly="1"/>
-                                <field name="extra_airport_km" force_save="1" readonly="1"/>
-                                <field name="extra_airport_km_rate" force_save="1" readonly="1"/>
-                                <field name="extra_airport_hour" force_save="1" readonly="1"/>
-                                <field name="extra_airport_hour_rate" force_save="1" readonly="1"/>
-                                <field name="airport_duty_value" force_save="1" readonly="1"/>
-                            </group>
-                            <group>
-                                <field name="km_value" force_save="1" readonly="1"/>
-                            </group>
-                            <group>
-                                <field name="total_rate" readonly="1" force_save="1"/>
-                            </group>
-                            <group>
-                                <field name="driven" readonly="1" force_save="1"/>
-                                <label for="apply_out_station"/>
-                                <div class="o_row">
-                                    <field name="apply_out_station" readonly="1" force_save="1"/>
-                                    <span>Km</span>
-                                </div>
-                                <field name="out_station_rate" readonly="1" force_save="1"/>
-                            </group>
-                            <group>
-                                <field name="apply_over_time" readonly="1" force_save="1"/>
-                                <field name="over_time_rate" readonly="1" force_save="1"/>
-                                <field name="over_time_value" readonly="1" force_save="1"/>
-                            </group>
-                            <group>
-                                <field name="net_amount" force_save="1" readonly="1"/>
-                            </group>
+                        </group>
+                        <group string="Address">
+                            <field name="pickup" force_save="1"/>
+                            <field name="program" force_save="1"/>
                         </group>
                     </group>
                 </sheet>
