@@ -27,6 +27,9 @@
                         <field name="contract_counter" widget="statinfo" string="Partner Contract"/>
                     </button>
                 </xpath>
+                <xpath expr="//field[@name='branch_id']" position="after">
+                    <field name="po_reference_req"/>
+                </xpath>
             </field>
         </record>
 
@@ -89,8 +92,14 @@
         <menuitem id="vendor_root"
                   name="Vendor"
                   parent="contacts.menu_contacts"
-                  action="action_vendor_view"
                   sequence="22"/>
+
+        <menuitem id="menu_vendor"
+                  name="Vendor"
+                  parent="vendor_root"
+                  action="action_vendor_view"
+                  sequence="1"/>
+
 
         <record id="action_user_view" model="ir.actions.act_window">
             <field name="name">User</field>
