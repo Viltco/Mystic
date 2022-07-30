@@ -16,8 +16,6 @@ class AddFieldsPartners(models.Model):
     strn = fields.Char(string="STRN", tracking=True)
     ntn = fields.Char(string="NTN/CNIC", tracking=True)
     uan = fields.Char(string="UAN", tracking=True)
-    po_reference_req = fields.Boolean(string='Require PO Reference')
-
     _sql_constraints = [
         ('ntn_unique', 'unique(ntn)', 'Cant be duplicate value For NTN!')]
 
