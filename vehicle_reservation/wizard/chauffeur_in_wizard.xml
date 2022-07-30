@@ -13,6 +13,8 @@
                     <group>
                         <field name="toll"/>
                         <field name="allowa"/>
+                        <field name="m_tag"/>
+                        <field name="damage_charges"/>
                     </group>
                     <group string="Actual Activities">
                         <field name="note"/>

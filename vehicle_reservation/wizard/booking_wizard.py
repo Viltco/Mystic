@@ -23,6 +23,18 @@ class BookingWizard(models.TransientModel):
     vehicle_out = fields.Datetime('Vehicle Out')
     vehicle_in = fields.Datetime('Vehicle IN')
 
+    rentee_type = fields.Selection([
+        ('mr', 'MR.'),
+        ('mrs', 'MRS.'),
+        ('prof', 'Prof.'),
+        ('dr', 'Dr.'),
+    ], default='mr', string="Rentee Name")
+    first_name = fields.Char(string='First Name')
+    last_name = fields.Char(string='Last Name')
+    rentee_mobile_number = fields.Char(string='Rentee Mobile Number')
+    source_name = fields.Char(string='Source Name')
+    source_mobile_number = fields.Char(string='Source Mobile Number')
+
     def booking_action(self):
         self.env['vehicle.reservation'].create({
             'branch_id': self.branch_id.id,
@@ -31,6 +43,12 @@ class BookingWizard(models.TransientModel):
             'payment_type': self.payment_type,
             'model_id': self.model_id.id,
             'vehicle_out': self.vehicle_out,
+            'rentee_type': self.rentee_type,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'rentee_mobile_number': self.rentee_mobile_number,
+            'source_name': self.source_name,
+            'source_mobile_number': self.source_mobile_number,
             'report_timing': self.vehicle_in,
             'pickup': self.pickup,
             'program': self.program,

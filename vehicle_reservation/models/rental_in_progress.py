@@ -41,6 +41,9 @@ class RentalProgress(models.Model):
     km_out = fields.Integer(string="Kms Out", tracking=True)
     toll = fields.Integer(string="Toll", tracking=True)
     allowa = fields.Integer(string="Allowa.", tracking=True)
+    m_tag = fields.Integer(string="M-Tag", tracking=True)
+    damage_charges = fields.Integer(string="Damage Charges (Depreciation)", tracking=True)
+
     time_in = fields.Datetime('Time In')
     time_out = fields.Datetime('Time Out')
     note = fields.Text(string='Note')
@@ -186,7 +189,7 @@ class RentalProgress(models.Model):
                 overtime = self.hours - record.apply_over_time
                 print("over time" , overtime)
                 self.driven = self.km_in - self.km_out
-                toll_allowance = self.toll + self.allowa
+                toll_allowance = self.toll + self.allowa + self.damage_charges + self.m_tag
                 extra_km_rate = 0
                 total_hours = 0
                 for j in record.contract_lines_id:
@@ -201,6 +204,7 @@ class RentalProgress(models.Model):
                             else:
                                 self.hours = total_hours
                                 self.per_hour_rate = j.per_hour_rate
+
                             # self.hours = hours
                             # self.per_hour_rate = j.per_hour_rate
                             self.hours_value = self.hours * self.per_hour_rate

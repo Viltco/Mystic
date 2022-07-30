@@ -12,6 +12,8 @@ class ChauffeurInWizard(models.TransientModel):
     time_in = fields.Datetime('Time In')
     toll = fields.Integer(string="Toll", tracking=True)
     allowa = fields.Integer(string="Allowa.", tracking=True)
+    m_tag = fields.Integer(string="M-Tag", tracking=True)
+    damage_charges = fields.Integer(string="Damage Charges (Depreciation)", tracking=True)
     note = fields.Text(string='Note')
 
 
@@ -57,8 +59,10 @@ class ChauffeurInWizard(models.TransientModel):
                 res.time_in = rec.time_in
                 res.toll = rec.toll
                 res.allowa = rec.allowa
+                res.m_tag = rec.m_tag
+                res.damage_charges = rec.damage_charges
                 res.note = rec.note
-                toll_allowance = rec.toll + rec.allowa
+                toll_allowance = rec.toll + rec.allowa + rec.m_tag + rec.damage_charges
                 res.driven = rec.km_in - res.km_out
                 print("current driven" , res.driven)
                 res.state = 'chauffeur_in'

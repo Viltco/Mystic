@@ -87,6 +87,8 @@
                             <field name="km_in"/>
                             <field name="toll"/>
                             <field name="allowa"/>
+                            <field name="m_tag"/>
+                            <field name="damage_charges"/>
                         </group>
                         <group>
                             <field name="time_in"/>

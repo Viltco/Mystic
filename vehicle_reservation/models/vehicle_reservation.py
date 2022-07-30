@@ -47,12 +47,24 @@ class VehicleReservation(models.Model):
     source_name = fields.Char(string='Source Name')
     source_mobile_number = fields.Char(string='Source Mobile Number')
     rentee_mobile_number = fields.Char(string='Rentee Mobile Number')
+    po_reference_req = fields.Boolean(string='Require PO Reference', compute="_compute_po_ref")
+    po_reference = fields.Char(string='PO Reference')
 
     pickup = fields.Text(string='Pickup')
     program = fields.Text(string='Program')
 
     state = fields.Selection([('draft', 'In Progress'), ('confirm', 'confirmed'), ('cancel', 'Cancelled')], default='draft',
                              string="status", tracking=True)
+
+    @api.onchange('partner_id')
+    def _compute_po_ref(self):
+        if self.partner_id:
+            if self.partner_id.po_reference_req:
+                self.po_reference_req = True
+            else:
+                self.po_reference_req = False
+        else:
+            self.po_reference_req = False
 
     # @api.model
     # def create(self, values):

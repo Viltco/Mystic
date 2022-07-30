@@ -69,22 +69,24 @@
                             <field name="rentee_mobile_number" attrs="{'readonly': [('state', '=', 'confirm')]}"
                                    required="1"/>
 
-                            <field name="source_name" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
-                            <field name="source_mobile_number" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="source_name" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
+                            <field name="source_mobile_number" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
+                            <field name="po_reference_req" invisible="1"/>
+                            <field name="po_reference" attrs="{'readonly': [('state', '=', 'confirm')] ,'required':[('po_reference_req','=',True)]}"/>
                         </group>
                         <group string="Booking Time">
                             <field name="vehicle_out" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
                             <field name="report_timing" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
                         </group>
                         <group string="Booking">
-                            <field name="booking" widget="radio" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="booking" widget="radio" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
                             <field name="based_on"
                                    attrs="{'readonly': [('state', '=', 'confirm')]}"
                                    required="1"/>
                             <field name="payment_type" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
                         </group>
                         <group string="Demand Vehicle">
-                            <field name="model_id" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                            <field name="model_id" attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
                             <field name="brand_id" attrs="{'readonly': [('state', '=', 'confirm')]}"
                                    domain="[('id','in', brand_ids)]" options="{'no_create': True}" required="1"/>
                             <!--                             <field name="brand_id" attrs="{'readonly': [('state', '=', 'confirm')]}"-->
@@ -93,7 +95,7 @@
                         </group>
                         <group string="Booking">
                             <field name="booking_accept" widget="radio"
-                                   attrs="{'readonly': [('state', '=', 'confirm')]}"/>
+                                   attrs="{'readonly': [('state', '=', 'confirm')]}" required="1"/>
                         </group>
                         <group string="Address">
                             <field name="pickup" attrs="{'readonly': [('state', '=', 'confirm')]}"/>
