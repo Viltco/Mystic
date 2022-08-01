@@ -6,3 +6,4 @@ access_chauffeur_wizard,access.chauffeur.wizard,model_chauffeur_wizard,,1,1,1,1
 access_chauffeur_in,access.chauffeur.in,model_chauffeur_in,,1,1,1,1
 access_service_type,access.service.type,model_service_type,,1,1,1,1
 access_service_lines,access.service.lines,model_service_lines,,1,1,1,1
+access_rental_move_line,access.rental.move.line,model_rental_move_line,,1,1,1,1

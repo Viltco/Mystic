@@ -65,6 +65,7 @@ class AccountaSSET(models.Model):
             {'state': 'close'})
         print("Closeddddddddddddddddddddddddddddddddd")
         full_asset.vehicle_id.active = False
+        full_asset.vehicle_id.toggle_active()
         if move_ids:
             return self._return_disposal_view(move_ids)
 

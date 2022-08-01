@@ -56,12 +56,8 @@
                                    context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
                                    options='{"always_reload": True}' attrs="{'readonly': [('state', '=', 'confirm')]}"
                                    required="1"/>
+                            <label string="Rentee Name" for="rentee_type"/>
                             <div class="o_row">
-                                <span>
-                                    <strong>
-                                        Rentee Name
-                                    </strong>
-                                </span>
                                 <field name="rentee_type" required="1"/>
                                 <field name="first_name" required="1" placeholder="First Name"/>
                                 <field name="last_name" required="1" placeholder="Last Name"/>

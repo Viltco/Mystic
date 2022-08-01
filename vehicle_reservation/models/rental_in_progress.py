@@ -502,6 +502,7 @@ class RentalProgress(models.Model):
     def action_create_invoice(self):
         for rec in self:
             line_vals = []
+            rental_vals = []
             if rec.hours_value > 0:
                 if rec.vehicle_no.booleans == 'pool_id':
                     service = self.env['service.lines'].search([('service_type' ,'=','hour')])
@@ -510,7 +511,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.hours_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -520,7 +521,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.hours_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -530,7 +531,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.hours_value,
                     }))
             if rec.days_value > 0:
@@ -543,7 +544,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.days_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -555,7 +556,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.days_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -567,7 +568,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.days_value,
                     }))
             if rec.weeks_value > 0:
@@ -580,7 +581,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.weeks_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -592,7 +593,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.weeks_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -604,7 +605,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.weeks_value,
                     }))
             if rec.month_value > 0:
@@ -617,7 +618,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.month_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -629,7 +630,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.month_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -641,7 +642,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.month_value,
                     }))
             if rec.mobil_oil_rate > 0:
@@ -654,7 +655,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.mobil_oil_rate,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -666,7 +667,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.mobil_oil_rate,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -678,7 +679,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.mobil_oil_rate,
                     }))
             if rec.oil_filter_rate > 0:
@@ -691,7 +692,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.oil_filter_rate,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -703,7 +704,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.oil_filter_rate,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -715,7 +716,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.oil_filter_rate,
                     }))
             if rec.air_filter_rate > 0:
@@ -728,7 +729,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.air_filter_rate,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -740,7 +741,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.air_filter_rate,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -752,8 +753,45 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.air_filter_rate,
+                    }))
+            if rec.km_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','km')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.km_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'km')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.km_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'km')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.km_value,
                     }))
             if rec.drop_off_value > 0:
                 if rec.vehicle_no.booleans == 'pool_id':
@@ -765,7 +803,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.drop_off_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -777,7 +815,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.drop_off_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -789,7 +827,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.drop_off_value,
                     }))
             if rec.over_time_value > 0:
@@ -802,7 +840,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.over_time_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
@@ -814,7 +852,7 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.over_time_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
@@ -826,10 +864,10 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.over_time_value,
                     }))
-            if rec.out_station_rate > 0:
+            if rec.out_of_station_value > 0:
                 if rec.vehicle_no.booleans == 'pool_id':
                     print("pool")
                     service = self.env['service.lines'].search([('service_type' ,'=','out_station')])
@@ -839,8 +877,8 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
-                        'price_unit': rec.out_station_rate,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.out_of_station_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool':
                     print("Non pool")
@@ -851,8 +889,8 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
-                        'price_unit': rec.out_station_rate,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.out_of_station_value,
                     }))
                 elif rec.vehicle_no.booleans == 'non_pool_other':
                     print("Non pool Other")
@@ -863,14 +901,214 @@ class RentalProgress(models.Model):
                         'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
                         'date_rental': rec.time_out,
                         'rental_id': rec.id,
-                        'rentee_name': rec.rentee_name,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
                         'price_unit': rec.out_station_rate,
                     }))
+            if rec.airport_duty_value > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','airport_duty')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.airport_duty_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'airport_duty')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.airport_duty_value,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'airport_duty')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.airport_duty_value,
+                    }))
+            if rec.toll > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','toll')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.toll,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'toll')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.toll,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'toll')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.toll,
+                    }))
+            if rec.allowa > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','allowa')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.allowa,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'allowa')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.allowa,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'allowa')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.allowa,
+                    }))
+            if rec.m_tag > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','m_tag')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.m_tag,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'm_tag')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.m_tag,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'm_tag')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.m_tag,
+                    }))
+            if rec.damage_charges > 0:
+                if rec.vehicle_no.booleans == 'pool_id':
+                    print("pool")
+                    service = self.env['service.lines'].search([('service_type' ,'=','damage_charges')])
+                    print("service" ,service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.damage_charges,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool':
+                    print("Non pool")
+                    service = self.env['service.lines'].search([('service_type', '=', 'damage_charges')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.damage_charges,
+                    }))
+                elif rec.vehicle_no.booleans == 'non_pool_other':
+                    print("Non pool Other")
+                    service = self.env['service.lines'].search([('service_type', '=', 'damage_charges')])
+                    print("service", service.pool_id.name)
+                    line_vals.append((0, 0, {
+                        'product_id': service.non_pool_other_id.id,
+                        'analytic_account_id': rec.vehicle_no.analytical_account_id.id,
+                        'date_rental': rec.time_out,
+                        'rental_id': rec.id,
+                        'rentee_name': rec.first_name + '' + rec.last_name,
+                        'price_unit': rec.damage_charges,
+                    }))
             print(line_vals)
+            print("lines" , line_vals[0])
+            print("lines after" , line_vals[0][-1]['rental_id'])
+            # rental = line_vals[0][-1]['rental_id']
+            # if rental == rec.rental_id.id:
+
+            result = sum(item[-1]['price_unit'] for item in line_vals)
+            print(result)
+            rental_vals.append((0, 0, {
+                'date_rental': rec.create_date,
+                'rental_id': rec.id,
+                # 'description': r.time_out,
+                'rentee_name': rec.first_name + '' + rec.last_name,
+                'amount': result,
+            }))
             r = self.env['account.journal'].search([('branch_id', '=', rec.branch_id.id), ('type', '=', 'sale')])
             print(r)
             invoice = {
                 'invoice_line_ids': line_vals,
+                'rental_lines_id': rental_vals,
                 'partner_id': rec.name.id,
                 'invoice_date': date.today(),
                 'branch_id': rec.branch_id.id,
@@ -906,8 +1144,16 @@ class RentalProgress(models.Model):
                 break
         if merge:
             line_vals = []
+            rental_vals = []
             j = self.env['account.journal'].search([('branch_id', '=', self.branch_id.id), ('type', '=', 'sale')])
             for r in selected_records:
+                rental_vals.append((0, 0, {
+                    'date_rental': r.create_date,
+                    'rental_id': r.id,
+                    # 'description': r.time_out,
+                    'rentee_name': r.first_name + '' + r.last_name,
+                    'amount': r.net_amount,
+                }))
                 if r.hours_value > 0:
                     if r.vehicle_no.booleans == 'pool_id':
                         service = self.env['service.lines'].search([('service_type', '=', 'hour')])
@@ -916,7 +1162,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.hours_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -926,7 +1172,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.hours_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -936,7 +1182,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.hours_value,
                         }))
                 if r.days_value > 0:
@@ -947,7 +1193,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.days_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -957,7 +1203,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.days_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -967,7 +1213,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.days_value,
                         }))
                 if r.weeks_value > 0:
@@ -980,7 +1226,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.weeks_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -992,7 +1238,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.weeks_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -1004,7 +1250,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.weeks_value,
                         }))
                 if r.month_value > 0:
@@ -1017,7 +1263,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.month_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -1029,7 +1275,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.month_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -1041,7 +1287,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.month_value,
                         }))
                 if r.mobil_oil_rate > 0:
@@ -1054,7 +1300,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.mobil_oil_rate,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -1066,7 +1312,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.mobil_oil_rate,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -1078,7 +1324,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.mobil_oil_rate,
                         }))
                 if r.oil_filter_rate > 0:
@@ -1091,7 +1337,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.oil_filter_rate,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -1103,7 +1349,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.oil_filter_rate,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -1115,7 +1361,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.oil_filter_rate,
                         }))
                 if r.air_filter_rate > 0:
@@ -1128,7 +1374,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.air_filter_rate,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -1140,7 +1386,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.air_filter_rate,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -1152,8 +1398,45 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.air_filter_rate,
+                        }))
+                if r.km_value > 0:
+                    if r.vehicle_no.booleans == 'pool_id':
+                        print("pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'km')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.km_value,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool':
+                        print("Non pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'km')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.km_value,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool_other':
+                        print("Non pool Other")
+                        service = self.env['service.lines'].search([('service_type', '=', 'km')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_other_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.km_value,
                         }))
                 if r.drop_off_value > 0:
                     if r.vehicle_no.booleans == 'pool_id':
@@ -1165,7 +1448,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.drop_off_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -1177,7 +1460,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.drop_off_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -1189,8 +1472,45 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.drop_off_value,
+                        }))
+                if r.airport_duty_value > 0:
+                    if r.vehicle_no.booleans == 'pool_id':
+                        print("pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'airport_duty')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.airport_duty_value,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool':
+                        print("Non pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'airport_duty')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.airport_duty_value,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool_other':
+                        print("Non pool Other")
+                        service = self.env['service.lines'].search([('service_type', '=', 'airport_duty')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_other_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.airport_duty_value,
                         }))
                 if r.over_time_value > 0:
                     if r.vehicle_no.booleans == 'pool_id':
@@ -1202,7 +1522,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.over_time_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
@@ -1214,7 +1534,7 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.over_time_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
@@ -1226,10 +1546,10 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
+                            'rentee_name': r.first_name + '' + r.last_name,
                             'price_unit': r.over_time_value,
                         }))
-                if r.out_station_rate > 0:
+                if r.out_of_station_value > 0:
                     if r.vehicle_no.booleans == 'pool_id':
                         print("pool")
                         service = self.env['service.lines'].search([('service_type', '=', 'out_station')])
@@ -1239,8 +1559,8 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
-                            'price_unit': r.out_station_rate,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.out_of_station_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool':
                         print("Non pool")
@@ -1251,8 +1571,8 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
-                            'price_unit': r.out_station_rate,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.out_of_station_value,
                         }))
                     elif r.vehicle_no.booleans == 'non_pool_other':
                         print("Non pool Other")
@@ -1263,15 +1583,184 @@ class RentalProgress(models.Model):
                             'analytic_account_id': r.vehicle_no.analytical_account_id.id,
                             'date_rental': r.time_out,
                             'rental_id': r.id,
-                            'rentee_name': r.rentee_name,
-                            'price_unit': r.out_station_rate,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.out_of_station_value,
+                        }))
+                if r.toll > 0:
+                    if r.vehicle_no.booleans == 'pool_id':
+                        print("pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'toll')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.toll,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool':
+                        print("Non pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'toll')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.toll,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool_other':
+                        print("Non pool Other")
+                        service = self.env['service.lines'].search([('service_type', '=', 'toll')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_other_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.toll,
+                        }))
+                if r.allowa > 0:
+                    if r.vehicle_no.booleans == 'pool_id':
+                        print("pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'allowa')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.allowa,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool':
+                        print("Non pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'allowa')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.allowa,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool_other':
+                        print("Non pool Other")
+                        service = self.env['service.lines'].search([('service_type', '=', 'allowa')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_other_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.allowa,
+                        }))
+                if r.m_tag > 0:
+                    if r.vehicle_no.booleans == 'pool_id':
+                        print("pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'm_tag')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.m_tag,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool':
+                        print("Non pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'm_tag')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.m_tag,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool_other':
+                        print("Non pool Other")
+                        service = self.env['service.lines'].search([('service_type', '=', 'm_tag')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_other_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.m_tag,
+                        }))
+                if r.damage_charges > 0:
+                    if r.vehicle_no.booleans == 'pool_id':
+                        print("pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'damage_charges')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.damage_charges,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool':
+                        print("Non pool")
+                        service = self.env['service.lines'].search([('service_type', '=', 'damage_charges')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.damage_charges,
+                        }))
+                    elif r.vehicle_no.booleans == 'non_pool_other':
+                        print("Non pool Other")
+                        service = self.env['service.lines'].search([('service_type', '=', 'damage_charges')])
+                        print("service", service.pool_id.name)
+                        line_vals.append((0, 0, {
+                            'product_id': service.non_pool_other_id.id,
+                            'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+                            'date_rental': r.time_out,
+                            'rental_id': r.id,
+                            'rentee_name': r.first_name + '' + r.last_name,
+                            'price_unit': r.damage_charges,
                         }))
                 r.stage_id = 'billed'
                 r.button_show = True
             print(line_vals)
+            print(rental_vals)
+            # print("lines", line_vals[0])
+            # print("lines after", line_vals[0][-1]['rental_id'])
+            # rental = line_vals[0][-1]['rental_id']
+            #
+            # # result = sum(item[-1]['price_unit'] for item in line_vals)
+            # print("rental",rental)
+            # for line in line_vals:
+            #     print("after loop",line[-1]['rental_id'])
+            #     if rental == line[-1]['rental_id']:
+            #         print("after condition" , line)
+            #     rental_vals.append((0, 0, {
+            #         'date_rental': r.create_date,
+            #         'rental_id': r.id,
+            #         # 'description': r.time_out,
+            #         'rentee_name': r.first_name + '' + r.last_name,
+            #         'amount': result,
+            #     }))
+
+
             invoice_obj = self.env['account.move']
             vals = {
                 'invoice_line_ids': line_vals,
+                'rental_lines_id': rental_vals,
                 'partner_id': selected_records[0].name.id,
                 'branch_id': selected_records[0].branch_id.id,
                 'invoice_date': datetime.today(),

@@ -112,6 +112,7 @@ class ChauffeurInWizard(models.TransientModel):
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + res.over_time_value
                                     res.out_station_rate = 0
+                                    res.out_of_station_value = 0
                             elif res.based_on == 'daily':
                                 if minutes > 0:
                                     res.hours = hours + 1
@@ -148,6 +149,7 @@ class ChauffeurInWizard(models.TransientModel):
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + res.over_time_value
                                     res.out_station_rate = 0
+                                    res.out_of_station_value = 0
                             elif res.based_on == 'weekly':
                                 week = int(total_days.days // 7)
                                 day = int(total_days.days - week * 7)
@@ -192,6 +194,7 @@ class ChauffeurInWizard(models.TransientModel):
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + + res.over_time_value
                                     res.out_station_rate = 0
+                                    res.out_of_station_value = 0
                             elif res.based_on == 'monthly':
                                 month = int(total_days.days / 30)
                                 week = int(total_days.days - month * 30) // 7
@@ -246,6 +249,7 @@ class ChauffeurInWizard(models.TransientModel):
                                     res.out_of_station = False
                                     res.net_amount = res.total_rate + toll_allowance + res.over_time_value
                                     res.out_station_rate = 0
+                                    res.out_of_station_value = 0
                             elif res.based_on == 'drop_off_duty':
                                 res.drop_off_rate = j.drop_off_rate
                                 extra_km = res.driven - record.km_limit
