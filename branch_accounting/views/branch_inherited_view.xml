@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record id="branch_res_branch_view_form_inherited" model="ir.ui.view">
+            <field name="name">res.branch.inherited</field>
+            <field name="inherit_id" ref="branch.branch_res_branch_view_form"/>
+            <field name="model">res.branch</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="account_rec_id"/>
+                    <field name="account_pay_id"/>
+                    <field name="inter_branch_journal"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,60 @@
+<odoo>
+    <data>
+        <record id="view_account_payment_form_inherited" model="ir.ui.view">
+            <field name="name">account.payment.inherited</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="model">account.payment</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='branch_id']" position="after">
+                    <field name="is_multi_branch" required="1"/>
+                </xpath>
+                <xpath expr="//field[@name='branch_id']" position="attributes">
+                    <attribute name="required">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_id']" position="after">
+<!--                   <field name="move_id2" attrs="{'invisible': [('move_id2','=',False)]}"/>-->
+                   <field name="move_id3" attrs="{'invisible': [('move_id3','=',False)]}"/>
+                </xpath>
+                <xpath expr="//header" position="inside">
+<!--                    <button name="action_create_jv" type="object" string="Create Invoice Jv"/>-->
+                    <button name="action_branch_entries_jv" type="object" string="Create Entries jv"/>
+                </xpath>
+                <xpath expr="//notebook" position="replace">
+                    <notebook>
+                        <page string="Invoice Lines" name="invoice_lines">
+                            <field name="payment_invoice_ids"
+                                   attrs="{'invisible': ['|', ('payment_type', 'not in', ['inbound', 'outbound']), ('partner_type', 'not in', ['customer', 'supplier'])]}">
+                                <tree editable="bottom" create="false">
+                                    <field name="invoice_id" readonly="1" force_save="1"/>
+                                    <field name="origin"/>
+                                    <field name="branch_id"/>
+                                    <field name="date_invoice"/>
+                                    <field name="date_due"/>
+                                    <field name="amount_total"/>
+                                    <field name="residual"/>
+                                    <field name="allocation" attrs="{'readonly': [('payment_state', '!=', 'draft')]}"/>
+                                    <field name="reconcile_amount"
+                                           attrs="{'readonly': [('payment_state', '!=', 'draft')]}"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="payment_state" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Branch Entries" attrs="{'invisible': [('is_multi_branch','!=','yes')]}">
+                            <field name="branch_entries_id">
+                                <tree editable="bottom">
+                                    <field name="receiving_branch_id" optional="show"/>
+                                    <field name="partner_id_to" optional="show"/>
+                                    <field name="payable_branch_id" optional="show"/>
+                                    <field name="partner_id_from" optional="show"/>
+                                    <field name="amount" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
