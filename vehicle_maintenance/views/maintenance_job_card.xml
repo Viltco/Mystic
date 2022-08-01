@@ -62,6 +62,7 @@
                         <group string="Location">
                             <field name="location_id" required="True"/>
                             <field name="inspection_from"/>
+                            <field name="fuel_type"/>
                         </group>
                         <group>
                             <field name="vehicle_in"/>
@@ -71,6 +72,31 @@
                         <group>
                             <field name="work_done"/>
                         </group>
+                    </group>
+                    <notebook>
+                        <page>
+                            <field name="maintenance_lines_id" force_save="1">
+                                <tree editable="bottom">
+                                    <field name="sl_no" readonly="1" force_save="1"/>
+                                    <field name="location_id" force_save="1"/>
+                                    <field name="product_id" force_save="1"/>
+                                    <field name="quantity" force_save="1"/>
+                                    <field name="unit_price" force_save="1"/>
+                                    <field name="total" force_save="1"/>
+                                    <field name="labour" force_save="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="total">
+                            <field name="total" widget="monetary" force_save="1"/>
+                            <field name="labour_total" force_save="1"/>
+                            <field name="tax" force_save="1"/>
+                            <field name="grand_total" widget="monetary" force_save="1"/>
+                            <!--                            <field name="estimate_total" widget="monetary"/>-->
+                        </group>
+                        <div class="oe_clear"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">

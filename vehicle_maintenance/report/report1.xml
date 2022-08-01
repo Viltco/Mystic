@@ -1,0 +1,177 @@
+<odoo>
+    <template id="maintenance_report_id_print">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+
+                <t t-call="web.external_layout">
+                    <style>
+                        table, th, td {
+                        border: 3px solid black;
+                        }
+                    </style>
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <!--                    class="text-center"-->
+                        <div>
+                            <div class="page">
+                                <div class="oe_structure"/>
+                                <div style="float:right;">
+                                    Printed On:
+                                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                                </div>
+                                <br/>
+                                <br/>
+                                <div class="text-left">
+                                    <h3 class="text-center">Maintenance Job Card</h3>
+                                    <div class="row mt64">
+                                        <div class="col-6">
+                                            <strong>Job Card No:</strong>
+                                            <span t-esc="o.maintenance_bf"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Next Oil Change:</strong>
+                                            <span t-esc="o.next_oil_change"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt64">
+                                        <div class="col-6">
+                                            <strong>Model:</strong>
+                                            <span t-esc="o.model_id.name"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Registration No:</strong>
+                                            <span t-esc="o.registration_no"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt64">
+                                        <div class="col-6">
+                                            <strong>Current KM:</strong>
+                                            <span t-esc="o.current_km"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Fuel Type:</strong>
+                                            <span t-esc="o.fuel_type"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt64">
+                                        <div class="col-6">
+                                            <strong>Chassis No:</strong>
+                                            <span t-esc="o.chassis_no"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Date:</strong>
+                                            <span t-esc="o.vehicle_in"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt64">
+                                        <div class="col-6">
+                                            <strong>Work Done:</strong>
+                                            <span t-esc="o.work_done"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:left;border: 1px solid black;">
+                                                    <strong>Reference No.</strong>
+                                                </th>
+                                                <th style="text-align:left;border: 1px solid black;">
+                                                    <strong>From</strong>
+                                                </th>
+                                                <th style="text-align:left;border: 1px solid black;">
+                                                    <strong>Item No.</strong>
+                                                </th>
+                                                <th style="text-align:left;border: 1px solid black;">
+                                                    <strong>Quantity</strong>
+                                                </th>
+                                                <th style="text-align:left;border: 1px solid black;">
+                                                    <strong>Unit Price</strong>
+                                                </th>
+                                                <th style="text-align:left;border: 1px solid black;">
+                                                    <strong>Total</strong>
+                                                </th>
+                                                <th style="text-align:left;border: 1px solid black;">
+                                                    <strong>Labour</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="o.maintenance_lines_id" t-as="m">
+                                                <tr>
+                                                    <td style="text-align:left;border: 1px solid black;">
+                                                        <t t-esc="m['sl_no']"/>
+                                                    </td>
+                                                    <td style="text-align:left;border: 1px solid black;">
+                                                        <t t-esc="m['location_id']['name']"/>
+                                                    </td>
+                                                    <td style="text-align:left;border: 1px solid black;">
+                                                        <t t-esc="m['product_id']['name']"/>
+                                                    </td>
+                                                    <td style="text-align:left;border: 1px solid black;">
+                                                        <t t-esc="m['quantity']"/>
+                                                    </td>
+                                                    <td style="text-align:left;border: 1px solid black;">
+                                                        <t t-esc="m['unit_price']"/>
+                                                    </td>
+                                                    <td style="text-align:left;border: 1px solid black;">
+                                                        <t t-esc="m['total']"/>
+                                                    </td>
+                                                    <td style="text-align:left;border: 1px solid black;">
+                                                        <t t-esc="m['labour']"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="clearfix">
+                                    <div id="total" class="row">
+                                        <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
+                                            <table class="table table-sm" style="page-break-inside: avoid;">
+                                                <tr class="border-black o_subtotal" style="">
+                                                    <td>
+                                                        <strong>Total</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-field="o.total"/>
+                                                    </td>
+                                                </tr>
+                                                <tr class="border-black o_subtotal" style="">
+                                                    <td>
+                                                        <strong>Labour</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-field="o.labour_total"/>
+                                                    </td>
+                                                </tr>
+                                                <tr class="border-black o_subtotal" style="">
+                                                    <td>
+                                                        <strong>Tax</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-field="o.tax"/>
+                                                    </td>
+                                                </tr>
+                                                <tr class="border-black o_subtotal" style="">
+                                                    <td>
+                                                        <strong>Grand Total</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-field="o.grand_total"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

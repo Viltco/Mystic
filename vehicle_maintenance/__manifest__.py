@@ -28,6 +28,8 @@
         'security/ir.model.access.csv',
         'data/data.xml',
         'views/maintenance_job_card.xml',
+        'report/report.xml',
+        'report/report1.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
