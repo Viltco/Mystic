@@ -16,7 +16,12 @@ class FleetVehicleInh(models.Model):
 
     def toggle_active(self):
         for record in self.fleet_insurance_lines:
-            record.insurance_status = 'inactive'
+            if record.insurance_status == 'active':
+                record.insurance_status = 'inactive'
+                record.is_line_active = True
+            elif record.is_line_active == True:
+                record.insurance_status = 'active'
+                record.is_line_active = False
         res = super(FleetVehicleInh, self).toggle_active()
         return res
 
@@ -28,6 +33,8 @@ class FleetInsuranceLines(models.Model):
 
     fleet_vehicle_id = fields.Many2one('fleet.vehicle')
     active = fields.Boolean('Active', default=True)
+
+    is_line_active = fields.Boolean('Line Active', default=False)
 
     # def default_branch_id(self):
     #     return self.fleet_vehicle_id.branch_id.id

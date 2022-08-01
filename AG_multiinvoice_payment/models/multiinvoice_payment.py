@@ -1,6 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+
 class AccountPaymentInvoices(models.Model):
     _name = 'account.payment.invoice'
 
@@ -15,6 +16,7 @@ class AccountPaymentInvoices(models.Model):
     amount_total = fields.Monetary(related="invoice_id.amount_total")
     residual = fields.Monetary(related="invoice_id.amount_residual")
     allocation = fields.Boolean('Allocation',default=False)
+    branch_id = fields.Many2one(related='invoice_id.branch_id')
 
     @api.onchange('allocation')
     def allocate(self):
@@ -38,6 +40,7 @@ class AccountMoveLine(models.Model):
                                         in the involved lines.
                 * tax_cash_basis_moves: An account.move recordset representing the tax cash basis journal entries.
         '''
+
         results = {}
 
         if not self:
@@ -53,8 +56,9 @@ class AccountMoveLine(models.Model):
         account = None
         print("===self==", self)
         for line in self:
-            if line.reconciled:
-                raise UserError(_("You are trying to reconcile some entries that are already reconciled."))
+            # print(line.reconciled)
+            # if line.reconciled:
+            #     raise UserError(_("You are trying to reconcile some entries that are already reconciled."))
             if not line.account_id.reconcile and line.account_id.internal_type != 'liquidity':
                 raise UserError(_("Account %s does not allow reconciliation. First change the configuration of this account to allow it.")
                                 % line.account_id.display_name)
@@ -88,17 +92,16 @@ class AccountMoveLine(models.Model):
         # ==== Create partials ====
 
         partial_amount = self.env.context.get('amount', False)
-        print(partial_amount)
         if partial_amount:
             reconcile = sorted_lines._prepare_reconciliation_partials()
-            print(sorted_lines)
-            print(reconcile)
-            # if reconcile:
-            reconcile[0].update({
-                'amount': partial_amount,
-                'debit_amount_currency': partial_amount,
-                'credit_amount_currency': partial_amount,
-            })
+            # print(sorted_lines)
+            # print(reconcile)
+            if reconcile:
+                reconcile[0].update({
+                    'amount': partial_amount,
+                    'debit_amount_currency': partial_amount,
+                    'credit_amount_currency': partial_amount,
+                })
         else:
             reconcile = sorted_lines._prepare_reconciliation_partials()
 
@@ -158,11 +161,19 @@ class AccountMoveLine(models.Model):
         return results
 
 
+class Adi(models.Model):
+    _inherit = 'account.edi.document'
+
+    def action_export_xml(self):
+        pass
+
+
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     payment_invoice_ids = fields.One2many('account.payment.invoice', 'payment_id',string="Customer Invoices")
     amount = fields.Monetary(currency_field='currency_id',compute='get_amounts',store=True,readonly=False)
+    # available_partner_bank_ids = fields.Many2many('res.bank')
    
     @api.depends('payment_invoice_ids')
     def get_amounts(self):
@@ -173,31 +184,31 @@ class AccountPayment(models.Model):
             # raise UserError(amount)
             rec.amount = amount
 
-    # @api.onchange('payment_type', 'partner_type', 'partner_id', 'currency_id')
-    # def _onchange_to_get_vendor_invoices(self):
-    #     if self.payment_type in ['inbound', 'outbound'] and self.partner_type and self.partner_id and self.currency_id:
-    #         self.payment_invoice_ids = [(6, 0, [])]
-    #
-    #         if self.payment_type == 'inbound' and self.partner_type == 'customer':
-    #             invoice_type = 'out_invoice'
-    #         elif self.payment_type == 'outbound' and self.partner_type == 'customer':
-    #             invoice_type = 'out_refund'
-    #         elif self.payment_type == 'outbound' and self.partner_type == 'supplier':
-    #             invoice_type = 'in_invoice'
-    #         else:
-    #             invoice_type = 'in_refund'
-    #         invoice_recs = self.env['account.move'].search([
-    #             ('partner_id', 'child_of', self.partner_id.id),
-    #             ('state', '=', 'posted'),
-    #             ('move_type', '=', invoice_type),
-    #             ('payment_state', '!=', 'paid'),
-    #             ('currency_id', '=', self.currency_id.id)])
-    #         print(invoice_type)
-    #         print(invoice_recs)
-    #         payment_invoice_values = []
-    #         for invoice_rec in invoice_recs:
-    #             payment_invoice_values.append([0, 0, {'invoice_id': invoice_rec.id}])
-    #         self.payment_invoice_ids = payment_invoice_values
+    @api.onchange('payment_type', 'partner_type', 'partner_id', 'currency_id')
+    def _onchange_to_get_vendor_invoices(self):
+        if self.payment_type in ['inbound', 'outbound'] and self.partner_type and self.partner_id and self.currency_id:
+            self.payment_invoice_ids = [(6, 0, [])]
+
+            if self.payment_type == 'inbound' and self.partner_type == 'customer':
+                invoice_type = 'out_invoice'
+            elif self.payment_type == 'outbound' and self.partner_type == 'customer':
+                invoice_type = 'out_refund'
+            elif self.payment_type == 'outbound' and self.partner_type == 'supplier':
+                invoice_type = 'in_invoice'
+            else:
+                invoice_type = 'in_refund'
+            invoice_recs = self.env['account.move'].search([
+                ('partner_id', 'child_of', self.partner_id.id),
+                ('state', '=', 'posted'),
+                ('move_type', '=', invoice_type),
+                ('payment_state', '!=', 'paid'),
+                ('currency_id', '=', self.currency_id.id)])
+            print(invoice_type)
+            print(invoice_recs)
+            payment_invoice_values = []
+            for invoice_rec in invoice_recs:
+                payment_invoice_values.append([0, 0, {'invoice_id': invoice_rec.id}])
+            self.payment_invoice_ids = payment_invoice_values
 
     # def action_post(self):
     #     super(AccountPayment, self).action_post()
@@ -222,11 +233,11 @@ class AccountPayment(models.Model):
     #             else:
     #                 self.ensure_one()
     #                 if payment.payment_type == 'inbound':
-    #                     lines = payment.move_id.line_ids.filtered(lambda line: line.credit > 0)
+    #                     lines = payment.move_id.line_ids.filtered(lambda line: line.credit > 0 and line.credit == line_id.reconcile_amount and line.branch_id.id == line_id.branch_id.id)
     #                     lines += line_id.invoice_id.line_ids.filtered(lambda line: line.account_id == lines[0].account_id and not line.reconciled)
     #                     lines.with_context(amount=line_id.reconcile_amount).reconcile()
     #                 elif payment.payment_type == 'outbound':
-    #                     lines = payment.move_id.line_ids.filtered(lambda line: line.debit > 0)
+    #                     lines = payment.move_id.line_ids.filtered(lambda line: line.debit > 0 and line.debit == line_id.reconcile_amount and line.branch_id.id == line_id.branch_id.id)
     #                     lines += line_id.invoice_id.line_ids.filtered(lambda line: line.account_id == lines[0].account_id and not line.reconciled)
     #                     lines.with_context(amount=line_id.reconcile_amount).reconcile()
     #     return True

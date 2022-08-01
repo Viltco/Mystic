@@ -76,9 +76,26 @@
                             class="oe_stat_button" icon="fa-dollar" string="Journal Entries" attrs="{'invisible': [('move_type', '=', 'entry')]}">
                     </button>
                 </xpath>
-<!--                <xpath expr="//field[@name='journal_id']" position="after">-->
-<!--                        <field name="advance_journal"/>-->
-<!--                </xpath>-->
+            </field>
+        </record>
+
+        <record id="res_config_settings_view_form_inherited" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <h2 style="background-color:#e1e3e6;">Advance Adjustment Account</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box" title="Advance Adjustment Account">
+                            <div class="o_setting_right_pane">
+                                <group>
+                                    <field name="account_id"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
             </field>
         </record>
     </data>

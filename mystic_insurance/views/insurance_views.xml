@@ -14,6 +14,7 @@
                         <field name="fleet_insurance_lines">
                             <tree editable="bottom">
                                 <field name="active" invisible="1" widget="boolean_toggle"/>
+                                <field name="is_line_active"/>
                                 <field name="fleet_vehicle_id" invisible="1"/>
                                 <field name="date_from" required="1"/>
                                 <field name="date_to" required="1"/>

@@ -16,7 +16,12 @@ class FleetVehicleTrk(models.Model):
 
     def toggle_active(self):
         for record in self.tracking_charges_lines:
-            record.tracking_status = 'inactive'
+            if record.tracking_status == 'active':
+                record.tracking_status = 'inactive'
+                record.is_line_active = True
+            elif record.is_line_active == True:
+                record.tracking_status = 'active'
+                record.is_line_active = False
         res = super(FleetVehicleTrk, self).toggle_active()
         return res
 
@@ -28,6 +33,8 @@ class TrackingChargesLines(models.Model):
 
     tracking_charge_id = fields.Many2one('fleet.vehicle')
     active = fields.Boolean('Active', default=True)
+
+    is_line_active = fields.Boolean('Line Active', default=False)
 
     # @api.depends('tracking_charge_id')
     # def default_branch_id(self):

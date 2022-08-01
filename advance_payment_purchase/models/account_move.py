@@ -17,11 +17,19 @@ class AccountMoveInherit(models.Model):
     paid_amount = fields.Float(string='Paid Amount')
     advance_journal = fields.Many2one('account.journal', string='Account Journal')
     hide_aj = fields.Boolean(default=False)
+
+    def _default_account_id(self):
+        account_id = self.env['ir.config_parameter'].get_param('advance_payment_purchase.account_id')
+        account_id = self.env['account.account'].search([('id', '=', account_id)])
+        print(account_id)
+        return account_id
+
     advance_account = fields.Many2one(
         comodel_name='account.account',
         string='Advance Account',
         store=True, readonly=False,
-        domain="[('user_type_id.type', 'in', ('receivable', 'payable')), ('company_id', '=', company_id)]")
+        domain="[('user_type_id.type', 'in', ('receivable', 'payable')), ('company_id', '=', company_id)]",
+        default=_default_account_id)
 
     #
     # @api.depends('purchase_vendor_bill_id')
@@ -151,7 +159,6 @@ class AccountMoveInherit(models.Model):
         print(self.move_type)
         if total_plus > active_model.paid_amount:
             raise UserError('Advance has already been paid')
-
 
     # def action_post(self):
     #     active_model = self.env['account.move'].browse(self.env.context.get('active_id'))

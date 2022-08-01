@@ -11,6 +11,7 @@
                         <tree editable="bottom">
                             <field name="tracking_charge_id" invisible="1"/>
                             <field name="active" invisible="1" widget="boolean_toggle"/>
+                            <field name="is_line_active"/>
                             <field name="date_from" required="1"/>
                             <field name="date_to" required="1"/>
                             <field name="branch_id" required="1" readonly="0"/>

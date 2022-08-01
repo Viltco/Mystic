@@ -9,7 +9,7 @@
     'category':"Accounting",
     'summary':"Using this module you can pay multiple invoice payment in one click. Multiple invoice payment in one click for customer",
     "depends": [
-        "account", 'approval_workflow'
+        "account", 'approval_workflow', 'branch'
     ],
     'data': [
         'security/ir.model.access.csv',
