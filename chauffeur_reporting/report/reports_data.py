@@ -13,9 +13,10 @@ class EmpReport(models.AbstractModel):
         data = self.env['hr.employee'].search([('branch_id','=',result.branch_id.id),('is_driver','=',True)])
         print(data)
         return {
-            'doc_ids': docids,
+            'docs': docids,
             'doc_model': 'chauffeur.info',
             'data': data,
+            'result': result,
         }
 
 
