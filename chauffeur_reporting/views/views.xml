@@ -1,0 +1,31 @@
+<odoo>
+    <record id="chauffeur_report_form" model="ir.ui.view">
+        <field name="name">chauffeur.info.form</field>
+        <field name="model">chauffeur.info</field>
+        <field name="arch" type="xml">
+        <form string="Report">
+            <group class="oe_title">
+                <field name="branch_id"/>
+            </group>
+            <footer>
+                <button name="menu_report_action" string="PDF Print" class="btn-primary" type="object"/>
+                <button string="Cancel" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+        </field>
+    </record>
+    <record id="chauffeur_report_action" model="ir.actions.act_window">
+        <field name="name">Chauffeur Information Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">chauffeur.info</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="chauffeur_report_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="chauffeur_root_report"
+              name="Chauffeur Information Report"
+              parent="hr.hr_menu_hr_reports"
+              action="chauffeur_report_action"
+              sequence="400"/>
+</odoo>

@@ -95,7 +95,6 @@ class VehicleMaintenance(models.Model):
 class VehicleMaintenanceLines(models.Model):
     _name = "vehicle.maintenance.lines"
 
-    sl_no = fields.Integer(string='Reference', store=True)
     location_id = fields.Many2one('stock.location', string="Location", tracking=True)
     product_id = fields.Many2one('product.product', string="Product", tracking=True)
     quantity = fields.Float(string='Quantity', store=True)
@@ -112,18 +111,4 @@ class VehicleMaintenanceLines(models.Model):
                 rec.total = rec.quantity * rec.unit_price
             else:
                 rec.total = 0
-    # , compute = '_compute_serial_number'
-    # @api.depends('maintenance_job_id')
-    # def _compute_serial_number(self):
-    #     sr = 1
-    #     print(self)
-    #     for rec in self:
-    #         sr += 1
-    #         print(sr)
 
-            # if not line.sl_no:
-            #     line.sl_no = 1
-            #     for line in order_line:
-            #         print(line.sl_no)
-            #         line.sl_no = 1
-            #         line.sl_no += 1

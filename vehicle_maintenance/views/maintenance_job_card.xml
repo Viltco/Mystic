@@ -77,7 +77,6 @@
                         <page>
                             <field name="maintenance_lines_id" force_save="1">
                                 <tree editable="bottom">
-                                    <field name="sl_no" readonly="1" force_save="1"/>
                                     <field name="location_id" force_save="1"/>
                                     <field name="product_id" force_save="1"/>
                                     <field name="quantity" force_save="1"/>
