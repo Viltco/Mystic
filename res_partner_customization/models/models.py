@@ -50,9 +50,13 @@ class AddFieldsPartners(models.Model):
     @api.model
     def create(self, vals):
         result = super(AddFieldsPartners, self).create(vals)
+        if result.parent_id and result.parent_id.partner_type == 'is_customer':
+            result.partner_type = 'is_customer'
+            result.branch_id = result.parent_id.branch_id.id
         if result.partner_type == 'is_customer':
+            br = result.parent_id.branch_id.id  if result.parent_id else result.branch_id.id
             res = self.env['res.contract'].create(
-                {'branch_id': result.branch_id.id,
+                {'branch_id': br,
                  'partner_id': result.id,
                  })
         return result
