@@ -26,6 +26,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/account_payment_inherited.xml',
+        'views/res_config_inherited.xml',
         'views/branch_inherited_view.xml',
     ],
     # only loaded in demonstration mode

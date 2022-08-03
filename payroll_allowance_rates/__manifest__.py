@@ -20,13 +20,15 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'hr_payroll', 'hr_work_entry_contract', 'hr_attendance'],
+    'depends': ['base', 'hr_payroll', 'hr_work_entry_contract', 'hr_attendance', 'branch', 'de_shift_attendance',
+                'vehicle_reservation'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/allowance_rates_view.xml',
         'views/attendance_inherited_view.xml',
+        'views/payroll.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

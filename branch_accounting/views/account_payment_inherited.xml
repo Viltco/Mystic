@@ -17,7 +17,6 @@
                    <field name="move_id3" attrs="{'invisible': [('move_id3','=',False)]}"/>
                 </xpath>
                 <xpath expr="//header" position="inside">
-<!--                    <button name="action_create_jv" type="object" string="Create Invoice Jv"/>-->
                     <button name="action_branch_entries_jv" type="object" string="Create Entries jv"/>
                 </xpath>
                 <xpath expr="//notebook" position="replace">

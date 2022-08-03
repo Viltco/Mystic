@@ -98,11 +98,14 @@ class AllocationShift(models.Model):
                     day_week = '5'
                 elif date_after_month.weekday() == 6:
                     day_week = '6'
+
                 vals = {
                     'rel_allocation': self.id,
                     'date': date_after_month,
                     'day': day_week,
                 }
+                if vals['day'] == self.shift_id.off_day:
+                    vals['rest_day'] = True
                 self.env['hr.shift.allocation.line'].create(vals)
                 i = i + 1
 

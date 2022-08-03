@@ -39,6 +39,15 @@ class AttendanceShift(models.Model):
     late_out = fields.Float(string='Late out Threshold')
 
     branch_id = fields.Many2one('res.branch')
+    off_day = fields.Selection([
+        ('0', 'Monday'),
+        ('1', 'Tuesday'),
+        ('2', 'Wednesday'),
+        ('3', 'Thursday'),
+        ('4', 'Friday'),
+        ('5', 'Saturday'),
+        ('6', 'Sunday'),
+    ], string='Off Day', copy=False, default='6')
 
     # @api.onchange('time_in', 'time_out')
     # def _onchange_hours(self):

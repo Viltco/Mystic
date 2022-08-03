@@ -34,6 +34,7 @@
                             <field name="early_in" attrs="{'invisible': [('is_driver_shift','=', False)]}" widget="float_time"/>
                             <field name="late_out" attrs="{'invisible': [('is_driver_shift','=', False)]}" widget="float_time"/>
                             <field name="branch_id"/>
+                            <field name="off_day"/>
 						</group>
 					</group>
 				</sheet>

@@ -4,4 +4,4 @@ from . import shift_attendance
 from . import shift_allocation
 from . import shift_management
 from . import rental
-
+from . import gusted_holidays

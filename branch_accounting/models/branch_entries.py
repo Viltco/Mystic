@@ -11,3 +11,4 @@ class BranchEntries(models.Model):
     payable_branch_id = fields.Many2one('res.branch', string='Payable Branch')
     partner_id_from = fields.Many2one('res.partner', string='Partner (From)')
     amount = fields.Float('Amount')
+

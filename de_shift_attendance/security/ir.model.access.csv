@@ -4,4 +4,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 3,access_hr_shift_allocation_line,model_hr_shift_allocation_line,base.group_user,1,1,1,1
 4,access_hr_shift_management,model_hr_shift_management,base.group_user,1,1,1,1
 5,access_hr_shift_management_line,model_hr_shift_management_line,base.group_user,1,1,1,1
-
+access_gusted_holiday_wizard,access.gusted.holiday.wizard,model_gusted_holiday_wizard,,1,1,1,1
+access_hr_gusted_holidays,access.hr.gusted.holidays,model_hr_gusted_holidays,,1,1,1,1

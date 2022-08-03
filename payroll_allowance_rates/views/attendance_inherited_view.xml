@@ -7,13 +7,27 @@
             <field name="priority">100</field>
             <field type="xml" name="arch">
                 <xpath expr="//field[@name='check_out']" position="after">
-                    <field name="early_in" widget="float_time" optional="show" readonly="1"/>
-                    <field name="late_in" widget="float_time" optional="show" readonly="1"/>
-                    <field name="early_out" widget="float_time" optional="show" readonly="1"/>
-                    <field name="late_out" widget="float_time" optional="show" readonly="1"/>
+                    <field name="early_in" widget="float_time" optional="show" readonly="1" force_save="1"/>
+                    <field name="late_out" widget="float_time" optional="show" readonly="1" force_save="1"/>
+                    <field name="extra_time" widget="float_time" optional="show" readonly="1" force_save="1"/>
+                    <field name="late_in" widget="float_time" optional="show" readonly="1" force_save="1"/>
+                    <field name="early_out" widget="float_time" optional="show" readonly="1" force_save="1"/>
+                    <field name="short_time" widget="float_time" optional="show" readonly="1" force_save="1"/>
                 </xpath>
                 <xpath expr="//field[@name='employee_id']" position="after">
-                    <field name="shift" optional="show" readonly="1"/>
+                    <field name="shift" optional="show" readonly="1" force_save="1"/>
+                    <field name="branch_id" optional="show" readonly="1" force_save="1"/>
+                </xpath>
+                <xpath expr="//field[@name='worked_hours']" position="before">
+                    <field name="overtime" widget="float_time" optional="show" readonly="1" force_save="1"/>
+                </xpath>
+                <xpath expr="//field[@name='worked_hours']" position="after">
+                    <field name="rental_count" optional="show" readonly="1" force_save="1"/>
+                    <field name="osa_count" optional="show" readonly="1" force_save="1"/>
+                    <field name="loc_night_count" optional="show" readonly="1" force_save="1"/>
+                    <field name="out_night_count" optional="show" readonly="1" force_save="1"/>
+                    <field name="rakhsha_count" optional="show" readonly="1" force_save="1"/>
+                    <field name="rest_day" optional="show" readonly="1" force_save="1"/>
                 </xpath>
             </field>
         </record>

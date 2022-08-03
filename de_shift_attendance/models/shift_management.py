@@ -26,6 +26,9 @@ class ManagementShift(models.Model):
     #     else:
     #         super(ManagementShift,self).unlink()
 
+    def action_gusted_holidays(self):
+        action = self.env.ref('de_shift_attendance.action_gusted_holiday_wizard').read()[0]
+        return action
 
 class ManagementShiftLine(models.Model):
     _name = 'hr.shift.management.line'
@@ -47,8 +50,7 @@ class ManagementShiftLine(models.Model):
         ('6', 'Sunday'),
     ], string='Day', copy=False, default='0')
 
-
-
     def unlink(self):
         if not self.env.user.has_group('de_shift_attendance.allow_management_deletion'):
             raise UserError(('You Did Not Have Access Rights to Delete The Record '))
+

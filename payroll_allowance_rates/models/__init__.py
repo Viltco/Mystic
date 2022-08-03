@@ -2,3 +2,4 @@
 
 from . import allowance_rates
 from . import attendance_inherited
+from . import payroll
