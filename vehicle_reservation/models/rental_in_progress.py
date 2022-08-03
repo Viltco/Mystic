@@ -259,6 +259,18 @@ class RentalProgress(models.Model):
                         elif self.based_on == 'weekly':
                             week = int(total_days.days // 7)
                             day = int(total_days.days - week * 7)
+                            # if 0 < minutes < 15:
+                            #     self.hours = hours + 1
+                            #     self.per_hour_rate = j.per_hour_rate
+                            # elif 15 < minutes < 30:
+                            #
+                            # elif 30 < minutes < 45:
+                            #
+                            # elif 45 < minutes < 60:
+                            #
+                            # else:
+                            #     self.hours = hours
+                            #     self.per_hour_rate = j.per_hour_rate
                             if minutes > 0:
                                 self.hours = hours + 1
                                 self.per_hour_rate = j.per_hour_rate

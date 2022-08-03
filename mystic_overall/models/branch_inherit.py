@@ -13,6 +13,7 @@ class ResBranchCode(models.Model):
     code = fields.Char()
 
     journal_id = fields.Many2one('account.journal', string="Journal")
+    category_id = fields.Many2one('res.partner.category', string="Tags")
 
     @api.model
     def create(self, vals):
@@ -24,4 +25,8 @@ class ResBranchCode(models.Model):
              'code': res['code'],
              })
         res.journal_id = result.id
+        tag = self.env['res.partner.category'].create(
+            {'name': res['name'],
+             })
+        res.category_id = tag.id
         return res

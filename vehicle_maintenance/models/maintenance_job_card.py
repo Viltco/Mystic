@@ -15,6 +15,7 @@ class VehicleMaintenance(models.Model):
     driver_id = fields.Many2one('res.partner', string="Driver", tracking=True,
                                 domain=[('partner_type', '=', 'is_driver')])
     location_id = fields.Many2one('stock.warehouse', string="Location", tracking=True)
+    opertion_type_id = fields.Many2one('stock.picking.type', string="Operation Type", tracking=True)
 
     inspection_from = fields.Char(string='Inspection From')
     vehicle_in = fields.Datetime('Vehicle In', default=datetime.today())
@@ -36,12 +37,13 @@ class VehicleMaintenance(models.Model):
          ('completed', 'Maintenance Completed'),
          ('vehicle_out', 'Vehicle Out')], default='waiting_for_inspection',
         string="Stage", tracking=True)
-    total = fields.Float(string='Total', store=True , compute="_compute_total")
-    labour_total = fields.Float(string='Labour', store=True , compute="_compute_labour_total")
+    total = fields.Float(string='Total', store=True, compute="_compute_total")
+    labour_total = fields.Float(string='Labour', store=True, compute="_compute_labour_total")
     tax = fields.Float(string='Tax', store=True)
-    grand_total = fields.Float(string='Grand Total', store=True , compute="_compute_grand_total")
+    grand_total = fields.Float(string='Grand Total', store=True, compute="_compute_grand_total")
 
-    maintenance_lines_id = fields.One2many('vehicle.maintenance.lines', 'maintenance_job_id', string="Maintenance Lines")
+    maintenance_lines_id = fields.One2many('vehicle.maintenance.lines', 'maintenance_job_id',
+                                           string="Maintenance Lines")
 
     @api.depends('maintenance_lines_id.total')
     def _compute_total(self):
@@ -59,24 +61,105 @@ class VehicleMaintenance(models.Model):
                 labour += line.labour
             rec.labour_total = labour
 
-    @api.depends('total' , 'labour_total')
+    @api.depends('total', 'labour_total')
     def _compute_grand_total(self):
         for rec in self:
             rec.grand_total = rec.total + rec.labour_total + rec.tax
 
-
     @api.model
     def create(self, values):
+        line_vals = []
         if 'branch_id' in values:
             seq = self.env['ir.sequence'].search(
                 [('name', '=', 'Vehicle Maintenance'), ('branch_id', '=', values['branch_id'])])
             self.env['ir.sequence'].next_by_code(seq.code)
             values['maintenance_bf'] = seq.prefix + '/' + seq.branch_id.code + '/' + str(
                 datetime.now().year) + '/' + str(datetime.now().month) + '/' + str(seq.number_next_actual) or _('New')
+        # operation_type = self.env['stock.picking.type'].search(
+        #     [('branch_id', '=', self.number), ('vehicle_id.license_plate', '=', False)])
+
+        # line_vals.append((0, 0, {
+        #     'product_id': self.non_pool_other_id.id,
+        #     'analytic_account_id': r.vehicle_no.analytical_account_id.id,
+        #     'date_rental': r.time_out,
+        #     'rental_id': r.id,
+        #     'rentee_name': r.first_name + '' + r.last_name,
+        #     'price_unit': r.damage_charges,
+        # }))
+        # operation = str(values['opertion_type_id'])
+        # print(operation)
+        # res = self.env['stock.picking'].create(
+        #     {
+        #      'picking_type_id':  self.opertion_type_id,
+        #      'location_id': [],
+        #      'location_dest_id': [],
+        #      # 'vehicle_id': rest.id,
+        #      })
         return super(VehicleMaintenance, self).create(values)
 
     def action_under_maintenance(self):
+        # res = self.env['stock.picking'].create(
+        #     {
+        #      'picking_type_id':  self.opertion_type_id.id,
+        #      'location_id': self.opertion_type_id.default_location_src_id.id,
+        #      'location_dest_id': self.opertion_type_id.default_location_dest_id.id,
+        #      # 'move_ids_without_package': line_vals,
+        #      # 'vehicle_id': rest.id,
+        #      })
+        # for line in self.maintenance_lines_id:
+        #     lines = {
+        #         # 'picking_id': picking.id,
+        #         'product_id': line.product_id.id,
+        #         'name': 'Transfer Out',
+        #         # 'product_uom': line.product_id.uom_id.id,
+        #         'location_id': self.opertion_type_id.default_location_src_id.id,
+        #         'location_dest_id': self.opertion_type_id.default_location_dest_id.id,
+        #         'product_uom_qty': line.quantity,
+        #     }
+        #     stock_move = self.env['stock.move'].create(lines)
+        picking_delivery = self.env['stock.picking.type'].search([('code', '=', 'internal')], limit=1)
+        vals = {
+            'picking_type_id':  self.opertion_type_id.id,
+            'location_id': self.opertion_type_id.default_location_src_id.id,
+            'location_dest_id': self.opertion_type_id.default_location_dest_id.id,
+            # 'partner_id': self.workcenter_id.partner_id.id,
+            # 'product_sub_id': self.product_subcontract_id.id,
+            # 'picking_type_id': picking_delivery.id,
+            'origin': self.maintenance_bf,
+        }
+        picking = self.env['stock.picking'].create(vals)
+        for line in self.maintenance_lines_id:
+            lines = {
+                'picking_id': picking.id,
+                'product_id': line.product_id.id,
+                'name': line.product_id.name,
+                'product_uom': line.product_id.uom_id.id,
+                'location_id': self.opertion_type_id.default_location_src_id.id,
+                'location_dest_id': self.opertion_type_id.default_location_dest_id.id,
+                'product_uom_qty': line.quantity,
+                # 'reserved_availability': qty * line.product_qty,
+                # 'quantity_done': qty * line.product_qty,
+            }
+            stock_move = self.env['stock.move'].create(lines)
         self.state = 'under_maintenance'
+
+    int_counter = fields.Integer(compute='get_int_counter')
+
+    def get_int_counter(self):
+        for rec in self:
+            count = self.env['stock.picking'].search_count([('origin', '=', self.maintenance_bf)])
+            rec.int_counter = count
+
+    def get_internal_transfer(self):
+        return {
+            'name': _('Transfers'),
+            'domain': [('origin', '=', self.maintenance_bf)],
+            'view_type': 'form',
+            'res_model': 'stock.picking',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'type': 'ir.actions.act_window',
+        }
 
     def action_maintenance_completed(self):
         self.state = 'completed'
@@ -104,11 +187,10 @@ class VehicleMaintenanceLines(models.Model):
 
     maintenance_job_id = fields.Many2one('vehicle.maintenance')
 
-    @api.depends('quantity' , 'unit_price')
+    @api.depends('quantity', 'unit_price')
     def _compute_total(self):
         for rec in self:
             if rec.quantity and rec.unit_price:
                 rec.total = rec.quantity * rec.unit_price
             else:
                 rec.total = 0
-

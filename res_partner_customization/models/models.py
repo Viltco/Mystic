@@ -21,6 +21,11 @@ class AddFieldsPartners(models.Model):
     _sql_constraints = [
         ('ntn_unique', 'unique(ntn)', 'Cant be duplicate value For NTN!')]
 
+    @api.onchange('branch_id','category_id')
+    def _onchange_category(self):
+        if self.branch_id:
+            self.category_id = self.branch_id.category_id.ids
+
     def action_view_sale_order(self):
         pass
 

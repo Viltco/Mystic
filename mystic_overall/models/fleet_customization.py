@@ -209,6 +209,8 @@ class FleetModelField(models.Model):
 
     model_year = fields.Selection(selection=[(f'{i}', i) for i in range(1900, 3000)], string='Model Year')
     power_cc = fields.Char(string="Power/CC")
+    vehicle_type = fields.Selection([('sedan', 'Sedan'), ('suv', 'SUV'),('commuter', 'Commuter'),('loade', 'Loade')], default='sedan', required=True)
+
 
     def name_get(self):
         res = []

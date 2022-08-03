@@ -21,7 +21,7 @@ class BookingWizard(models.TransientModel):
     program = fields.Text(string='Program')
     model_id = fields.Many2one('fleet.vehicle.model', string="Model", tracking=True)
     vehicle_out = fields.Datetime('Vehicle Out')
-    vehicle_in = fields.Datetime('Vehicle IN')
+    vehicle_in = fields.Datetime('Report Timing')
 
     rentee_type = fields.Selection([
         ('mr', 'MR.'),
@@ -34,6 +34,9 @@ class BookingWizard(models.TransientModel):
     rentee_mobile_number = fields.Char(string='Rentee Mobile Number')
     source_name = fields.Char(string='Source Name')
     source_mobile_number = fields.Char(string='Source Mobile Number')
+    field_show = fields.Boolean(defaut=False)
+    source_mobile_number_2 = fields.Char(string='Source Mobile Number2')
+    source_mobile_number_3  = fields.Char(string='Source Mobile Number3')
 
     def booking_action(self):
         self.env['vehicle.reservation'].create({
@@ -47,7 +50,10 @@ class BookingWizard(models.TransientModel):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'rentee_mobile_number': self.rentee_mobile_number,
+            'field_show': self.field_show,
             'source_name': self.source_name,
+            'source_mobile_number_2': self.source_mobile_number_2,
+            'source_mobile_number_3': self.source_mobile_number_3,
             'source_mobile_number': self.source_mobile_number,
             'report_timing': self.vehicle_in,
             'pickup': self.pickup,

@@ -194,6 +194,10 @@
         <field name="model">fleet.vehicle.model</field>
         <field name="priority">100</field>
         <field type="xml" name="arch">
+<!--            <xpath expr="//field[@name='manager_id']" position="after">-->
+<!--                <field name="model_year"/>-->
+<!--                <field name="power_cc"/>-->
+<!--            </xpath>-->
             <xpath expr="//field[@name='vehicle_type']" position="after">
                 <field name="model_year"/>
                 <field name="power_cc"/>

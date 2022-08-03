@@ -1,0 +1,60 @@
+<odoo>
+    <template id="fleet_available_id_print">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div style="float:right;">
+                        Printed On:
+                        <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
+                    </div>
+                    <br/>
+                    <br/>
+                    <div class="text-left">
+                        <h3 class="text-center">Available Vehicles</h3>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <table class="table table-bordered">
+                            <!--                            <t t-set="sr_no" t-value="0"/>-->
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;border: 1px solid black;">
+                                        <strong>Model</strong>
+                                    </th>
+                                    <th style="text-align:left;border: 1px solid black;">
+                                        <strong>Reg No.</strong>
+                                    </th>
+                                    <th style="text-align:left;border: 1px solid black;">
+                                        <strong>Chassis No</strong>
+                                    </th>
+                                    <th style="text-align:left;border: 1px solid black;">
+                                        <strong>Fuel</strong>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="vehicle_list" t-as="o">
+                                    <tr>
+                                        <td style="text-align:left;border: 1px solid black;">
+                                            <t t-esc="o['model_id']"/>
+                                        </td>
+                                        <td style="text-align:left;border: 1px solid black;">
+                                            <t t-esc="o['license_plate']"/>
+                                        </td>
+                                        <td style="text-align:left;border: 1px solid black;">
+                                            <t t-esc="o['vin_sn']"/>
+                                        </td>
+                                        <td style="text-align:left;border: 1px solid black;">
+                                            <t t-esc="o['fuel_type']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -33,7 +33,13 @@
                         </div>
                         <field name="rentee_mobile_number" required="1"/>
                         <field name="source_name" required="1"/>
-                        <field name="source_mobile_number" required="1"/>
+                        <label string="Source Mobile Number" for="source_mobile_number"/>
+                        <div class="o_row">
+                            <field name="source_mobile_number" required="1"/>
+                            <field name="field_show"/>
+                        </div>
+                        <field name="source_mobile_number_2" attrs="{'invisible': [('field_show','=',False)]}"/>
+                        <field name="source_mobile_number_3" attrs="{'invisible': [('field_show','=',False)]}"/>
                     </group>
                 </group>
 

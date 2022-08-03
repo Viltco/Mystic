@@ -166,18 +166,18 @@
                                 <group>
                                     <field name="hours" force_save="1" readonly="1"/>
                                     <field name="per_hour_rate" force_save="1" readonly="1"/>
-                                    <field name="hours_value" force_save="1" readonly="1"/>
+                                    <field name="hours_value" force_save="1" readonly="1" />
                                 </group>
                                 <group>
-                                    <field name="days" force_save="1" readonly="1"/>
-                                    <field name="day_rate" force_save="1" readonly="1"/>
+                                    <field name="days" force_save="1" readonly="1" />
+                                    <field name="day_rate" force_save="1" readonly="1" />
                                     <field name="days_value" force_save="1" readonly="1"/>
                                 </group>
                                 <group>
                                     <field name="driven" readonly="1" force_save="1"/>
                                 </group>
                                 <group>
-                                    <field name="km_rate" force_save="1" readonly="1"/>
+                                    <field name="km_rate" force_save="1" readonly="1" />
                                     <field name="km_value" force_save="1" readonly="1"/>
                                 </group>
                                 <group>
@@ -186,7 +186,7 @@
                                         <field name="apply_out_station" readonly="1" force_save="1"/>
                                         <span>Km</span>
                                     </div>
-                                    <field name="out_station_rate" readonly="1" force_save="1"/>
+                                    <field name="out_station_rate" readonly="1" force_save="1" />
                                     <field name="out_of_station_value" readonly="1" force_save="1"/>
                                 </group>
                                 <group>
