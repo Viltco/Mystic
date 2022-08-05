@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "res_partner_customization",
+    'name': "mystic_fuel_integration",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -20,15 +20,13 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base' , 'hr','contacts' , 'select_multiple_models' ,'de_shift_attendance' , 'mystic_fuel_integration'],
+    'depends': ['base' , 'mail' , 'account'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'data/data.xml',
-        'views/views.xml',
-        'views/hr_employee.xml',
-        'views/contracts.xml',
+        'views/fuel_pump.xml',
+        # 'views/res_partner_customization.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

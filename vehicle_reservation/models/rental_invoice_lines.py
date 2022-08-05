@@ -12,7 +12,7 @@ class RentalMoves(models.Model):
 class ServiceTypeLines(models.Model):
     _name = "rental.move.line"
 
-    date_rental = fields.Datetime('Date')
+    date_rental = fields.Date('Date')
     rental_id = fields.Many2one('rental.progress', string="Rental")
     description = fields.Char(string="Description")
     rentee_name = fields.Char(string='Rentee Name')

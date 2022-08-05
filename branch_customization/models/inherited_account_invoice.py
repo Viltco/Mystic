@@ -25,73 +25,36 @@ class AccountMove(models.Model):
                 rec.line_ids.branch_id = rec.branch_id.id
                 rec.line_ids.analytic_tag_ids = tags
 
-    @api.model
-    def create(self, values):
-        res = super(AccountMove, self).create(values)
-        records = self.env['account.journal'].search(
-            ['&', ('multi_branch_only', '=', False), ('name', '=', self.journal_id.name)])
-        if records:
-            for invoice in res.invoice_line_ids:
-                invoice.branch_id = res.branch_id
-                tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', res.branch_id.id)])
-                invoice.analytic_tag_ids = tags
-
-            for line1 in res.line_ids:
-                line1.branch_id = res.branch_id
-                tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', res.branch_id.id)])
-                line1.analytic_tag_ids = tags
-        # else:
-        #     for invoice in res.invoice_line_ids:
-        #         if not invoice.branch_id:
-        #             invoice.branch_id = res.branch_id
-        #             tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', res.branch_id.id)])
-        #             invoice.analytic_tag_ids = tags
-        #         else:
-        #             tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', invoice.branch_id.id)])
-        #             invoice.analytic_tag_ids = tags
-        #
-        #     for line1 in res.line_ids:
-        #         if not line1.branch_id:
-        #             line1.branch_id = res.branch_id
-        #             tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', res.branch_id.id)])
-        #             line1.analytic_tag_ids = tags
-        #         else:
-        #             tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', line1.branch_id.id)])
-        #             line1.analytic_tag_ids = tags
-
-        return res
-
-    def write(self, values):
-        res = super(AccountMove, self).write(values)
-        records = self.env['account.journal'].search(
-            ['&', ('multi_branch_only', '=', False), ('name', '=', self.journal_id.name)])
-        if records:
-            tags = self.env['account.analytic.tag'].search([('branch_id', '=', self.branch_id.id)])
-            for line in self.invoice_line_ids:
-                line.branch_id = self.branch_id
-                line.analytic_tag_ids = tags.ids
-            for line1 in self.line_ids:
-                line1.branch_id = self.branch_id
-                line1.analytic_tag_ids = tags.ids
-        # else:
-        #
-        #     for line in self.invoice_line_ids:
-        #         if not line.branch_id:
-        #             tags = self.env['account.analytic.tag'].search([('branch_id', '=', self.branch_id.id)])
-        #             line.branch_id = self.branch_id
-        #             line.analytic_tag_ids = tags.ids
-        #         else:
-        #             tags = self.env['account.analytic.tag'].search([('branch_id', '=', line.branch_id.id)])
-        #             line.analytic_tag_ids = tags.ids
-        #     for line1 in self.line_ids:
-        #         if not line1.branch_id:
-        #             tags = self.env['account.analytic.tag'].search([('branch_id', '=', self.branch_id.id)])
-        #             line1.branch_id = self.branch_id
-        #             line1.analytic_tag_ids = tags.ids
-        #         else:
-        #             tags = self.env['account.analytic.tag'].search([('branch_id', '=', line1.branch_id.id)])
-        #             line1.analytic_tag_ids = tags.ids
-        return res
+    # @api.model
+    # def create(self, values):
+    #     res = super(AccountMove, self).create(values)
+    #     records = self.env['account.journal'].search(
+    #         ['&', ('multi_branch_only', '=', False), ('name', '=', self.journal_id.name)])
+    #     if records:
+    #         for invoice in res.invoice_line_ids:
+    #             invoice.branch_id = res.branch_id
+    #             tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', res.branch_id.id)])
+    #             invoice.analytic_tag_ids = tags
+    #
+    #         for line1 in res.line_ids:
+    #             line1.branch_id = res.branch_id
+    #             tags = self.env['account.analytic.tag'].search([('branch_id.id', '=', res.branch_id.id)])
+    #             line1.analytic_tag_ids = tags
+    #     return res
+    #
+    # def write(self, values):
+    #     res = super(AccountMove, self).write(values)
+    #     records = self.env['account.journal'].search(
+    #         ['&', ('multi_branch_only', '=', False), ('name', '=', self.journal_id.name)])
+    #     if records:
+    #         tags = self.env['account.analytic.tag'].search([('branch_id', '=', self.branch_id.id)])
+    #         for line in self.invoice_line_ids:
+    #             line.branch_id = self.branch_id
+    #             line.analytic_tag_ids = tags.ids
+    #         for line1 in self.line_ids:
+    #             line1.branch_id = self.branch_id
+    #             line1.analytic_tag_ids = tags.ids
+    #     return res
 
     def action_register_payment(self):
 

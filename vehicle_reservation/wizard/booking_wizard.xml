@@ -54,7 +54,7 @@
     </record>
 
     <record id="booking_wizard_action" model="ir.actions.act_window">
-        <field name="name">Booking</field>
+        <field name="name">Scheduling</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">booking.wizard</field>
         <field name="view_mode">form</field>
@@ -63,7 +63,7 @@
     </record>
 
     <menuitem id="booking_details"
-              name="Booking"
+              name="Scheduling"
               parent="vehicle_reservation_details"
               action="booking_wizard_action"
               sequence="1"/>

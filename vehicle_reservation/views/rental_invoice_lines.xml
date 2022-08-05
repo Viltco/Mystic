@@ -7,7 +7,7 @@
         <field name="model">account.move</field>
         <field name="priority">100</field>
         <field type="xml" name="arch">
-            <xpath expr="/form/sheet/notebook/page[@name='other_info']" position="after">
+            <xpath expr="/form/sheet/notebook/page[@id='invoice_tab']" position="before">
                 <page string="Rental Lines">
                     <field name="rental_lines_id" force_save="1">
                         <tree editable="bottom">

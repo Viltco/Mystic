@@ -18,7 +18,7 @@ class VehicleReservation(models.Model):
         ('mrs', 'MRS.'),
         ('prof', 'Prof.'),
         ('dr', 'Dr.'),
-    ], default='mr' ,string="Rentee Name")
+    ], default='mr', string="Rentee Name")
     first_name = fields.Char(string='First Name')
     last_name = fields.Char(string='Last Name')
     booking = fields.Selection([
@@ -30,7 +30,8 @@ class VehicleReservation(models.Model):
         ('drop_off_duty', 'Drop Off Duty'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'), ('airport_duty', 'Airport Transfer') ,('out_station', 'Out Station')], default='time_and_mileage', string="Based On")
+        ('monthly', 'Monthly'), ('airport_duty', 'Airport Transfer'), ('out_station', 'Out Station')],
+        default='time_and_mileage', string="Based On")
     payment_type = fields.Selection([
         ('cash', 'Cash'),
         ('credit', 'Credit')], default='cash', string="Payment Type")
@@ -38,7 +39,7 @@ class VehicleReservation(models.Model):
     report_timing = fields.Datetime('Report Timing')
     model_id = fields.Many2one('fleet.vehicle.model', string="Model", tracking=True)
     brand_id = fields.Many2one('fleet.vehicle', string="Vehicle", tracking=True)
-    brand_ids = fields.Many2many('fleet.vehicle' , compute = "_compute_brand_ids")
+    brand_ids = fields.Many2many('fleet.vehicle', compute="_compute_brand_ids")
     # , compute = "_compute_brand_ids"
     booking_accept = fields.Selection([
         ('on_call', 'On Call'),
@@ -56,7 +57,8 @@ class VehicleReservation(models.Model):
     pickup = fields.Text(string='Pickup')
     program = fields.Text(string='Program')
 
-    state = fields.Selection([('draft', 'In Progress'), ('confirm', 'confirmed'), ('cancel', 'Cancelled')], default='draft',
+    state = fields.Selection([('draft', 'In Progress'), ('confirm', 'confirmed'), ('cancel', 'Cancelled')],
+                             default='draft',
                              string="status", tracking=True)
 
     @api.onchange('partner_id')
@@ -88,7 +90,6 @@ class VehicleReservation(models.Model):
                 'New')
         user = super(VehicleReservation, self).write(vals)
         return user
-
 
     def action_confirm(self):
         for rec in self:
@@ -133,6 +134,7 @@ class VehicleReservation(models.Model):
 
             else:
                 raise ValidationError(f'PLease Create Contract of Customer')
+
     # def action_confirm(self):
     #     for rec in self:
     #         record = self.env['res.contract'].search(
@@ -171,12 +173,21 @@ class VehicleReservation(models.Model):
         self.state = 'draft'
 
     def action_cancel(self):
+        rental = self.env['rental.progress'].search([('reservation_id', '=', self.id),('state', '!=', 'rental_close')])
+        print(rental.state)
+        print(rental.vehicle_no)
+        for r in rental:
+            r.state = 'cancel'
+            result = self.env['fleet.vehicle.state'].search([('sequence', '=', 0)])
+            r.vehicle_no.state_id = result.id
         self.state = 'cancel'
 
     @api.depends('model_id', 'brand_id')
     def _compute_brand_ids(self):
         for rec in self:
-            records = self.env['fleet.vehicle'].search([('model_id.name', '=', rec.model_id.name),('model_id.model_year', '=', rec.model_id.model_year),('model_id.power_cc', '=', rec.model_id.power_cc)])
+            records = self.env['fleet.vehicle'].search(
+                [('model_id.name', '=', rec.model_id.name), ('model_id.model_year', '=', rec.model_id.model_year),
+                 ('model_id.power_cc', '=', rec.model_id.power_cc)])
             vehicle_list = []
             if records:
                 for re in records:
@@ -205,4 +216,3 @@ class VehicleReservation(models.Model):
         for rec in self:
             count = self.env['rental.progress'].search_count([('reservation_id', '=', self.id)])
             rec.rental_counter = count
-

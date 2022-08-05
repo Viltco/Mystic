@@ -33,15 +33,15 @@
                 <header>
                     <button id="button_chauffeur_out" name="action_chauffeur_out" string="Chauffeur Out"
                             class="btn-primary" type="object"
-                            attrs="{'invisible':[('state','in',('chauffeur_out' , 'chauffeur_in' , 'rental_close'))]}"/>
+                            attrs="{'invisible':[('state','in',('chauffeur_out' , 'chauffeur_in' , 'rental_close' ,'cancel'))]}"/>
                     <button id="button_chauffeur_in" name="action_chauffeur_in" string="Chauffeur In"
                             class="btn-primary" type="object" states="chauffeur_out"/>
                     <button id="button_rental_closed" name="action_rental_closed" string="Rental Closed"
                             class="btn-primary" type="object"
-                            attrs="{'invisible':[('state','in',('ready_for_departure','chauffeur_out'  , 'rental_close'))]}"/>
+                            attrs="{'invisible':[('state','in',('ready_for_departure','chauffeur_out'  , 'rental_close' ,'cancel'))]}"/>
                     <button id="button_create_invoice" name="action_create_invoice" string="Create Invoice"
                             class="btn-primary" type="object" groups="account.group_account_invoice"
-                            attrs="{'invisible':['|',('state','in',('ready_for_departure','chauffeur_out','chauffeur_in')),('button_show','=',True)]}"/>
+                            attrs="{'invisible':['|',('state','in',('ready_for_departure','chauffeur_out','chauffeur_in','cancel')),('button_show','=',True)]}"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="ready_for_departure,chauffeur_out,chauffeur_in,rental_close"/>
                 </header>
@@ -80,18 +80,18 @@
                         <group string="Kms Driven">
                             <field name="odometer" force_save="1"/>
                             <field name="km_out"/>
-                            <field name="km_in"/>
-                            <field name="toll"/>
-                            <field name="allowa"/>
-                            <field name="m_tag"/>
-                            <field name="damage_charges"/>
+                            <field name="km_in" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="toll" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="allowa" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="m_tag" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="damage_charges" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
                         </group>
                         <group>
-                            <field name="time_in"/>
+                            <field name="time_in" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
                             <field name="time_out"/>
-                            <field name="out_of_station"/>
-                            <field name="over_night"/>
-                            <field name="over_time"/>
+                            <field name="out_of_station" attrs="{'invisible': [('state','in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="over_night" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="over_time" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
                             <field name="button_show" invisible="1"/>
                         </group>
                         <group string="Actual Activities">
@@ -161,7 +161,7 @@
                         <!--                                <field name="net_amount" force_save="1" readonly="1"/>-->
                         <!--                            </group>-->
                         <!--                        </group>-->
-                        <group string="Calculations">
+                        <group string="Calculations" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}">
                             <group>
                                 <group>
                                     <field name="hours" force_save="1" readonly="1"/>

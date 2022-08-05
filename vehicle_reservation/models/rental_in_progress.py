@@ -97,7 +97,7 @@ class RentalProgress(models.Model):
     state = fields.Selection(
         [('ready_for_departure', 'Ready For Departure'), ('chauffeur_out', 'Chauffeur Out'),
          ('chauffeur_in', 'Chauffeur In'),
-         ('rental_close', 'Rental Closed')],
+         ('rental_close', 'Rental Closed') , ('cancel', 'Cancelled')],
         default='ready_for_departure',
         string="Status", tracking=True)
     reservation_id = fields.Many2one('vehicle.reservation')
@@ -122,6 +122,7 @@ class RentalProgress(models.Model):
                  ('state', '=', 'confirm')])
             overtime = self.hours - record.apply_over_time
             over_rate = 0
+            toll_allowance = self.toll + self.allowa + self.damage_charges + self.m_tag
             for j in record.contract_lines_id:
                 if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
                     # if self.out_of_station:
@@ -136,7 +137,7 @@ class RentalProgress(models.Model):
                     if self.apply_out_station <= self.driven:
                         print("out station done")
                         self.out_station_rate = j.out_station
-                        self.net_amount = self.total_rate + self.out_station_rate + over_rate
+                        self.net_amount = self.total_rate + self.out_station_rate + over_rate + toll_allowance
         else:
             self.net_amount = self.net_amount - self.out_station_rate
 
@@ -149,6 +150,7 @@ class RentalProgress(models.Model):
             overtime = self.hours - record.apply_over_time
             print("overtime" , overtime)
             out_station = 0
+            toll_allowance = self.toll + self.allowa + self.damage_charges + self.m_tag
             for j in record.contract_lines_id:
                 if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
                     print("true")
@@ -163,7 +165,7 @@ class RentalProgress(models.Model):
                         self.apply_over_time = record.apply_over_time
                         self.over_time_rate = j.over_time
                         # over_rate = overtime * self.over_time_rate
-                        self.net_amount = self.total_rate + out_station + (overtime * self.over_time_rate)
+                        self.net_amount = self.total_rate + out_station + (overtime * self.over_time_rate) + toll_allowance
         else:
             record = self.env['res.contract'].search(
                 [('partner_id', '=', self.name.id),
@@ -1110,7 +1112,7 @@ class RentalProgress(models.Model):
             result = sum(item[-1]['price_unit'] for item in line_vals)
             print(result)
             rental_vals.append((0, 0, {
-                'date_rental': rec.create_date,
+                'date_rental': rec.create_date.date(),
                 'rental_id': rec.id,
                 # 'description': r.time_out,
                 'rentee_name': rec.first_name + '' + rec.last_name,

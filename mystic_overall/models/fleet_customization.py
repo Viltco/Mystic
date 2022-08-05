@@ -36,7 +36,6 @@ class FleetManageField(models.Model):
         self.model_year = self.model_id.model_year
 
     def name_get(self):
-        print('gggg')
         res = []
         for rec in self:
             print((rec.id, '%s/%s/%s/%s' % (

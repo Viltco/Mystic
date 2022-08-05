@@ -29,20 +29,26 @@
                 </xpath>
                 <xpath expr="//field[@name='branch_id']" position="after">
                     <field name="po_reference_req"/>
+                    <field name="pump_id" attrs="{'invisible': [('partner_type', '!=', 'is_pump')]}"/>
+
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[@name='accounting']/group/group[@name='accounting_entries']/field[@name='property_account_payable_id']"
+                       position="after">
+                    <field name="credit_limit"/>
                 </xpath>
             </field>
         </record>
 
         <record id="view_pin_search_inherited" model="ir.ui.view">
-        <field name="name">res.partner.inherited</field>
-        <field name="inherit_id" ref="base.view_res_partner_filter"/>
-        <field name="model">res.partner</field>
-        <field type="xml" name="arch">
-            <search>
-                <field name="pin_code"/>
-            </search>
-        </field>
-    </record>
+            <field name="name">res.partner.inherited</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="model">res.partner</field>
+            <field type="xml" name="arch">
+                <search>
+                    <field name="pin_code"/>
+                </search>
+            </field>
+        </record>
 
         <record id="action_customer_view" model="ir.actions.act_window">
             <field name="name">Customer</field>
@@ -51,7 +57,7 @@
             <field name="view_mode">tree,form</field>
             <field name="domain">[('partner_type', '=', 'is_customer')]</field>
             <!--        <field name="search_view_id" ref="view_project_filter" />-->
-            <field name="context">{'default_partner_type': 'is_customer'}</field>
+            <field name="context">{'default_partner_type': 'is_customer','default_company_type':'company'}</field>
         </record>
 
 
@@ -59,7 +65,7 @@
                   name="Customer"
                   parent="contacts.menu_contacts"
                   action="action_customer_view"
-                  sequence="20"/>
+                  sequence="4"/>
 
         <record id="action_driver_view" model="ir.actions.act_window">
             <field name="name">Driver</field>
@@ -76,7 +82,7 @@
                   name="Driver"
                   parent="contacts.menu_contacts"
                   action="action_driver_view"
-                  sequence="21"/>
+                  sequence="5"/>
 
         <record id="action_vendor_view" model="ir.actions.act_window">
             <field name="name">Vendor</field>
@@ -85,20 +91,20 @@
             <field name="view_mode">tree,form</field>
             <field name="domain">[('partner_type', '=', 'is_vendor')]</field>
             <!--        <field name="search_view_id" ref="view_project_filter" />-->
-            <field name="context">{'default_partner_type': 'is_vendor'}</field>
+            <field name="context">{'default_partner_type': 'is_vendor','default_company_type':'company'}</field>
         </record>
 
 
         <menuitem id="vendor_root"
                   name="Vendor"
                   parent="contacts.menu_contacts"
-                  sequence="22"/>
-
-        <menuitem id="menu_vendor"
-                  name="Vendor"
-                  parent="vendor_root"
                   action="action_vendor_view"
-                  sequence="1"/>
+                  sequence="6"/>
+
+        <!--        <menuitem id="menu_vendor"-->
+        <!--                  name="Vendor"-->
+        <!--                  parent="vendor_root"-->
+        <!--                  sequence="1"/>-->
 
 
         <record id="action_user_view" model="ir.actions.act_window">
@@ -116,7 +122,24 @@
                   name="User"
                   parent="contacts.menu_contacts"
                   action="action_user_view"
-                  sequence="23"/>
+                  sequence="7"/>
+
+        <record id="action_pump_view" model="ir.actions.act_window">
+            <field name="name">Pump</field>
+            <field name="res_model">res.partner</field>
+            <!--        <field name="view_type">form</field>-->
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('partner_type', '=', 'is_pump')]</field>
+            <!--        <field name="search_view_id" ref="view_project_filter" />-->
+            <field name="context">{'default_partner_type': 'is_pump'}</field>
+        </record>
+
+
+        <menuitem id="pump_root"
+                  name="Pump"
+                  parent="contacts.menu_contacts"
+                  action="action_pump_view"
+                  sequence="8"/>
 
         <record model="ir.ui.menu" id="contacts.res_partner_menu_config">
             <field name="sequence">24</field>

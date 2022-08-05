@@ -27,9 +27,9 @@
                             class="btn-primary" type="object"
                             attrs="{'invisible':[('state','in',('confirm' , 'cancel'))]}"/>
                     <button id="button_reset_draft" name="action_reset_draft" string="Reset to Draft"
-                            class="btn-secondary" type="object" states="confirm,cancel"/>
+                            class="btn-secondary" type="object"  attrs="{'invisible':[('state','in',('confirm' , 'draft'))]}"/>
                     <button id="button_cancel" name="action_cancel" string="Cancel"
-                            class="btn-secondary" type="object" states="draft"/>
+                            class="btn-secondary" type="object" attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
                 </header>
                 <sheet>

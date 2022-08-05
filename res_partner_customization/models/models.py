@@ -12,11 +12,13 @@ class AddFieldsPartners(models.Model):
     partner_type = fields.Selection([
         ('is_customer', 'Customer'),
         ('is_vendor', 'Vendor'),
-        ('is_driver', 'Driver'), ('is_user', 'User')], default='is_user', string="Partner Type")
+        ('is_driver', 'Driver'), ('is_user', 'User'), ('is_pump', 'Pump')], default='is_user', string="Partner Type")
     strn = fields.Char(string="STRN", tracking=True)
     ntn = fields.Char(string="NTN/CNIC", tracking=True)
     uan = fields.Char(string="UAN", tracking=True)
     po_reference_req = fields.Boolean(string='Require PO Reference')
+    pump_id = fields.Many2one('fuel.pump', string="Fuel Pump", tracking=True)
+    credit_limit = fields.Integer(string='Credit Limit')
 
     _sql_constraints = [
         ('ntn_unique', 'unique(ntn)', 'Cant be duplicate value For NTN!')]
@@ -30,7 +32,6 @@ class AddFieldsPartners(models.Model):
         pass
 
     def name_get(self):
-            print('gggg')
             res = []
             for rec in self:
                 if rec.partner_type == 'is_driver':

@@ -14,8 +14,9 @@ class VehicleMaintenance(models.Model):
     branch_id = fields.Many2one('res.branch', string="Branch", tracking=True)
     driver_id = fields.Many2one('res.partner', string="Driver", tracking=True,
                                 domain=[('partner_type', '=', 'is_driver')])
-    location_id = fields.Many2one('stock.warehouse', string="Location", tracking=True)
     opertion_type_id = fields.Many2one('stock.picking.type', string="Operation Type", tracking=True)
+    location_id = fields.Many2one('stock.location', string="Location", tracking=True,
+                                  related='opertion_type_id.default_location_src_id')
 
     inspection_from = fields.Char(string='Inspection From')
     vehicle_in = fields.Datetime('Vehicle In', default=datetime.today())
@@ -119,7 +120,7 @@ class VehicleMaintenance(models.Model):
         #     stock_move = self.env['stock.move'].create(lines)
         picking_delivery = self.env['stock.picking.type'].search([('code', '=', 'internal')], limit=1)
         vals = {
-            'picking_type_id':  self.opertion_type_id.id,
+            'picking_type_id': self.opertion_type_id.id,
             'location_id': self.opertion_type_id.default_location_src_id.id,
             'location_dest_id': self.opertion_type_id.default_location_dest_id.id,
             # 'partner_id': self.workcenter_id.partner_id.id,
@@ -178,10 +179,10 @@ class VehicleMaintenance(models.Model):
 class VehicleMaintenanceLines(models.Model):
     _name = "vehicle.maintenance.lines"
 
-    location_id = fields.Many2one('stock.location', string="Location", tracking=True)
     product_id = fields.Many2one('product.product', string="Product", tracking=True)
+    available_quantity = fields.Float(string='Available Quantity', store=True, compute="_compute_available_quantity")
     quantity = fields.Float(string='Quantity', store=True)
-    unit_price = fields.Float(string='Unit Price', store=True)
+    unit_price = fields.Float(string='Unit Price', store=True, related='product_id.standard_price')
     total = fields.Float(string='Total', store=True, compute="_compute_total")
     labour = fields.Float(string='Labour', store=True)
 
@@ -190,7 +191,30 @@ class VehicleMaintenanceLines(models.Model):
     @api.depends('quantity', 'unit_price')
     def _compute_total(self):
         for rec in self:
-            if rec.quantity and rec.unit_price:
-                rec.total = rec.quantity * rec.unit_price
+            if rec.quantity > rec.available_quantity:
+                raise ValidationError(f'Please Enter quantity less than available quantity')
             else:
-                rec.total = 0
+                rec.total = rec.quantity * rec.unit_price
+
+    @api.depends('product_id', 'maintenance_job_id.opertion_type_id', 'maintenance_job_id.location_id')
+    def _compute_available_quantity(self):
+        for rec in self:
+            total = 0
+            quants = self.get_quant_lines()
+            # print("quants",quants)
+            quants = self.env['stock.quant'].browse(quants)
+            for q_line in quants:
+                # print(q_line.product_tmpl_id)
+                print("locations", q_line.location_id)
+                # print(rec.product_id)
+                if q_line.product_tmpl_id.name == rec.product_id.name and q_line.location_id.id == rec.maintenance_job_id.location_id.id:
+                    # if q_line.location_id.name == rec.maintenance_job_id.location_id.name:
+                    print("after", q_line)
+                    total = total + q_line.available_quantity
+                    print(total)
+            rec.available_quantity = total
+
+    def get_quant_lines(self):
+        domain_loc = self.env['product.product']._get_domain_locations()[0]
+        quant_ids = [l['id'] for l in self.env['stock.quant'].search_read(domain_loc, ['id'])]
+        return quant_ids
