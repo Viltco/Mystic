@@ -54,8 +54,14 @@ class RentalProgress(models.Model):
 
     hours = fields.Integer(string='Hours')
     per_hour_rate = fields.Integer(string='Hour Rate')
+
     days = fields.Integer(string='Days')
     day_rate = fields.Integer(string='Day Rate')
+    extra_daily_km = fields.Integer(string='Extra KMs(Daily)')
+    extra_daily_km_rate = fields.Integer(string='Extra KM Rate(Daily)')
+    extra_daily_hour = fields.Integer(string='Extra Hours(Daily)')
+    extra_daily_hour_rate = fields.Integer(string='Extra Hour Rate(Daily)')
+
     weeks = fields.Integer(string='Weeks')
     week_rate = fields.Integer(string='Week Rate')
     months = fields.Integer(string='Months')
@@ -193,6 +199,7 @@ class RentalProgress(models.Model):
                 self.driven = self.km_in - self.km_out
                 toll_allowance = self.toll + self.allowa + self.damage_charges + self.m_tag
                 extra_km_rate = 0
+                extra_hour_rate = 0
                 total_hours = 0
                 for j in record.contract_lines_id:
                     if j.model_id.name == self.vehicle_no.model_id.name and j.model_id.model_year == self.vehicle_no.model_id.model_year and j.model_id.power_cc == self.vehicle_no.model_id.power_cc:
@@ -224,20 +231,37 @@ class RentalProgress(models.Model):
                                 self.net_amount = self.total_rate + toll_allowance
                                 self.out_station_rate = 0
                         elif self.based_on == 'daily':
+                            total_hours = ((total_days.days * 24) + (total_days.seconds / 3600))
                             if minutes > 0:
-                                self.hours = hours + 1
-                                self.per_hour_rate = j.per_hour_rate
+                                self.hours = total_hours + 1
+                                # self.per_hour_rate = j.per_hour_rate
                             else:
-                                self.hours = hours
-                                self.per_hour_rate = j.per_hour_rate
+                                self.hours = total_hours
+                                # self.per_hour_rate = j.per_hour_rate
                             self.days = total_days.days
                             if self.days > 0:
                                 self.day_rate = j.per_day_rate
                             else:
                                 self.day_rate = 0
-                            self.hours_value = self.hours * self.per_hour_rate
-                            self.days_value = self.days * self.day_rate
-                            self.total_rate = self.days_value + self.hours_value
+                            # self.hours_value = self.hours * self.per_hour_rate
+                            # self.days_value = self.days * self.day_rate
+                            extra_km = self.driven - record.km_daily_limit
+                            extra_hour = total_hours - record.hourly_daily_limit
+                            if extra_km > 0:
+                                self.extra_daily_km = extra_km
+                                self.extra_daily_km_rate = record.addit_daily_km_rate
+                                extra_km_rate = self.extra_daily_km * self.extra_daily_km_rate
+                            if extra_hour > 0:
+                                if minutes > 0:
+                                    self.extra_daily_hour_rate = record.addit_daily_hour_rate
+                                    self.extra_daily_hour = extra_hour + 1
+                                    extra_hour_rate = self.extra_daily_hour * self.extra_daily_hour_rate
+                                else:
+                                    self.extra_daily_hour_rate = record.addit_daily_hour_rate
+                                    self.extra_daily_hour = extra_hour
+                                    extra_hour_rate = self.extra_daily_hour * self.extra_daily_hour_rate
+                            self.days_value = (self.days * self.day_rate) + extra_km_rate + extra_hour_rate
+                            self.total_rate = self.days_value
                             if overtime > 0:
                                 self.over_time = True
                                 self.apply_over_time = record.apply_over_time
@@ -253,7 +277,7 @@ class RentalProgress(models.Model):
                                 self.out_of_station = True
                                 self.out_station_rate = j.out_station
                                 self.out_of_station_value = self.out_station_rate
-                                self.net_amount = self.total_rate + self.out_of_station_value + toll_allowance
+                                self.net_amount = self.total_rate + self.out_of_station_value + toll_allowance + self.over_time_value
                             else:
                                 self.out_of_station = False
                                 self.net_amount = self.total_rate + toll_allowance + self.over_time_value

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="add_fuelwizard_form" model="ir.ui.view">
+        <field name="name">addfuel.wizard.form</field>
+        <field name="model">addfuel.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Liters">
+                <group>
+                    <group>
+                        <field name="entry_type"/>
+                        <field name="payment_mode" widget="radio" attrs="{'invisible': [('entry_type','!=','slip')]}"/>
+                        <field name="vendor_id" attrs="{'invisible': [('entry_type','!=','card')]}"/>
+
+                    </group>
+                    <group>
+
+                    </group>
+                    <group>
+                        <field name="description"/>
+                        <field name="date"/>
+                        <field name="ref_no"/>
+                    </group>
+                    <group>
+                        <field name="km_in"/>
+                        <field name="km_out" attrs="{'readonly': [('km_out','!=',0)]}" force_save="1"/>
+                        <field name="rate"/>
+                        <field name="qty"/>
+                    </group>
+
+                </group>
+                <footer>
+                    <button name="add_fuel_button" string="Create" class="btn-primary" type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="addfuel_wizard_action" model="ir.actions.act_window">
+        <field name="name">Add Litres</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">addfuel.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="add_fuelwizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+
+</odoo>

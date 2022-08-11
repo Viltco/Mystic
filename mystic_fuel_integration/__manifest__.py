@@ -20,13 +20,16 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base' , 'mail' , 'account'],
+    'depends': ['base' , 'mail' , 'account' , 'fleet' , 'branch' , 'hr' , 'hr_expense'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'data/data.xml',
         'views/fuel_pump.xml',
-        # 'views/res_partner_customization.xml',
+        'views/fuel_management.xml',
+        'views/ir_config_account_cust.xml',
+        'wizard/add_fuel.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

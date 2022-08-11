@@ -80,18 +80,27 @@
                         <group string="Kms Driven">
                             <field name="odometer" force_save="1"/>
                             <field name="km_out"/>
-                            <field name="km_in" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
-                            <field name="toll" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
-                            <field name="allowa" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
-                            <field name="m_tag" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
-                            <field name="damage_charges" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="km_in"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="toll"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="allowa"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="m_tag"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="damage_charges"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
                         </group>
                         <group>
-                            <field name="time_in" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="time_in"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
                             <field name="time_out"/>
-                            <field name="out_of_station" attrs="{'invisible': [('state','in', ('chauffeur_out', 'ready_for_departure'))]}"/>
-                            <field name="over_night" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
-                            <field name="over_time" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="out_of_station"
+                                   attrs="{'invisible': [('state','in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="over_night"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
+                            <field name="over_time"
+                                   attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}"/>
                             <field name="button_show" invisible="1"/>
                         </group>
                         <group string="Actual Activities">
@@ -161,23 +170,28 @@
                         <!--                                <field name="net_amount" force_save="1" readonly="1"/>-->
                         <!--                            </group>-->
                         <!--                        </group>-->
-                        <group string="Calculations" attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}">
+                        <group string="Calculations"
+                               attrs="{'invisible': [('state', 'in', ('chauffeur_out', 'ready_for_departure'))]}">
                             <group>
                                 <group>
                                     <field name="hours" force_save="1" readonly="1"/>
                                     <field name="per_hour_rate" force_save="1" readonly="1"/>
-                                    <field name="hours_value" force_save="1" readonly="1" />
+                                    <field name="hours_value" force_save="1" readonly="1"/>
                                 </group>
                                 <group>
-                                    <field name="days" force_save="1" readonly="1" />
-                                    <field name="day_rate" force_save="1" readonly="1" />
+                                    <field name="days" force_save="1" readonly="1"/>
+                                    <field name="day_rate" force_save="1" readonly="1"/>
+                                    <field name="extra_daily_km" force_save="1" readonly="1"/>
+                                    <field name="extra_daily_km_rate" force_save="1" readonly="1"/>
+                                    <field name="extra_daily_hour" force_save="1" readonly="1"/>
+                                    <field name="extra_daily_hour_rate" force_save="1" readonly="1"/>
                                     <field name="days_value" force_save="1" readonly="1"/>
                                 </group>
                                 <group>
                                     <field name="driven" readonly="1" force_save="1"/>
                                 </group>
                                 <group>
-                                    <field name="km_rate" force_save="1" readonly="1" />
+                                    <field name="km_rate" force_save="1" readonly="1"/>
                                     <field name="km_value" force_save="1" readonly="1"/>
                                 </group>
                                 <group>
@@ -186,7 +200,7 @@
                                         <field name="apply_out_station" readonly="1" force_save="1"/>
                                         <span>Km</span>
                                     </div>
-                                    <field name="out_station_rate" readonly="1" force_save="1" />
+                                    <field name="out_station_rate" readonly="1" force_save="1"/>
                                     <field name="out_of_station_value" readonly="1" force_save="1"/>
                                 </group>
                                 <group>

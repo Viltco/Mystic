@@ -38,8 +38,8 @@ class FleetManageField(models.Model):
     def name_get(self):
         res = []
         for rec in self:
-            print((rec.id, '%s/%s/%s/%s' % (
-            rec.model_id.brand_id.name, rec.model_id.name, rec.model_id.model_year, rec.model_id.power_cc)))
+            # print((rec.id, '%s/%s/%s/%s' % (
+            # rec.model_id.brand_id.name, rec.model_id.name, rec.model_id.model_year, rec.model_id.power_cc)))
             if rec.license_plate:
                 res.append((rec.id, '%s/%s/%s/%s/%s' % (
                 rec.model_id.brand_id.name, rec.model_id.name, rec.model_id.model_year, rec.model_id.power_cc,
@@ -52,7 +52,7 @@ class FleetManageField(models.Model):
         return res
 
     def write(self, values):
-        print(self.account_asset_id)
+        # print(self.account_asset_id)
         self.account_asset_id.vehicle_id = False
         self.account_asset_id.asset_show = False
         res = super(FleetManageField, self).write(values)
@@ -64,16 +64,16 @@ class FleetManageField(models.Model):
     def _compute_fleet_age(self):
         if self.account_asset_id:
             dayss = (self.account_asset_id.acquisition_date - date.today()).days
-            print(dayss)
+            # print(dayss)
             if dayss > 0:
                 year = int(dayss / 365)
                 month = int((dayss - (year * 365)) / 30)
                 # week = int((dayss - (year * 365)) - month * 30) // 7
                 day = int((dayss - (year * 365)) - month * 30)
-                print("year", year)
-                print("month", month)
+                # print("year", year)
+                # print("month", month)
                 # print("week" , week)
-                print("days", day)
+                # print("days", day)
                 self.fleet_age = str(year) + "-year" + '/' + str(month) + '-Month' + '/' + str(day) + '-Day'
             else:
                 self.fleet_age = 0

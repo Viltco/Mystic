@@ -1,2 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_fuel_pump,access.fuel.pump,model_fuel_pump,,1,1,1,1
+access_fuel_management,access.fuel.management,model_fuel_management,,1,1,1,1
+access_fuel_lines,access.fuel.lines,model_fuel_lines,,1,1,1,1
+access_fuel_lines,access.fuel.lines,model_fuel_lines,,1,1,1,1
+access_addfuel_wizard,access.addfuel.wizard,model_addfuel_wizard,,1,1,1,1
+

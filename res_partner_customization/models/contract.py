@@ -23,6 +23,16 @@ class Contracts(models.Model):
     addit_airport_km_rate = fields.Integer(string='Additional KM Rate')
     km_airport_limit = fields.Integer(string='KM Limit')
 
+    addit_daily_hour_rate = fields.Integer(string='Additional Hourly Rate')
+    hourly_daily_limit = fields.Integer(string='Hourly Limit')
+    addit_daily_km_rate = fields.Integer(string='Additional KM Rate')
+    km_daily_limit = fields.Integer(string='KM Limit')
+
+    addit_week_hour_rate = fields.Integer(string='Additional Hourly Rate')
+    hourly_week_limit = fields.Integer(string='Hourly Limit')
+    addit_week_km_rate = fields.Integer(string='Additional KM Rate')
+    km_week_limit = fields.Integer(string='KM Limit')
+
     per_hour_rate = fields.Float(string='Hour')
     per_km_rate = fields.Float(string='KM')
     per_day_rate = fields.Float(string='Daily')

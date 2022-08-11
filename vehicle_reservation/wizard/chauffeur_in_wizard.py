@@ -81,6 +81,7 @@ class ChauffeurInWizard(models.TransientModel):
                     hours = datetime.strptime(str(td), "%H:%M:%S").hour
                     minutes = datetime.strptime(str(td), "%H:%M:%S").minute
                     extra_km_rate = 0
+                    extra_hour_rate = 0
                     for j in record.contract_lines_id:
                         if j.model_id.name == res.vehicle_no.model_id.name and j.model_id.model_year == res.vehicle_no.model_id.model_year and j.model_id.power_cc == res.vehicle_no.model_id.power_cc:
                             if res.based_on == 'time_and_mileage':
@@ -114,21 +115,37 @@ class ChauffeurInWizard(models.TransientModel):
                                     res.out_station_rate = 0
                                     res.out_of_station_value = 0
                             elif res.based_on == 'daily':
+                                total_hours = ((total_days.days * 24) + (total_days.seconds / 3600))
                                 if minutes > 0:
-                                    res.hours = hours + 1
-                                    res.per_hour_rate = j.per_hour_rate
+                                    res.hours = total_hours + 1
+                                    # res.per_hour_rate = j.per_hour_rate
                                 else:
-                                    res.hours = hours
-                                    res.per_hour_rate = j.per_hour_rate
+                                    res.hours = total_hours
+                                    # res.per_hour_rate = j.per_hour_rate
                                 res.days = total_days.days
                                 if res.days > 0:
                                     res.day_rate = j.per_day_rate
                                 else:
                                     res.day_rate = 0
-                                res.hours_value = res.hours * res.per_hour_rate
+                                # res.hours_value = res.hours * res.per_hour_rate
                                 res.days_value = res.days * res.day_rate
-                                res.total_rate = res.days_value + res.hours_value
-                                overtime = res.hours - record.apply_over_time
+                                extra_km = res.driven - record.km_daily_limit
+                                extra_hour = total_hours - record.hourly_daily_limit
+                                if extra_km > 0:
+                                    res.extra_daily_km = extra_km
+                                    res.extra_daily_km_rate = record.addit_daily_km_rate
+                                    extra_km_rate = res.extra_daily_km * res.extra_daily_km_rate
+                                if extra_hour > 0:
+                                    if minutes > 0:
+                                        res.extra_daily_hour_rate = record.addit_daily_hour_rate
+                                        res.extra_daily_hour = extra_hour + 1
+                                        extra_hour_rate = res.extra_daily_hour * res.extra_daily_hour_rate
+                                    else:
+                                        res.extra_daily_hour_rate = record.addit_daily_hour_rate
+                                        res.extra_daily_hour = extra_hour
+                                        extra_hour_rate = res.extra_daily_hour * res.extra_daily_hour_rate
+                                res.total_rate = res.days_value + extra_km_rate + extra_hour_rate
+                                overtime = total_hours - record.apply_over_time
                                 if overtime > 0:
                                     res.over_time = True
                                     res.apply_over_time = record.apply_over_time
@@ -269,7 +286,7 @@ class ChauffeurInWizard(models.TransientModel):
                                         res.extra_drop_off_hour = extra_hour
                                 res.drop_off_value = ((res.extra_drop_off_hour * res.extra_drop_off_km_rate) + res.drop_off_rate + extra_km_rate)
                                 res.total_rate = res.drop_off_value
-                                res.net_amount = res.total_rate + + toll_allowance
+                                res.net_amount = res.total_rate  + toll_allowance
                             elif res.based_on == 'airport_duty':
                                 res.airport_duty_rate = j.airport_duty_rate
                                 extra_km = res.driven - record.km_airport_limit

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fuel_management_tree" model="ir.ui.view">
+        <field name="name">fuel.management.tree</field>
+        <field name="model">fuel.management</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+
+        </field>
+    </record>
+    <record id="res_fuel_management_form" model="ir.ui.view">
+        <field name="name">fuel.management.form</field>
+        <field name="model">fuel.management</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button id="button_confirm" name="action_confirm" string="Confirm"
+                            class="btn-primary" type="object"
+                            attrs="{'invisible':[('state','in',('confirm' , 'cancel'))]}"/>
+                    <button id="button_reset_draft" name="action_reset_draft" string="Reset to Draft"
+                            class="btn-secondary" type="object"
+                            attrs="{'invisible':[('state','in',('confirm' , 'draft'))]}"/>
+                    <button id="button_cancel" name="action_cancel" string="Cancel"
+                            class="btn-secondary" type="object" attrs="{'invisible':[('state','!=','confirm')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" force_save="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="brand_id"/>
+                            <field name="branch_id"/>
+                            <field name="fuel_type"/>
+                        </group>
+                        <group>
+                            <!--                            <field name="odometer"/>-->
+                            <field name="driver_id"/>
+                            <field name="journal_id"/>
+                            <button id="button_add_fuel" name="action_add_fuel" string="Add Fuel"
+                                    class="btn-primary" type="object"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page>
+                            <field name="fuel_lines_id">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="entry_type"/>
+                                    <field name="description"/>
+                                    <field name="ref_no"/>
+                                    <field name="km_in"/>
+                                    <field name="km_out"/>
+                                    <field name="diff"/>
+                                    <field name="qty"/>
+                                    <field name="rate"/>
+                                    <field name="mpg"/>
+                                    <field name="amount"/>
+                                    <field name="rs_per_km"/>
+                                    <field name="vendor_id"/>
+                                    <field name="payment_mode" optional="hide"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="fuel_management_action" model="ir.actions.act_window">
+        <field name="name">Fuel Management</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fuel.management</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                create your Fuel Management!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="fuel_management_root"
+              name="Fuel Management"
+              sequence="10"/>
+
+    <menuitem id="fuel_management"
+              name="Fuel Management"
+              parent="fuel_management_root"
+              sequence="1"/>
+
+    <menuitem id="fuel_management_details"
+              name="Fuel Management"
+              parent="fuel_management"
+              action="fuel_management_action"
+              sequence="1"/>
+</odoo>

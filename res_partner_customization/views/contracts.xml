@@ -114,6 +114,47 @@
                             <field name="over_night"/>
                             <field name="out_station"/>
                         </group>
+
+                        <group string="Daily Duty">
+                            <label for="addit_daily_hour_rate"/>
+                            <div class="o_row">
+                                <field name="addit_daily_hour_rate"/>
+                                <span>Per Hour</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="hourly_daily_limit"/>
+                            </div>
+                            <label for="addit_daily_km_rate"/>
+                            <div class="o_row">
+                                <field name="addit_daily_km_rate"/>
+                                <span>Per KM</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="km_daily_limit"/>
+                            </div>
+                        </group>
+                        <group string="Weekly Duty">
+                            <label for="addit_week_hour_rate"/>
+                            <div class="o_row">
+                                <field name="addit_week_hour_rate"/>
+                                <span>Per Hour</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="hourly_week_limit"/>
+                            </div>
+                            <label for="addit_week_km_rate"/>
+                            <div class="o_row">
+                                <field name="addit_week_km_rate"/>
+                                <span>Per KM</span>
+                                <strong>
+                                    <span>Limit</span>
+                                </strong>
+                                <field name="km_week_limit"/>
+                            </div>
+                        </group>
                     </group>
                     <notebook>
                         <page>
